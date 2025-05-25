@@ -14,7 +14,7 @@ interface ContractPreviewProps {
 const formatCurrency = (value: string | number | undefined): string => {
   if (value === undefined || value === null) return 'R$ 0,00';
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return 'R$ 0,00'; 
+  if (isNaN(num)) return 'R$ 0,00';
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
 };
 
@@ -23,32 +23,16 @@ const numberToWords = (numStr: string | number | undefined): string => {
     const num = typeof numStr === 'string' ? parseFloat(numStr) : numStr;
     if (isNaN(num)) return '';
 
-    const toWords = require('number-to-words'); 
-    try {
-        let words = toWords.toWords(num); 
-        if (typeof words === 'string') {
-            const integerPart = Math.floor(num);
-            const decimalPart = Math.round((num - integerPart) * 100);
-            
-            words = toWords.toWords(integerPart); 
-            
-            let decimalWords = '';
-            if (decimalPart > 0) {
-                decimalWords = toWords.toWords(decimalPart);
-                if (integerPart > 0 || decimalPart > 0) { // handle 0.50 case
-                  words += ` vírgula ${decimalWords}`; 
-                } else {
-                  words = decimalWords; 
-                }
-            }
-            return words;
-        }
-        return String(num); 
-    } catch (e) {
-        console.warn("Error converting number to words with 'number-to-words'. Falling back. Error:", e);
-        const [integerPart, decimalPart = '00'] = String(num.toFixed(2)).split('.');
-        return `${integerPart} e ${decimalPart}/100`;
+    const integerPart = Math.floor(num);
+    const decimalPart = Math.round((num - integerPart) * 100);
+
+    let words = `${integerPart} reais`;
+    if (decimalPart > 0) {
+        words += ` e ${decimalPart.toString().padStart(2, '0')} centavos`;
+    } else {
+        words += ` e 00 centavos`; // Consistent "e 00 centavos" for whole numbers
     }
+    return words;
 };
 
 
@@ -96,7 +80,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{contractTitle || "CONTRATO DE PERMUTA"}</h1>
-      
+
       <p className="mb-4">Pelo presente instrumento particular, as partes abaixo identificadas:</p>
 
       <PartyDetails party={permutante} title="PERMUTANTE (Cede o equipamento e recebe os serviços)" />
@@ -106,8 +90,8 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
       <div className="space-y-3">
         <p><span className="font-bold">CLÁUSULA 1 - DO OBJETO</span><br/>
-        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do PERMUTANTE, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` (${equipmentValueInWords} reais)` : ' (___________________ reais)'}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo PERMUTADO.</p>
-        
+        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do PERMUTANTE, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` (${equipmentValueInWords})` : ''}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo PERMUTADO.</p>
+
         {paymentClause && (
             <p><span className="font-bold">CLÁUSULA 2 - DA FORMA DE PAGAMENTO</span><br/>
             {paymentClause}</p>
@@ -115,7 +99,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
         <p><span className="font-bold">CLÁUSULA {paymentClause ? '3' : '2'} - DAS CONDIÇÕES</span><br/>
         {conditions || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
-        
+
         <p><span className="font-bold">CLÁUSULA {paymentClause ? '4' : '3'} - DA TRANSFERÊNCIA DE PROPRIEDADE</span><br/>
         {transferClause || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
 
@@ -123,18 +107,18 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
             <p><span className="font-bold">CLÁUSULA {paymentClause ? '5' : '4'} - DAS DISPOSIÇÕES GERAIS</span><br/>
             {generalDispositions}</p>
         )}
-        
+
         <p><span className="font-bold">CLÁUSULA {paymentClause ? (generalDispositions ? '6' : '5') : (generalDispositions ? '5' : '4')} - DO FORO</span><br/>
         Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de {foro || '___________________'}.</p>
       </div>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
-      
+
       <div className="mt-12 space-y-10">
         <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
         <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
       </div>
-      
+
       <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
 
     </div>
@@ -164,6 +148,9 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   const totalValueFormatted = formatCurrency(totalValue);
   const totalValueInWords = numberToWords(totalValue);
+  const rescissionNoticePeriodInWords = numberToWords(rescissionNoticePeriodDays);
+  const rescissionPenaltyInWords = numberToWords(rescissionPenaltyPercentage);
+
 
   let paymentDescription = '';
   if (paymentType === 'vista') {
@@ -173,7 +160,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   } else if (paymentType === 'outro') {
     paymentDescription = paymentOutroDescription || 'Conforme especificado pelas partes.';
   }
-  
+
   const renderList = (text: string = '') => {
     return text.split('\\n').map((item, index) => item.trim() ? <li key={index}>{item.trim()}</li> : null).filter(Boolean);
   };
@@ -181,7 +168,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{contractTitle || "CONTRATO DE PRESTAÇÃO DE SERVIÇOS"}</h1>
-      
+
       <PartyDetails party={contratante} title="CONTRATANTE" />
       <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATADA" />
 
@@ -189,7 +176,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       A CONTRATADA prestará ao CONTRATANTE os serviços de {objectDescription || '___________________'}.</p>
 
       <p className="mb-4"><span className="font-bold">VALOR E FORMA DE PAGAMENTO:</span><br/>
-      O valor total pelos serviços é de {totalValueFormatted}{totalValueInWords ? ` (${totalValueInWords} reais)` : ' (___________________ reais)'}, a ser pago da seguinte forma:<br/>
+      O valor total pelos serviços é de {totalValueFormatted}{totalValueInWords ? ` (${totalValueInWords})` : ''}, a ser pago da seguinte forma:<br/>
       {paymentDescription}</p>
 
       <p className="mb-4"><span className="font-bold">PRAZO DE ENTREGA:</span><br/>
@@ -206,18 +193,18 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
         {renderList(responsibilitiesContratante)}
         {!responsibilitiesContratante?.trim() && <li>___________________</li>}
       </ul>
-      
+
       <p className="mb-4"><span className="font-bold">DIREITOS AUTORAIS:</span><br/>
       {copyrightClause || '___________________'}</p>
 
       <p className="mb-4"><span className="font-bold">RESCISÃO:</span><br/>
-      O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {rescissionNoticePeriodDays || '__'} ({numberToWords(rescissionNoticePeriodDays) || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de {rescissionPenaltyPercentage || '__'}% ({numberToWords(rescissionPenaltyPercentage) || '______'} por cento) sobre o valor do contrato.</p>
+      O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {rescissionNoticePeriodDays || '__'} ({rescissionNoticePeriodInWords ? rescissionNoticePeriodInWords.replace(" reais e 00 centavos", "") : '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de {rescissionPenaltyPercentage || '__'}% ({rescissionPenaltyInWords ? rescissionPenaltyInWords.replace(" reais e 00 centavos", " por cento") : '______ por cento'}) sobre o valor do contrato.</p>
 
       {generalDispositions && (
         <p className="mb-4"><span className="font-bold">DISPOSIÇÕES GERAIS:</span><br/>
         {generalDispositions}</p>
       )}
-        
+
       <p className="mb-4"><span className="font-bold">FORO:</span><br/>
       As partes elegem o foro da comarca de {foro || '___________________'} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.</p>
 
@@ -264,3 +251,5 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
 };
 
 export default ContractPreview;
+
+    
