@@ -20,16 +20,19 @@ export interface ContractParty {
 // --- Data for "Permuta de Equipamento por Serviços" Contract ---
 export interface PermutaEquipmentServiceContractData {
   contractType: 'PERMUTA_EQUIPMENT_SERVICE';
-  permutante: ContractParty; // Person/entity ceding equipment
-  // Permutado is FastFilms, so its details can be hardcoded or come from CompanyInfo
-  equipmentDescription: string;
-  equipmentValue: number; // Monetary value
-  serviceDescription: string; // Services to be rendered by FastFilms
-  conditions?: string; // Specific conditions, like deadline for services
-  transferClause?: string; // Details about property transfer
-  foro: string; // e.g., "Lagoa Santa/MG"
-  contractDate: string; // e.g., "15 de maio de 2025"
-  cityForDate: string; // e.g., "Lagoa Santa/MG" for the "Lagoa Santa/MG, 15 de maio de 2025." line
+  contractTitle: string;
+  permutante: ContractParty;
+  // Permutado is FastFilms (Contratada)
+  equipmentDescription: string; 
+  equipmentValue: string; // Keep as string for form input
+  serviceDescription: string; 
+  paymentClause?: string; // "CLÁUSULA 2 - DA FORMA DE PAGAMENTO"
+  conditions: string; 
+  transferClause: string; 
+  generalDispositions?: string; // "CLÁUSULA 5 - DAS DISPOSIÇÕES GERAIS"
+  foro: string; 
+  contractCity: string; // e.g., "Lagoa Santa/MG" for the signature line
+  contractFullDate: string; // e.g., "15 de maio de 2025" for the signature line
 }
 
 // --- Data for "Prestação de Serviços de Vídeo" Contract ---
@@ -78,8 +81,31 @@ export interface FreelanceHireContractData {
 }
 
 
-// Union type for all possible contract data structures
-export type AnyContractData = 
+// Union type for all possible contract data structures for form state
+export type AnyContractFormState = 
   | PermutaEquipmentServiceContractData 
+  | Partial<ServiceVideoContractData> // Use partial for other types until fully implemented
+  | Partial<FreelanceHireContractData>;
+
+// Union type for all possible complete contract data structures
+export type AnyContractData =
+  | PermutaEquipmentServiceContractData
   | ServiceVideoContractData
   | FreelanceHireContractData;
+
+// Initial data for forms
+export const initialPermutaData: PermutaEquipmentServiceContractData = {
+  contractType: 'PERMUTA_EQUIPMENT_SERVICE',
+  contractTitle: 'CONTRATO DE PERMUTA DE EQUIPAMENTO POR PRESTAÇÃO DE SERVIÇOS',
+  permutante: { name: '', cpfCnpj: '', address: '', email: '' },
+  equipmentDescription: 'uma câmera fotográfica com acessórios',
+  equipmentValue: '6000.00',
+  serviceDescription: 'gravação e edição de vídeos',
+  paymentClause: 'O pagamento do valor acordado será realizado por meio da prestação dos serviços descritos na cláusula anterior, não havendo a necessidade de pagamento em dinheiro.',
+  conditions: 'Não há prazo limite estipulado para a quitação do valor em serviços. As partes se comprometem a manter comunicação clara e objetiva quanto à realização e entrega dos serviços.',
+  transferClause: 'A propriedade do equipamento será transferida ao PERMUTADO na assinatura deste contrato, sendo este responsável por sua guarda, manutenção e utilização a partir de então.',
+  generalDispositions: 'Este contrato é celebrado em caráter irrevogável e irretratável, obrigando as partes por si e seus sucessores.',
+  foro: 'Lagoa Santa/MG',
+  contractCity: 'Lagoa Santa/MG',
+  contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+};

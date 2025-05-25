@@ -22,7 +22,7 @@ interface ContractTypeDialogProps {
 const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenChange, onContractTypeSelect }) => {
   const handleSelect = (type: SupportedContractType) => {
     onContractTypeSelect(type);
-    onOpenChange(false); // Close dialog after selection
+    // onOpenChange(false); // Dialog will be closed by the parent (page.tsx) after selection
   };
 
   return (
@@ -46,23 +46,25 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
             variant="outline" 
             onClick={() => handleSelect('SERVICE_VIDEO')}
             className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            disabled // Remove disabled once implemented
           >
-            Prestação de Serviços de Vídeo
+            Prestação de Serviços de Vídeo (Em breve)
           </Button>
-          {/* Add more contract types here as they are implemented */}
-           <Button 
+          <Button 
             variant="outline" 
             onClick={() => handleSelect('FREELANCE_HIRE_EDITOR')}
             className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            disabled // Remove disabled once implemented
           >
-            Contratação Freelancer (Editor de Vídeo)
+            Contratação Freelancer (Editor de Vídeo) (Em breve)
           </Button>
            <Button 
             variant="outline" 
             onClick={() => handleSelect('FREELANCE_HIRE_FILMMAKER')}
             className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            disabled // Remove disabled once implemented
           >
-            Contratação Freelancer (Cinegrafista/Captação)
+            Contratação Freelancer (Cinegrafista/Captação) (Em breve)
           </Button>
         </div>
         <DialogFooter>
