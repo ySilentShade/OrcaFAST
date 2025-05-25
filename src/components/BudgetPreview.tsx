@@ -20,8 +20,8 @@ const formatCurrency = (value: number) => {
 const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
   if (!data) {
     return (
-      <Card className="sticky top-8 shadow-lg h-[calc(100vh-4rem)]" style={{ backgroundColor: '#18191b' }}>
-        <CardContent className="p-6 text-center text-muted-foreground flex flex-col items-center justify-center h-full">
+      <Card className="sticky top-8 shadow-lg" style={{ backgroundColor: '#18191b' }}>
+        <CardContent className="p-6 text-center text-muted-foreground flex flex-col items-center justify-center min-h-[300px]">
           <FileText className="h-16 w-16 mb-4 text-gray-500" />
           <p className="text-lg">Nenhum orçamento gerado ainda.</p>
           <p className="text-sm">Preencha o formulário e clique em "Gerar Orçamento".</p>
@@ -60,27 +60,27 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
         </div>
       </CardHeader>
       
-      <CardContent className="p-8 flex-grow min-h-0 flex flex-col"> 
-        <div className="mb-6 flex-shrink-0"> {/* Informações do Cliente */}
+      <CardContent className="p-8 flex-grow flex flex-col min-h-0"> 
+        <div className="mb-6"> {/* Informações do Cliente */}
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
-          <p className="font-bold" style={{ color: '#FFFFFF' }}>{clientName}</p>
+          <p className="font-bold text-lg" style={{ color: '#FFFFFF' }}>{clientName}</p>
           <p className="text-sm whitespace-pre-line" style={{ color: '#B0B0B0' }}>{clientAddress}</p>
         </div>
 
-        <div className="mb-6"> {/* Seção de Itens */}
+        <div className="mb-6 flex-grow overflow-y-auto min-h-0"> {/* Seção de Itens com rolagem */}
           <h3 className="text-lg font-semibold mb-2 sticky top-0 py-1 z-10" style={{ color: '#D0D0D0', backgroundColor: '#18191b'}}>Itens do Orçamento:</h3>
           <Table style={{ color: '#D0D0D0' }}>
             <TableHeader>
-              <TableRow className="border-b" style={{ borderColor: '#4A4A4A', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
-                <TableHead style={{ color: '#B0B0B0' }}>Descrição</TableHead>
-                <TableHead className="text-right" style={{ color: '#B0B0B0' }}>Qtde.</TableHead>
-                <TableHead className="text-right" style={{ color: '#B0B0B0' }}>Preço Unit.</TableHead>
-                <TableHead className="text-right" style={{ color: '#B0B0B0' }}>Total Item</TableHead>
+              <TableRow className="border-b" style={{ borderColor: 'hsl(var(--border))', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
+                <TableHead style={{ color: 'hsl(var(--muted-foreground))' }}>Descrição</TableHead>
+                <TableHead className="text-right" style={{ color: 'hsl(var(--muted-foreground))' }}>Qtde.</TableHead>
+                <TableHead className="text-right" style={{ color: 'hsl(var(--muted-foreground))' }}>Preço Unit.</TableHead>
+                <TableHead className="text-right" style={{ color: 'hsl(var(--muted-foreground))' }}>Total Item</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.id} className="border-b" style={{ borderColor: '#4A4A4A', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
+                <TableRow key={item.id} className="border-b" style={{ borderColor: 'hsl(var(--border))', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
                   <TableCell>{item.description}</TableCell>
                   <TableCell className="text-right">{item.quantity}</TableCell>
                   <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
@@ -91,22 +91,22 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </Table>
         </div>
         
-        <div className="mt-auto flex-shrink-0"> {/* Rodapé: Total, Termos, Agradecimento */}
-          <Separator className="my-6" style={{ backgroundColor: '#4A4A4A' }} />
+        <div className="mt-auto"> {/* Rodapé: Total, Termos, Agradecimento */}
+          <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <div className="flex justify-end mb-8 pr-4">
             <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
               <span className="mr-2">Total:</span>
               {formatCurrency(totalAmount)}
             </p>
           </div>
-          <Separator className="my-6" style={{ backgroundColor: '#4A4A4A' }} />
+          <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <div className="text-center mb-6">
             <h3 className="text-xl font-semibold mb-2" style={{ color: '#D0D0D0' }}>Termos e Condições:</h3>
             <p className="text-xs whitespace-pre-line text-justify" style={{ color: '#B0B0B0' }}>{terms}</p>
           </div>
-          <Separator className="my-6" style={{ backgroundColor: '#4A4A4A' }} />
+          <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <p className="text-center text-sm font-medium" style={{ color: '#D0D0D0' }}>
-            Obrigado pela sua preferência!
+            Obrigado pela preferência! — {companyInfo.name}
           </p>
         </div>
       </CardContent>
