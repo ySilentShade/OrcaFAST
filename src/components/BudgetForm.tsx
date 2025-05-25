@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,7 +16,7 @@ import PresetManagerDialog from './PresetManagerDialog';
 import type { BudgetFormState, BudgetItemForm, PresetItem, BudgetDemoData } from '@/types/budget';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useToast } from "@/hooks/use-toast";
-import initialPresetsData from '@/data/presets.json'; // Import the JSON data
+import initialPresetsData from '@/data/presets.json';
 
 const defaultTerms = "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão.";
 
@@ -37,14 +37,15 @@ const budgetFormSchema = z.object({
 interface BudgetFormProps {
   onSubmitForm: (data: BudgetFormState) => void;
   onFillWithDemoData: () => Promise<BudgetDemoData | null>;
+  onPreviewUpdate: (data: BudgetFormState) => void;
 }
 
-const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoData }) => {
+const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoData, onPreviewUpdate }) => {
   const { toast } = useToast();
   const [isPresetManagerOpen, setIsPresetManagerOpen] = useState(false);
-  const [presets] = useLocalStorage<PresetItem[]>('fastfilms-presets', initialPresetsData); // Use initialPresetsData as fallback
+  const [presets] = useLocalStorage<PresetItem[]>('fastfilms-presets', initialPresetsData);
 
-  const { control, handleSubmit, reset, setValue, getValues, formState: { errors } } = useForm<BudgetFormState>({
+  const { control, handleSubmit, reset, setValue, getValues, watch, formState: { errors } } = useForm<BudgetFormState>({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: {
       clientName: '',
@@ -59,9 +60,20 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     name: 'items',
   });
 
-  const handleFormSubmit = (data: BudgetFormState) => {
+  const watchedItems = watch('items');
+  const watchedClientName = watch('clientName');
+  const watchedClientAddress = watch('clientAddress');
+  const watchedTerms = watch('terms');
+
+  useEffect(() => {
+    const currentFormData = getValues();
+    onPreviewUpdate(currentFormData);
+  }, [JSON.stringify(watchedItems), watchedClientName, watchedClientAddress, watchedTerms, getValues, onPreviewUpdate]);
+
+
+  const handleFormSubmitInternal = (data: BudgetFormState) => {
     onSubmitForm(data);
-    toast({ title: "Orçamento Gerado!", description: "A pré-visualização foi atualizada.", variant: "default" });
+    // O toast de sucesso já é mostrado em page.tsx após a preparação bem-sucedida do preview final
   };
 
   const handleAddItem = () => {
@@ -71,8 +83,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
   const handleApplyPreset = (itemIndex: number, presetId: string) => {
     const preset = presets.find(p => p.id === presetId);
     if (preset) {
-      setValue(`items.${itemIndex}.description`, preset.description);
-      setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString());
+      setValue(`items.${itemIndex}.description`, preset.description, { shouldValidate: true, shouldDirty: true });
+      setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString(), { shouldValidate: true, shouldDirty: true });
       toast({
         title: "Preset Aplicado!",
         description: `"${preset.description}" foi aplicado ao item ${itemIndex + 1}.`,
@@ -89,9 +101,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
 
   const handleDemoFill = async () => {
     try {
-      const demoData = await onFillWithDemoData();
+      const demoData = await onFillWithDemoData(); // Esta função agora também chama onPreviewUpdate
       if (demoData) {
-        reset({
+        reset({ // reset também precisa ser chamado para atualizar os campos do formulário
           clientName: demoData.clientName,
           clientAddress: demoData.clientAddress,
           items: [{ 
@@ -126,7 +138,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
           </Button>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(handleFormSubmitInternal)} className="space-y-6">
             <section>
               <h3 className="text-lg font-semibold mb-2 text-primary">Dados do Cliente</h3>
               <div className="space-y-4">
