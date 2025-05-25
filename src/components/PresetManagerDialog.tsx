@@ -10,22 +10,15 @@ import { Plus, Edit3, Trash2 } from 'lucide-react';
 import type { PresetItem } from '@/types/budget';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import initialPresetsData from '@/data/presets.json'; // Import the JSON
 
 interface PresetManagerDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }
 
-const initialPresets: PresetItem[] = [
-  { id: crypto.randomUUID(), description: 'Produção de Vídeo', unitPrice: 250.00 },
-  { id: crypto.randomUUID(), description: 'Animação de logomarca', unitPrice: 300.00 },
-  { id: crypto.randomUUID(), description: 'Fotos Profissionais', unitPrice: 150.00 },
-  { id: crypto.randomUUID(), description: 'Edição de Vídeo', unitPrice: 100.00 },
-  { id: crypto.randomUUID(), description: 'Gravação (p/h)', unitPrice: 150.00 },
-];
-
 const PresetManagerDialog: React.FC<PresetManagerDialogProps> = ({ isOpen, onOpenChange }) => {
-  const [presets, setPresets] = useLocalStorage<PresetItem[]>('fastfilms-presets', initialPresets);
+  const [presets, setPresets] = useLocalStorage<PresetItem[]>('fastfilms-presets', initialPresetsData);
   const [editingPreset, setEditingPreset] = useState<PresetItem | null>(null);
   const [newDescription, setNewDescription] = useState('');
   const [newPrice, setNewPrice] = useState('');
@@ -103,7 +96,7 @@ const PresetManagerDialog: React.FC<PresetManagerDialogProps> = ({ isOpen, onOpe
 
         <h3 className="text-lg font-medium mb-2">Presets Salvos</h3>
         <ScrollArea className="h-[250px] border rounded-md p-2">
-          {presets.length === 0 && <p className="text-muted-foreground text-center py-4">Nenhum preset salvo.</p>}
+          {presets.length === 0 && <p className="text-muted-foreground text-center py-4">Nenhum preset salvo. Carregue os padrões ou adicione novos.</p>}
           {presets.map((preset) => (
             <div key={preset.id} className="flex items-center justify-between p-2 my-1 rounded-md hover:bg-muted/50">
               <div>
@@ -140,6 +133,11 @@ const PresetManagerDialog: React.FC<PresetManagerDialogProps> = ({ isOpen, onOpe
           ))}
         </ScrollArea>
         <DialogFooter className="mt-4">
+           {presets.length === 0 && (
+             <Button variant="outline" onClick={() => setPresets(initialPresetsData)}>
+                Carregar Presets Padrão
+             </Button>
+           )}
           <DialogClose asChild>
             <Button type="button" variant="outline">Fechar</Button>
           </DialogClose>
