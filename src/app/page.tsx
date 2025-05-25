@@ -117,9 +117,10 @@ export default function Home() {
 
 
   const handleFillWithDemoData = async (): Promise<BudgetDemoData | null> => {
-    const data = await fetchDemoBudgetData();
+    const data = await fetchDemoBudgetData(); // data is BudgetDemoData | null
     if (data) {
-        const demoFormState: BudgetFormState = {
+        // This section is for updating the preview in page.tsx based on the fetched demo data
+        const demoFormStateForPreview: BudgetFormState = {
             clientName: data.clientName,
             clientAddress: data.clientAddress,
             items: [{
@@ -131,18 +132,16 @@ export default function Home() {
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
         
-        // For demo fill, always update the live preview directly
-        // The 'watch' in BudgetForm will call handleBudgetPreviewUpdate
-        // So, we just need to set the state that BudgetForm watches
         const demoPreview = createPreviewObject(
-            demoFormState, 
-            "PREVIEW", // Use PREVIEW for number, date will be current
+            demoFormStateForPreview, 
+            "PREVIEW", 
             new Date().toLocaleDateString('pt-BR'), 
             companyInfo
         );
-        setBudgetPreviewData(demoPreview); // Update preview directly
-        // Resetting the form will trigger its internal 'watch' and call onPreviewUpdate with the new values
-        return demoFormState as any; // This value will be used by `reset(demoFormState)` in BudgetForm
+        setBudgetPreviewData(demoPreview); 
+        
+        // Return the original BudgetDemoData for BudgetForm.tsx to use for its reset logic
+        return data; 
     }
     return null;
   };
