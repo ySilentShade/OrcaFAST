@@ -66,14 +66,14 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
           {contractTypesWithOptions.map(({ type, label, icon: Icon, disabled }) => (
             <Button
               key={type}
-              variant="outline" // This applies base outline styles and hover:bg-accent hover:text-accent-foreground
               onClick={() => handleSelect(type)}
               disabled={disabled}
-              className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-all
-                         border-border bg-card // Override base variant bg and border for custom card look
-                         focus:ring-2 focus:ring-accent/50 focus:outline-none" // Use accent for focus ring
+              className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-colors
+                         border border-border bg-card text-card-foreground
+                         hover:bg-primary/90 hover:text-primary-foreground
+                         focus:ring-2 focus:ring-ring focus:outline-none"
             >
-              <Icon className="mr-3 h-5 w-5 text-primary" />
+              <Icon className="mr-3 h-5 w-5" /> {/* Icon inherits color from button's text color */}
               <span className="flex-1">{label}{disabled ? " (Em breve)" : ""}</span>
             </Button>
           ))}

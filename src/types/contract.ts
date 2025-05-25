@@ -116,7 +116,7 @@ export const initialServiceVideoData: ServiceVideoContractData = {
   paymentType: 'sinal_entrega',
   sinalValuePercentage: '50',
   paymentOutroDescription: '',
-  deliveryDeadline: '3 dias úteis após a realização da última gravação, salvo acordo diferente entre as partes.',
+  deliveryDeadline: '7 dias úteis após a realização da última gravação, salvo acordo diferente entre as partes.',
   responsibilitiesContratada: "- Gravar os vídeos conforme combinado;\n- Editar os vídeos conforme briefing aprovado;\n- Entregar os vídeos finalizados em formato digital.",
   responsibilitiesContratante: "- Fornecer todas as informações necessárias para o trabalho;\n- Aprovar o roteiro ou briefing, quando necessário;\n- Efetuar os pagamentos nas condições previstas.",
   copyrightClause: 'Os direitos sobre os vídeos finalizados serão cedidos ao CONTRATANTE após o pagamento integral.',
