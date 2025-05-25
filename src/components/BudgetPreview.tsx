@@ -94,8 +94,10 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
 
         <div className="flex justify-end mb-8">
           <div className="text-right">
-            <p className="text-sm text-gray-400">Subtotal:</p>
-            <p className="text-2xl font-bold text-gray-100">{formatCurrency(totalAmount)}</p>
+            <p className="text-2xl font-bold text-gray-100">
+              <span className="text-sm text-gray-400 font-normal mr-2">Total:</span>
+              {formatCurrency(totalAmount)}
+            </p>
           </div>
         </div>
         
