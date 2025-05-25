@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef } from 'react';
@@ -9,7 +10,7 @@ import { Download } from 'lucide-react';
 import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetDemoData } from '@/types/budget';
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
-import html2pdf from 'html2pdf.js';
+// import html2pdf from 'html2pdf.js'; // Removed static import
 
 const companyInfo: CompanyInfo = {
   name: "FastFilms",
@@ -59,7 +60,7 @@ export default function Home() {
     return data;
   };
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     if (!previewRef.current || !previewData) {
       toast({
         title: "Erro ao gerar PDF",
@@ -79,6 +80,9 @@ export default function Home() {
       return;
     }
 
+    // Dynamically import html2pdf.js
+    const html2pdf = (await import('html2pdf.js')).default;
+
     const clientNameSanitized = previewData.clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const opt = {
       margin:       0.5,
@@ -88,8 +92,6 @@ export default function Home() {
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-    // html2pdf().from(element).set(opt).save(); // This was causing issues in some environments
-     // Temporary workaround for potential html2pdf().from().set().save() issues:
     const worker = html2pdf().from(element).set(opt);
     worker.save();
 
