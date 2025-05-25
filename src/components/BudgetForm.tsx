@@ -60,20 +60,17 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     name: 'items',
   });
 
-  const watchedItems = watch('items');
-  const watchedClientName = watch('clientName');
-  const watchedClientAddress = watch('clientAddress');
-  const watchedTerms = watch('terms');
+  const watchedAllFields = watch(); // Watch all fields for simplicity or specify them
 
   useEffect(() => {
     const currentFormData = getValues();
     onPreviewUpdate(currentFormData);
-  }, [JSON.stringify(watchedItems), watchedClientName, watchedClientAddress, watchedTerms, getValues, onPreviewUpdate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedAllFields, onPreviewUpdate, getValues]); // getValues is stable, onPreviewUpdate is now stable
 
 
   const handleFormSubmitInternal = (data: BudgetFormState) => {
     onSubmitForm(data);
-    // O toast de sucesso já é mostrado em page.tsx após a preparação bem-sucedida do preview final
   };
 
   const handleAddItem = () => {
@@ -85,6 +82,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     if (preset) {
       setValue(`items.${itemIndex}.description`, preset.description, { shouldValidate: true, shouldDirty: true });
       setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString(), { shouldValidate: true, shouldDirty: true });
+      // Optionally set quantity if presets define it, e.g., to '1'
+      // setValue(`items.${itemIndex}.quantity`, '1', { shouldValidate: true, shouldDirty: true });
       toast({
         title: "Preset Aplicado!",
         description: `"${preset.description}" foi aplicado ao item ${itemIndex + 1}.`,
@@ -93,7 +92,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     } else {
       toast({
         title: "Erro ao Aplicar Preset",
-        description: "O preset selecionado não foi encontrado. Verifique se os presets estão carregados.",
+        description: "O preset selecionado não foi encontrado.",
         variant: "destructive",
       });
     }
@@ -101,9 +100,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
 
   const handleDemoFill = async () => {
     try {
-      const demoData = await onFillWithDemoData(); // Esta função agora também chama onPreviewUpdate
+      const demoData = await onFillWithDemoData();
       if (demoData) {
-        reset({ // reset também precisa ser chamado para atualizar os campos do formulário
+        reset({ 
           clientName: demoData.clientName,
           clientAddress: demoData.clientAddress,
           items: [{ 
@@ -114,6 +113,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
           }],
           terms: defaultTerms,
         });
+        // onPreviewUpdate will be called by the useEffect due to reset changing watched values
         toast({ title: "Dados de Teste Carregados!", description: "O formulário foi preenchido com dados de exemplo.", variant: "default" });
       } else {
         toast({ title: "Erro ao Carregar Dados", description: "Não foi possível preencher com dados de teste.", variant: "destructive" });
