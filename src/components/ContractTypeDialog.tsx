@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { SupportedContractType } from '@/types/contract';
-import { FileText, Video, Repeat, UserCheck } from 'lucide-react'; // Added icons
+import { FileText, Video, Repeat, UserCheck } from 'lucide-react'; 
 
 interface ContractTypeDialogProps {
   isOpen: boolean;
@@ -66,13 +66,12 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
           {contractTypesWithOptions.map(({ type, label, icon: Icon, disabled }) => (
             <Button
               key={type}
-              variant="outline"
+              variant="outline" // This applies base outline styles and hover:bg-accent hover:text-accent-foreground
               onClick={() => handleSelect(type)}
               disabled={disabled}
               className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-all
-                         border-border hover:border-primary/70 
-                         bg-card hover:bg-muted/50 
-                         focus:ring-2 focus:ring-primary/50 focus:outline-none"
+                         border-border bg-card // Override base variant bg and border for custom card look
+                         focus:ring-2 focus:ring-accent/50 focus:outline-none" // Use accent for focus ring
             >
               <Icon className="mr-3 h-5 w-5 text-primary" />
               <span className="flex-1">{label}{disabled ? " (Em breve)" : ""}</span>

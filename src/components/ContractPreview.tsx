@@ -4,7 +4,6 @@
 import React from 'react';
 import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
-import { Card, CardContent } from '@/components/ui/card'; 
 import { FileText } from 'lucide-react';
 
 interface ContractPreviewProps {
@@ -131,12 +130,12 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
       
-      <div className="mt-12 space-y-10"> {/* Increased spacing */}
+      <div className="mt-12 space-y-10">
         <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
         <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
       </div>
       
-      <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p> {/* Moved below and centered */}
+      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
 
     </div>
   );
@@ -224,12 +223,12 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
-      <div className="mt-12 space-y-10"> {/* Increased spacing */}
+      <div className="mt-12 space-y-10">
         <p className="text-center">__________________________________________<br/>{contratante.name || 'CONTRATANTE'}</p>
         <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
       </div>
 
-      <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p> {/* Moved below and centered */}
+      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
 
     </div>
   );
@@ -247,6 +246,8 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
     );
   }
 
+  // This div is purely for html2pdf.js to target a white background
+  // The internal contract previews handle their own text styling (typically dark text on white implied bg)
   return (
     <div id="contract-preview-content" className="bg-white p-8 text-black shadow-md print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
