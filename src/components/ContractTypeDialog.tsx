@@ -38,14 +38,14 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
           <Button 
             variant="outline" 
             onClick={() => handleSelect('PERMUTA_EQUIPMENT_SERVICE')}
-            className="justify-start text-left h-auto py-3"
+            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
           >
             Permuta de Equipamento por Serviços
           </Button>
           <Button 
             variant="outline" 
             onClick={() => handleSelect('SERVICE_VIDEO')}
-            className="justify-start text-left h-auto py-3"
+            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
           >
             Prestação de Serviços de Vídeo
           </Button>
@@ -53,14 +53,14 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
            <Button 
             variant="outline" 
             onClick={() => handleSelect('FREELANCE_HIRE_EDITOR')}
-            className="justify-start text-left h-auto py-3"
+            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
           >
             Contratação Freelancer (Editor de Vídeo)
           </Button>
            <Button 
             variant="outline" 
             onClick={() => handleSelect('FREELANCE_HIRE_FILMMAKER')}
-            className="justify-start text-left h-auto py-3"
+            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
           >
             Contratação Freelancer (Cinegrafista/Captação)
           </Button>
