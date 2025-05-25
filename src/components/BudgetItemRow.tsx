@@ -32,24 +32,19 @@ const BudgetItemRow: React.FC<BudgetItemRowProps> = ({ index, control, remove, i
         {itemErrors?.description && <p className="text-sm text-destructive mt-1">{itemErrors.description.message}</p>}
       </div>
       <div className="md:col-span-3">
-        <Controller
-          name={`items.${index}.id`} // Not directly used for value, but Select needs a field for form state
-          control={control}
-          render={({ field }) => ( // field is for the item's own id, not preset id
-            <Select onValueChange={(value) => onApplyPreset(index, value)} value="">
-              <SelectTrigger>
-                <SelectValue placeholder="Aplicar Preset" />
-              </SelectTrigger>
-              <SelectContent>
-                {presets.map((preset) => (
-                  <SelectItem key={preset.id} value={preset.id}>
-                    {preset.description} - R$ {preset.unitPrice.toFixed(2)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
+        <Select onValueChange={(value) => onApplyPreset(index, value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Aplicar Preset" />
+          </SelectTrigger>
+          <SelectContent>
+            {presets.map((preset) => (
+              <SelectItem key={preset.id} value={preset.id}>
+                {preset.description} - R$ {preset.unitPrice.toFixed(2)}
+              </SelectItem>
+            ))}
+            {presets.length === 0 && <div className="p-2 text-sm text-muted-foreground">Nenhum preset cadastrado.</div>}
+          </SelectContent>
+        </Select>
       </div>
       <div className="md:col-span-2">
         <Controller

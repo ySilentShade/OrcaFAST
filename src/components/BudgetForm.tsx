@@ -71,6 +71,17 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     if (preset) {
       setValue(`items.${itemIndex}.description`, preset.description);
       setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString());
+      toast({
+        title: "Preset Aplicado!",
+        description: `"${preset.description}" foi aplicado ao item ${itemIndex + 1}.`,
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Erro ao Aplicar Preset",
+        description: "O preset selecionado não foi encontrado.",
+        variant: "destructive",
+      });
     }
   };
 
