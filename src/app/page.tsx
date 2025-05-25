@@ -6,10 +6,12 @@ import AppHeader from '@/components/AppHeader';
 import BudgetForm from '@/components/BudgetForm';
 import BudgetPreview from '@/components/BudgetPreview';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, FileSignature } from 'lucide-react';
 import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetDemoData } from '@/types/budget';
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
+import ContractTypeDialog from '@/components/ContractTypeDialog'; // New Import
+import type { SupportedContractType } from '@/types/contract'; // New Import
 
 const companyInfo: CompanyInfo = {
   name: "FastFilms",
@@ -70,6 +72,9 @@ export default function Home() {
 
   const [lastSubmittedBudgetNumber, setLastSubmittedBudgetNumber] = useState("PREVIEW");
   const [lastSubmittedBudgetDate, setLastSubmittedBudgetDate] = useState(() => new Date().toLocaleDateString('pt-BR'));
+
+  // State for contract dialog
+  const [isContractTypeDialogOpen, setIsContractTypeDialogOpen] = useState(false);
 
   // Initialize date on client side to avoid hydration mismatch
   useEffect(() => {
@@ -167,6 +172,17 @@ export default function Home() {
     });
   };
 
+  const handleContractTypeSelect = (contractType: SupportedContractType) => {
+    // For now, just log the selected type. 
+    // In the future, this will trigger opening a specific contract form/dialog.
+    console.log("Selected contract type:", contractType);
+    toast({
+      title: "Tipo de Contrato Selecionado",
+      description: `Você selecionou: ${contractType}. O próximo passo será preencher os dados específicos.`,
+    });
+    setIsContractTypeDialogOpen(false);
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -181,20 +197,37 @@ export default function Home() {
             />
           </div>
           <div className="lg:col-span-1">
-            {previewData && (
+            <div className="flex gap-2 mb-4">
+              {previewData && (
+                <Button 
+                  onClick={handleDownloadPdf} 
+                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Download className="mr-2 h-4 w-4" /> Baixar PDF
+                </Button>
+              )}
               <Button 
-                onClick={handleDownloadPdf} 
-                className="mb-4 w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                variant="outline" 
+                size="icon" 
+                onClick={() => setIsContractTypeDialogOpen(true)}
+                className={!previewData ? "w-full" : ""}
+                title="Gerar Contrato"
               >
-                <Download className="mr-2 h-4 w-4" /> Baixar PDF
+                <FileSignature className="h-5 w-5" />
               </Button>
-            )}
+            </div>
             <div ref={previewRef}>
               <BudgetPreview data={previewData} />
             </div>
           </div>
         </div>
       </main>
+      <ContractTypeDialog 
+        isOpen={isContractTypeDialogOpen}
+        onOpenChange={setIsContractTypeDialogOpen}
+        onContractTypeSelect={handleContractTypeSelect}
+      />
     </div>
   );
 }
+
