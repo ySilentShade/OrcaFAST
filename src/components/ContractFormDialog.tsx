@@ -5,8 +5,9 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, initialPermutaData as initialPermutaDataTypeDef } from '@/types/contract'; // Adjust path as needed
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData } from '@/types/contract'; // Adjust path as needed
 import PermutaContractForm from './forms/PermutaContractForm';
+import ServiceVideoContractForm from './forms/ServiceVideoContractForm';
 import ContractPreview from './ContractPreview';
 import type { CompanyInfo } from '@/types/budget';
 import { useToast } from "@/hooks/use-toast";
@@ -47,12 +48,27 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
     // Potentially close dialog or offer PDF download immediately
   };
 
+  const getContractTypeDisplayName = (type: SupportedContractType): string => {
+    switch(type) {
+      case 'PERMUTA_EQUIPMENT_SERVICE':
+        return 'Permuta de Equipamento por Serviços';
+      case 'SERVICE_VIDEO':
+        return 'Prestação de Serviços de Vídeo';
+      case 'FREELANCE_HIRE_EDITOR':
+        return 'Contratação Freelancer (Editor)';
+      case 'FREELANCE_HIRE_FILMMAKER':
+        return 'Contratação Freelancer (Cinegrafista)';
+      default:
+        return 'Contrato';
+    }
+  };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl h-[90vh] flex flex-col bg-card text-card-foreground p-0">
         <DialogHeader className="p-4 border-b">
-          <DialogTitle>Gerar Contrato: {contractType.replace(/_/g, ' ')}</DialogTitle>
+          <DialogTitle>Gerar Contrato: {getContractTypeDisplayName(contractType)}</DialogTitle>
           <DialogDescription>
             Preencha os campos abaixo para gerar o contrato. A pré-visualização será atualizada automaticamente.
           </DialogDescription>
@@ -67,9 +83,16 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                 onPreviewUpdate={onFormChange}
               />
             )}
+            {contractType === 'SERVICE_VIDEO' && (
+              <ServiceVideoContractForm
+                initialData={initialFormData as ServiceVideoContractData}
+                onSubmitForm={handleSubmit}
+                onPreviewUpdate={onFormChange}
+              />
+            )}
             {/* Add other contract forms here */}
-            {contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && (
-                <p className="text-center p-10">Formulário para {contractType.replace(/_/g, ' ')} ainda não implementado.</p>
+            {contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && contractType !== 'SERVICE_VIDEO' && (
+                <p className="text-center p-10">Formulário para {getContractTypeDisplayName(contractType)} ainda não implementado.</p>
             )}
           </div>
           <div className="lg:col-span-1 p-6 bg-gray-100 dark:bg-background/30 overflow-y-auto">

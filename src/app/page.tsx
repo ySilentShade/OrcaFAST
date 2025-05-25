@@ -11,8 +11,8 @@ import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, Budge
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, initialPermutaData } from '@/types/contract';
-import { initialPermutaData as defaultPermutaDataValues } from '@/types/contract';
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData } from '@/types/contract';
+import { initialPermutaData, initialServiceVideoData } from '@/types/contract';
 import ContractFormDialog from '@/components/ContractFormDialog'; // New Dialog for contract forms
 import { cn } from '@/lib/utils';
 
@@ -31,13 +31,14 @@ const generateBudgetNumber = () => {
 };
 
 const createPreviewObject = (
-  formData: BudgetFormState,
+  formData: Partial<BudgetFormState>, // Allow partial for live updates
   budgetNumber: string,
   budgetDate: string,
   currentCompanyInfo: CompanyInfo
 ): BudgetPreviewData | null => {
   if (!formData || (!formData.clientName && !formData.clientAddress && (!formData.items || formData.items.length === 0 || !formData.items.some(i => i.description || i.quantity || i.unitPrice)))) {
-    return null;
+     // If form is essentially empty for preview purposes, return null
+    if (budgetNumber === "PREVIEW") return null;
   }
 
   const items: BudgetItem[] = (formData.items || []).map(item => {
@@ -45,7 +46,7 @@ const createPreviewObject = (
     const unitPrice = parseFloat(item.unitPrice) || 0;
     return {
       id: item.id,
-      description: item.description,
+      description: item.description || "", // Ensure description is a string
       quantity,
       unitPrice,
       total: quantity * unitPrice,
@@ -55,10 +56,10 @@ const createPreviewObject = (
   const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
 
   return {
-    clientName: formData.clientName,
-    clientAddress: formData.clientAddress,
+    clientName: formData.clientName || "",
+    clientAddress: formData.clientAddress || "",
     items,
-    terms: formData.terms,
+    terms: formData.terms || "",
     budgetNumber,
     budgetDate,
     companyInfo: currentCompanyInfo,
@@ -71,8 +72,7 @@ export default function Home() {
   const [budgetPreviewData, setBudgetPreviewData] = useState<BudgetPreviewData | null>(null);
   const { toast } = useToast();
   const budgetPreviewRef = useRef<HTMLDivElement>(null);
-  const contractPreviewRef = useRef<HTMLDivElement>(null); // For contract PDF
-
+  
   const [lastSubmittedBudgetNumber, setLastSubmittedBudgetNumber] = useState("PREVIEW");
   const [lastSubmittedBudgetDate, setLastSubmittedBudgetDate] = useState(() => new Date().toLocaleDateString('pt-BR'));
 
@@ -87,6 +87,7 @@ export default function Home() {
 
 
   useEffect(() => {
+    // Initialize last submitted date on mount
     setLastSubmittedBudgetDate(new Date().toLocaleDateString('pt-BR'));
   }, []);
 
@@ -106,13 +107,13 @@ export default function Home() {
     }
   }, [toast]); 
 
-  const handleBudgetPreviewUpdate = useCallback((data: BudgetFormState) => {
+  const handleBudgetPreviewUpdate = useCallback((data: Partial<BudgetFormState>) => {
     const currentPreviewNumber = lastSubmittedBudgetNumber;
     const currentPreviewDate = lastSubmittedBudgetDate;
     
     const updatedPreview = createPreviewObject(data, currentPreviewNumber, currentPreviewDate, companyInfo);
     setBudgetPreviewData(updatedPreview);
-  }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate]); 
+  }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate]);
 
 
   const handleFillWithDemoData = async (): Promise<BudgetDemoData | null> => {
@@ -130,15 +131,20 @@ export default function Home() {
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
         
+        // For demo fill, always update the live preview directly
+        // The 'watch' in BudgetForm will call handleBudgetPreviewUpdate
+        // So, we just need to set the state that BudgetForm watches
         const demoPreview = createPreviewObject(
             demoFormState, 
-            "PREVIEW", 
+            "PREVIEW", // Use PREVIEW for number, date will be current
             new Date().toLocaleDateString('pt-BR'), 
             companyInfo
         );
-        setBudgetPreviewData(demoPreview);
+        setBudgetPreviewData(demoPreview); // Update preview directly
+        // Resetting the form will trigger its internal 'watch' and call onPreviewUpdate with the new values
+        return demoFormState as any; // This value will be used by `reset(demoFormState)` in BudgetForm
     }
-    return data;
+    return null;
   };
 
   const handleDownloadBudgetPdf = async () => {
@@ -166,15 +172,20 @@ export default function Home() {
   // --- Contract Logic ---
   const handleContractTypeSelect = (contractType: SupportedContractType) => {
     setSelectedContractType(contractType);
-    // Initialize form data based on contract type
+    let initialData: AnyContractFormState | null = null;
+
     if (contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
-      const initialData = { ...defaultPermutaDataValues, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
+      initialData = { ...initialPermutaData, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
+    } else if (contractType === 'SERVICE_VIDEO') {
+      initialData = { ...initialServiceVideoData, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
+    } else {
+      // Placeholder for other contract types - they are currently disabled in ContractTypeDialog
+      initialData = { contractType } as AnyContractFormState; 
+    }
+
+    if (initialData) {
       setCurrentContractFormData(initialData);
       setFinalContractDataForPdf(initialData); // Also set for initial PDF download readiness
-    } else {
-      // Placeholder for other contract types
-      setCurrentContractFormData({ contractType } as AnyContractFormState);
-      setFinalContractDataForPdf({ contractType } as AnyContractFormState);
     }
     setIsContractTypeDialogOpen(false); // Close selection dialog
     setIsContractFormDialogOpen(true); // Open form dialog
@@ -193,7 +204,7 @@ export default function Home() {
   }, [toast]);
 
   const handleDownloadContractPdf = async () => {
-    const previewElement = document.getElementById('contract-preview-content'); // Target the new preview
+    const previewElement = document.getElementById('contract-preview-content'); 
     if (!previewElement || !finalContractDataForPdf) {
       toast({ title: "Erro ao gerar PDF do Contrato", description: "Não há dados de contrato para gerar o PDF.", variant: "destructive" });
       return;
@@ -201,13 +212,19 @@ export default function Home() {
 
     const html2pdf = (await import('html2pdf.js')).default;
     let clientNameSanitized = 'contrato';
+    let partyName = '';
+
     if (finalContractDataForPdf.contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
-        clientNameSanitized = (finalContractDataForPdf as PermutaEquipmentServiceContractData).permutante.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'permutante';
+        partyName = (finalContractDataForPdf as PermutaEquipmentServiceContractData).permutante.name;
+    } else if (finalContractDataForPdf.contractType === 'SERVICE_VIDEO') {
+        partyName = (finalContractDataForPdf as ServiceVideoContractData).contratante.name;
     }
     // Add more specific naming for other contract types if needed
+    clientNameSanitized = partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || finalContractDataForPdf.contractType.toLowerCase();
+
 
     const opt = {
-      margin: 0.75, // Standard margin for contracts
+      margin: [0.75, 0.75, 0.75, 0.75], // Standard margin for contracts [top, right, bottom, left] in inches
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, // White background for contracts
@@ -237,7 +254,7 @@ export default function Home() {
                   onClick={handleDownloadBudgetPdf} 
                   className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
-                  <Download className="mr-2 h-4 w-4" /> Baixar PDF
+                  <Download className="mr-2 h-4 w-4" /> Baixar Orçamento
                 </Button>
               )}
               <Button 
@@ -267,7 +284,10 @@ export default function Home() {
       {selectedContractType && currentContractFormData && (
         <ContractFormDialog
             isOpen={isContractFormDialogOpen}
-            onOpenChange={setIsContractFormDialogOpen}
+            onOpenChange={(isOpen) => {
+              setIsContractFormDialogOpen(isOpen);
+              if (!isOpen) setSelectedContractType(null); // Reset selected type when closing
+            }}
             contractType={selectedContractType}
             companyInfo={companyInfo}
             initialFormData={currentContractFormData}

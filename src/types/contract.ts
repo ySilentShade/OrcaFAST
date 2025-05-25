@@ -22,7 +22,7 @@ export interface PermutaEquipmentServiceContractData {
   contractType: 'PERMUTA_EQUIPMENT_SERVICE';
   contractTitle: string;
   permutante: ContractParty;
-  // Permutado is FastFilms (Contratada)
+  // Permutado is FastFilms (Contratada) - Handled by CompanyInfo prop
   equipmentDescription: string; 
   equipmentValue: string; // Keep as string for form input
   serviceDescription: string; 
@@ -38,28 +38,25 @@ export interface PermutaEquipmentServiceContractData {
 // --- Data for "Prestação de Serviços de Vídeo" Contract ---
 export interface ServiceVideoContractData {
   contractType: 'SERVICE_VIDEO';
-  contratante: ContractParty; // Client hiring FastFilms
-  // Contratada is FastFilms
+  contractTitle: string;
+  contratante: ContractParty;
+  // Contratada is FastFilms - Handled by CompanyInfo prop
   objectDescription: string; // e.g., "gravação e edição de 10 (dez) vídeos..."
-  totalValue: number;
-  paymentTerms: {
-    type: 'vista' | 'sinal_entrega' | 'outro';
-    sinalPercentage?: number; // if 'sinal_entrega'
-    outroDescription?: string; // if 'outro'
-  };
+  totalValue: string; // Keep as string for form input
+  paymentType: 'vista' | 'sinal_entrega' | 'outro';
+  sinalValuePercentage?: string; // if 'sinal_entrega', e.g., "50"
+  paymentOutroDescription?: string; // if 'outro'
   deliveryDeadline: string; // e.g., "3 dias úteis após a última gravação"
-  responsibilitiesContratada?: string[]; // List of responsibilities
-  responsibilitiesContratante?: string[]; // List of responsibilities
-  copyrightClause?: string;
-  rescissionClause?: {
-    noticePeriodDays: number; // e.g., 7
-    penaltyPercentage: number; // e.g., 20
-  };
+  responsibilitiesContratada: string; // List of responsibilities as a single string for Textarea
+  responsibilitiesContratante: string; // List of responsibilities as a single string for Textarea
+  copyrightClause: string;
+  rescissionNoticePeriodDays: string; // e.g., "7"
+  rescissionPenaltyPercentage: string; // e.g., "20"
   generalDispositions?: string;
   foro: string;
-  contractDate: string;
-  cityForDate: string;
-  contratanteSignatories?: number; // For multiple signatories from contratante side
+  contractCity: string;
+  contractFullDate: string;
+  // contratanteSignatories?: number; // For multiple signatories - simplifying for now
 }
 
 // --- Data for "Contratação Freelancer" Contract ---
@@ -68,7 +65,7 @@ export interface FreelanceHireContractData {
   // Contratante is FastFilms
   freelancer: ContractParty; // The freelancer being hired
   serviceObject: string; // Specific description of services
-  paymentValue: number;
+  paymentValue: string; // Keep as string
   paymentMethod: string; // e.g., "PIX", "Transferência Bancária"
   deliveryTerms: string; // Deadlines, format, etc.
   confidentialityClause?: boolean;
@@ -76,16 +73,16 @@ export interface FreelanceHireContractData {
   copyrightOwnership: 'FASTFILMS' | 'FREELANCER_LIMITED_LICENSE' | 'SHARED_USAGE';
   rescissionConditions?: string;
   foro: string;
-  contractDate: string;
-  cityForDate: string;
+  contractCity: string;
+  contractFullDate: string;
 }
 
 
 // Union type for all possible contract data structures for form state
 export type AnyContractFormState = 
   | PermutaEquipmentServiceContractData 
-  | Partial<ServiceVideoContractData> // Use partial for other types until fully implemented
-  | Partial<FreelanceHireContractData>;
+  | ServiceVideoContractData
+  | Partial<FreelanceHireContractData>; // Use partial for other types until fully implemented
 
 // Union type for all possible complete contract data structures
 export type AnyContractData =
@@ -108,4 +105,36 @@ export const initialPermutaData: PermutaEquipmentServiceContractData = {
   foro: 'Lagoa Santa/MG',
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+};
+
+export const initialServiceVideoData: ServiceVideoContractData = {
+  contractType: 'SERVICE_VIDEO',
+  contractTitle: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE GRAVAÇÃO E EDIÇÃO DE VÍDEOS',
+  contratante: { name: '', cpfCnpj: '', address: '', email: '' },
+  objectDescription: 'gravação e edição de 10 (dez) vídeos, conforme briefing e orientações fornecidas pelo CONTRATANTE.',
+  totalValue: '2299.00',
+  paymentType: 'sinal_entrega',
+  sinalValuePercentage: '50',
+  paymentOutroDescription: '',
+  deliveryDeadline: '3 dias úteis após a realização da última gravação, salvo acordo diferente entre as partes.',
+  responsibilitiesContratada: "- Gravar os vídeos conforme combinado;\n- Editar os vídeos conforme briefing aprovado;\n- Entregar os vídeos finalizados em formato digital.",
+  responsibilitiesContratante: "- Fornecer todas as informações necessárias para o trabalho;\n- Aprovar o roteiro ou briefing, quando necessário;\n- Efetuar os pagamentos nas condições previstas.",
+  copyrightClause: 'Os direitos sobre os vídeos finalizados serão cedidos ao CONTRATANTE após o pagamento integral.',
+  rescissionNoticePeriodDays: '7',
+  rescissionPenaltyPercentage: '20',
+  generalDispositions: 'Qualquer alteração neste contrato só terá validade se feita por escrito e assinada por ambas as partes.',
+  foro: 'Lagoa Santa/MG',
+  contractCity: 'Lagoa Santa/MG',
+  contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+};
+
+// Placeholder for freelance contracts - not fully implemented yet
+export const initialFreelanceHireEditorData: Partial<FreelanceHireContractData> = {
+  contractType: 'FREELANCE_HIRE_EDITOR',
+  // ... other fields
+};
+
+export const initialFreelanceHireFilmmakerData: Partial<FreelanceHireContractData> = {
+  contractType: 'FREELANCE_HIRE_FILMMAKER',
+  // ... other fields
 };

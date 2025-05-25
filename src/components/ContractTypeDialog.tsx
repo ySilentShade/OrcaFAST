@@ -46,9 +46,8 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
             variant="outline" 
             onClick={() => handleSelect('SERVICE_VIDEO')}
             className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
-            disabled // Remove disabled once implemented
           >
-            Prestação de Serviços de Vídeo (Em breve)
+            Prestação de Serviços de Vídeo
           </Button>
           <Button 
             variant="outline" 
