@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useForm, useFieldArray, Controller, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import type { UseFormGetValues, UseFormSetValue} from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -87,7 +88,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
     onPreviewUpdate(getValues()); // Initial preview
 
     const subscription = watch((value) => {
-      onPreviewUpdate(value as BudgetFormState);
+      onPreviewUpdate(value as Partial<BudgetFormState>);
     });
     return () => subscription.unsubscribe();
   }, [watch, onPreviewUpdate, getValues]);
@@ -125,7 +126,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   const handleDemoFill = async () => {
     try {
       const demoData = await onFillWithDemoData();
-      if (demoData) {
+      if (demoData && demoData.item) {
         const newFormState: BudgetFormState = { 
           clientName: demoData.clientName,
           clientAddress: demoData.clientAddress,
@@ -140,7 +141,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
         reset(newFormState);
         toast({ title: "Dados de Teste Carregados!", description: "O formulário foi preenchido com dados de exemplo.", variant: "default" });
       } else {
-        toast({ title: "Erro ao Carregar Dados", description: "Não foi possível preencher com dados de teste.", variant: "destructive" });
+        toast({ title: "Erro ao Carregar Dados", description: "Não foi possível preencher com dados de teste ou dados de item ausentes.", variant: "destructive" });
       }
     } catch (error) {
       console.error("Error filling with demo data:", error);
@@ -161,7 +162,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
               variant="outline"
               size="icon"
               onClick={() => onToggleDroneFeature(getValues, setValue)}
-              className={isDroneFeatureEnabled ? 'bg-accent text-accent-foreground hover:bg-accent/90' : 'hover:bg-accent/10'}
+              className={isDroneFeatureEnabled ? 'bg-green-600 text-white hover:bg-green-700' : 'hover:bg-accent/10'}
               title={isDroneFeatureEnabled ? "Desativar Filmagem com Drone" : "Ativar Filmagem com Drone"}
             >
               <DroneIcon />

@@ -55,15 +55,19 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           <div className="text-right">
             <h1 className="text-3xl font-bold" style={{ color: '#FFFFFF' }}>
               ORÇAMENTO
-              {isDroneFeatureEnabled && <span className="text-drone-active text-xl"> (com Drone)</span>}
             </h1>
-            <p className="text-sm" style={{ color: '#B0B0B0' }}>Número: {budgetNumber}</p>
+            {isDroneFeatureEnabled && (
+              <p className="text-drone-active text-base -mt-1"> {/* Adjusted size and margin */}
+                (com Drone)
+              </p>
+            )}
+            <p className={`text-sm ${isDroneFeatureEnabled ? 'mt-2' : ''}`} style={{ color: '#B0B0B0' }}>Número: {budgetNumber}</p>
             <p className="text-sm" style={{ color: '#B0B0B0' }}>Data: {budgetDate}</p>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="p-8 flex-grow flex flex-col min-h-0"> 
+      <CardContent className="p-8 flex-grow flex flex-col overflow-y-auto min-h-0">
         <div className="mb-6 flex-shrink-0">
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
           <p className="font-bold text-lg" style={{ color: '#FFFFFF' }}>{clientName}</p>
