@@ -92,10 +92,10 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
         
         <Separator className="my-6 border-gray-600" />
 
-        <div className="flex justify-end mb-8">
+        <div className="flex justify-end mb-8 pr-4"> {/* Added pr-4 to shift content slightly left */}
           <div className="text-right">
             <p className="text-2xl font-bold text-gray-100">
-              <span className="text-sm text-gray-400 font-normal mr-2">Total:</span>
+              <span className="mr-2">Total:</span> {/* Inherits styles from p tag */}
               {formatCurrency(totalAmount)}
             </p>
           </div>
