@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'OrçaPro - Criador de Orçamentos',
+  title: 'OrçaFAST - Criador de Orçamentos',
   description: 'Crie orçamentos profissionais de forma rápida e fácil.',
 };
 
