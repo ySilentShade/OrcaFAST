@@ -20,7 +20,7 @@ const formatCurrency = (value: number) => {
 const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
   if (!data) {
     return (
-      <Card className="sticky top-8 shadow-lg h-[calc(100vh-4rem)] overflow-auto" style={{ backgroundColor: '#18191b' }}>
+      <Card className="sticky top-8 shadow-lg h-[calc(100vh-4rem)]" style={{ backgroundColor: '#18191b' }}>
         <CardContent className="p-6 text-center text-muted-foreground flex flex-col items-center justify-center h-full">
           <FileText className="h-16 w-16 mb-4 text-gray-500" />
           <p className="text-lg">Nenhum orçamento gerado ainda.</p>
@@ -33,7 +33,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
   const { clientName, clientAddress, items, terms, budgetNumber, budgetDate, companyInfo, totalAmount } = data;
 
   return (
-    <Card id="budget-preview-content" className="sticky top-8 shadow-lg h-[calc(100vh-4rem)] flex flex-col" style={{ backgroundColor: '#18191b', color: '#e0e0e0' }}>
+    <Card id="budget-preview-content" className="sticky top-8 shadow-lg flex flex-col" style={{ backgroundColor: '#18191b', color: '#e0e0e0' }}>
       <CardHeader className="p-8 border-b border-gray-600 flex-shrink-0">
         <div className="flex justify-between items-start">
           <div className="flex items-center">
@@ -60,16 +60,14 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
         </div>
       </CardHeader>
       
-      {/* CardContent agora é o container de scroll principal */}
-      <CardContent className="p-8 flex-grow overflow-y-auto min-h-0"> 
-        <div className="mb-6"> {/* Informações do Cliente */}
+      <CardContent className="p-8 flex-grow min-h-0 flex flex-col"> 
+        <div className="mb-6 flex-shrink-0"> {/* Informações do Cliente */}
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
           <p className="font-bold" style={{ color: '#FFFFFF' }}>{clientName}</p>
           <p className="text-sm whitespace-pre-line" style={{ color: '#B0B0B0' }}>{clientAddress}</p>
         </div>
 
         <div className="mb-6"> {/* Seção de Itens */}
-          {/* O título dos itens será sticky relativo ao CardContent */}
           <h3 className="text-lg font-semibold mb-2 sticky top-0 py-1 z-10" style={{ color: '#D0D0D0', backgroundColor: '#18191b'}}>Itens do Orçamento:</h3>
           <Table style={{ color: '#D0D0D0' }}>
             <TableHeader>
@@ -93,7 +91,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </Table>
         </div>
         
-        <div> {/* Rodapé: Total, Termos, Agradecimento */}
+        <div className="mt-auto flex-shrink-0"> {/* Rodapé: Total, Termos, Agradecimento */}
           <Separator className="my-6" style={{ backgroundColor: '#4A4A4A' }} />
           <div className="flex justify-end mb-8 pr-4">
             <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
