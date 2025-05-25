@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -15,6 +16,7 @@ import PresetManagerDialog from './PresetManagerDialog';
 import type { BudgetFormState, BudgetItemForm, PresetItem, BudgetDemoData } from '@/types/budget';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useToast } from "@/hooks/use-toast";
+import initialPresetsData from '@/data/presets.json'; // Import the JSON data
 
 const defaultTerms = "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão.";
 
@@ -40,7 +42,7 @@ interface BudgetFormProps {
 const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoData }) => {
   const { toast } = useToast();
   const [isPresetManagerOpen, setIsPresetManagerOpen] = useState(false);
-  const [presets] = useLocalStorage<PresetItem[]>('fastfilms-presets', []);
+  const [presets] = useLocalStorage<PresetItem[]>('fastfilms-presets', initialPresetsData); // Use initialPresetsData as fallback
 
   const { control, handleSubmit, reset, setValue, getValues, formState: { errors } } = useForm<BudgetFormState>({
     resolver: zodResolver(budgetFormSchema),
@@ -79,7 +81,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     } else {
       toast({
         title: "Erro ao Aplicar Preset",
-        description: "O preset selecionado não foi encontrado.",
+        description: "O preset selecionado não foi encontrado. Verifique se os presets estão carregados.",
         variant: "destructive",
       });
     }
