@@ -34,25 +34,25 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
             Escolha o modelo de contrato que deseja gerar. Os dados específicos serão solicitados a seguir.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="flex flex-col gap-3 py-4"> {/* Changed from grid to flex col */}
           <Button 
             variant="outline" 
             onClick={() => handleSelect('PERMUTA_EQUIPMENT_SERVICE')}
-            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
           >
             Permuta de Equipamento por Serviços
           </Button>
           <Button 
             variant="outline" 
             onClick={() => handleSelect('SERVICE_VIDEO')}
-            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
           >
             Prestação de Serviços de Vídeo
           </Button>
           <Button 
             variant="outline" 
             onClick={() => handleSelect('FREELANCE_HIRE_EDITOR')}
-            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
             disabled // Remove disabled once implemented
           >
             Contratação Freelancer (Editor de Vídeo) (Em breve)
@@ -60,7 +60,7 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
            <Button 
             variant="outline" 
             onClick={() => handleSelect('FREELANCE_HIRE_FILMMAKER')}
-            className="justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
+            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
             disabled // Remove disabled once implemented
           >
             Contratação Freelancer (Cinegrafista/Captação) (Em breve)

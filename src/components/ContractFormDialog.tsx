@@ -39,13 +39,12 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
   const { toast } = useToast();
 
   if (!contractType || !initialFormData) {
-    return null; // Or some loading/error state
+    return null; 
   }
 
   const handleSubmit = (data: AnyContractFormState) => {
     onFormSubmit(data);
     toast({ title: "Contrato Salvo!", description: "Os dados do contrato foram salvos." });
-    // Potentially close dialog or offer PDF download immediately
   };
 
   const getContractTypeDisplayName = (type: SupportedContractType): string => {
@@ -75,6 +74,7 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
         </DialogHeader>
 
         <div className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
+          {/* Form Section - Scrolls if content is too long */}
           <div className="lg:col-span-1 p-6 overflow-y-auto">
             {contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
               <PermutaContractForm
@@ -90,13 +90,13 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                 onPreviewUpdate={onFormChange}
               />
             )}
-            {/* Add other contract forms here */}
             {contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && contractType !== 'SERVICE_VIDEO' && (
                 <p className="text-center p-10">Formulário para {getContractTypeDisplayName(contractType)} ainda não implementado.</p>
             )}
           </div>
-          <div className="lg:col-span-1 p-6 bg-gray-100 dark:bg-background/30 overflow-y-auto">
-             <div className="flex justify-end mb-4">
+          {/* Contract Preview Section - Scrolls if content is too long */}
+          <div className="lg:col-span-1 p-6 bg-gray-100 dark:bg-background/50 overflow-y-auto">
+             <div className="flex justify-end mb-4 sticky top-0 py-2 z-10 bg-gray-100 dark:bg-background/50">
                 {currentContractData && (
                     <Button 
                         onClick={onDownloadPdf} 
@@ -107,6 +107,7 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                     </Button>
                 )}
             </div>
+            {/* ContractPreview component itself should not have artificial height limits or internal scroll for its main content div */}
             <ContractPreview data={currentContractData} companyInfo={companyInfo} />
           </div>
         </div>

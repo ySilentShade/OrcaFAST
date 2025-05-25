@@ -4,7 +4,7 @@
 import React from 'react';
 import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card'; // Keep CardContent for structure if needed, or remove if simple div is enough
 import { FileText } from 'lucide-react';
 
 interface ContractPreviewProps {
@@ -24,14 +24,32 @@ const numberToWords = (numStr: string | number | undefined): string => {
     const num = typeof numStr === 'string' ? parseFloat(numStr) : numStr;
     if (isNaN(num)) return '';
 
-    // Basic implementation, consider a library for full fidelity
-    // This is a very simplified version for demonstration
-    const toWords = require('number-to-words'); // You might need to install this: npm install number-to-words
+    const toWords = require('number-to-words'); 
     try {
-        return toWords.toWords(num, { currency: 'BRL', ignoreDecimal: false }).replace(/ reais?/, '');
+        // Ensure toWords is called correctly, pt-BR might not be directly supported for currency names
+        // We'll get the words for the number and append 'reais' manually if needed
+        let words = toWords.toWords(num); 
+        if (typeof words === 'string') {
+             // Basic pluralization for 'real' - improve if needed
+            const integerPart = Math.floor(num);
+            const decimalPart = Math.round((num - integerPart) * 100);
+            
+            words = toWords.toWords(integerPart); // Words for integer part
+            
+            let decimalWords = '';
+            if (decimalPart > 0) {
+                decimalWords = toWords.toWords(decimalPart);
+                if (integerPart > 0) {
+                  words += ` vírgula ${decimalWords}`; // "um vírgula cinquenta"
+                } else {
+                  words = decimalWords; // just "cinquenta" for 0.50
+                }
+            }
+            return words;
+        }
+        return String(num); // Fallback
     } catch (e) {
-        console.warn("Error converting number to words, ensure 'number-to-words' is installed and locale is supported or use a different library.", e);
-        // Fallback to just the number if conversion fails
+        console.warn("Error converting number to words with 'number-to-words'. Falling back. Error:", e);
         const [integerPart, decimalPart = '00'] = String(num.toFixed(2)).split('.');
         return `${integerPart} e ${decimalPart}/100`;
     }
@@ -41,20 +59,20 @@ const numberToWords = (numStr: string | number | undefined): string => {
 const PartyDetails: React.FC<{ party: ContractParty, title: string }> = ({ party, title }) => (
   <div className="mb-4">
     <p className="font-semibold">{title}:</p>
-    <p><span className="font-semibold">NOME:</span> {party.name || '____________________________________________'}</p>
-    <p><span className="font-semibold">CPF/CNPJ:</span> {party.cpfCnpj || '____________________________________________'}</p>
-    <p><span className="font-semibold">ENDEREÇO:</span> {party.address || '____________________________________________'}</p>
-    <p><span className="font-semibold">E-MAIL:</span> {party.email || '____________________________________________'}</p>
+    <p><span className="font-bold">NOME:</span> {party.name || '____________________________________________'}</p>
+    <p><span className="font-bold">CPF/CNPJ:</span> {party.cpfCnpj || '____________________________________________'}</p>
+    <p><span className="font-bold">ENDEREÇO:</span> {party.address || '____________________________________________'}</p>
+    <p><span className="font-bold">E-MAIL:</span> {party.email || '____________________________________________'}</p>
   </div>
 );
 
 const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string }> = ({ companyInfo, title, cnpj }) => (
  <div className="mb-6">
     <p className="font-semibold">{title}:</p>
-    <p><span className="font-semibold">NOME:</span> {companyInfo.name}</p>
-    <p><span className="font-semibold">CNPJ:</span> {cnpj || '53.525.841/0001-89'}</p> {/* Default CNPJ for FastFilms */}
-    <p><span className="font-semibold">ENDEREÇO:</span> {companyInfo.address}</p>
-    <p><span className="font-semibold">E-MAIL:</span> {companyInfo.email}</p>
+    <p><span className="font-bold">NOME:</span> {companyInfo.name}</p>
+    <p><span className="font-bold">CNPJ:</span> {cnpj || '53.525.841/0001-89'}</p> {/* Default CNPJ for FastFilms */}
+    <p><span className="font-bold">ENDEREÇO:</span> {companyInfo.address}</p>
+    <p><span className="font-bold">E-MAIL:</span> {companyInfo.email}</p>
   </div>
 );
 
@@ -160,7 +178,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   }
   
   const renderList = (text: string = '') => {
-    return text.split('\n').map((item, index) => item.trim() ? <li key={index}>{item.trim()}</li> : null).filter(Boolean);
+    return text.split('\\n').map((item, index) => item.trim() ? <li key={index}>{item.trim()}</li> : null).filter(Boolean);
   };
 
   return (
@@ -222,7 +240,8 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) => {
   if (!data) {
     return (
-      <Card className="sticky top-8 shadow-lg bg-white">
+      // Fallback when no data, kept the Card for consistent UI for this specific state
+      <Card className="sticky top-8 shadow-lg bg-white"> 
         <CardContent className="p-6 text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px]">
           <FileText className="h-16 w-16 mb-4 text-gray-400" />
           <p className="text-lg">Nenhum contrato selecionado ou dados preenchidos.</p>
@@ -233,23 +252,21 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
   }
 
   return (
-    <Card id="contract-preview-content" className="sticky top-8 shadow-lg flex flex-col bg-white text-black max-h-[calc(100vh-10rem)] overflow-y-auto">
-        <CardHeader className="p-4 border-b">
-            <CardTitle className="text-xl">Pré-visualização do Contrato</CardTitle>
-        </CardHeader>
-      <CardContent className="p-6">
-        {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
-          <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
-        )}
-        {data.contractType === 'SERVICE_VIDEO' && (
-          <ServiceVideoPreview contractData={data as ServiceVideoContractData} companyInfo={companyInfo} />
-        )}
-        {/* Add other contract type previews here as they are implemented */}
-        {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && data.contractType !== 'SERVICE_VIDEO') && (
-          <p>Pré-visualização para este tipo de contrato ainda não implementada.</p>
-        )}
-      </CardContent>
-    </Card>
+    // Main container for the actual contract content, targeted by html2pdf.js
+    // No Card wrapper here, no borders, no artificial height limits from this component itself.
+    // Shadow-md is for UI distinction in the dialog, html2pdf will use backgroundColor from options.
+    <div id="contract-preview-content" className="bg-white p-8 text-black shadow-md print:shadow-none print:border-none">
+      {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
+        <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
+      )}
+      {data.contractType === 'SERVICE_VIDEO' && (
+        <ServiceVideoPreview contractData={data as ServiceVideoContractData} companyInfo={companyInfo} />
+      )}
+      {/* Add other contract type previews here as they are implemented */}
+      {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && data.contractType !== 'SERVICE_VIDEO') && (
+        <p>Pré-visualização para este tipo de contrato ainda não implementada.</p>
+      )}
+    </div>
   );
 };
 
