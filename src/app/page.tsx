@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const companyInfo: CompanyInfo = {
   name: "FastFilms",
-  logoUrl: "https://placehold.co/80x80/212429/FFFFFF.svg?text=LOGO", // Updated to SVG placeholder
+  logoUrl: "https://raw.githubusercontent.com/Lyd09/FF/587b5eb4cf0fc07885618620dc1f18e8d6e0aef4/LOGO%20SVG.svg",
   address: "Rua Criativa, 789, Estúdio Central, Filmópolis - SP",
   email: "contato@fastfilms.com",
   phone: "(11) 98765-4321",
@@ -90,7 +90,7 @@ export default function Home() {
     if (finalPreview) {
         toast({ title: "Orçamento Gerado!", description: "A pré-visualização foi atualizada.", variant: "default" });
     }
-  }, [toast]); // companyInfo is stable, generateBudgetNumber is called inside
+  }, [toast]); 
 
   const handlePreviewUpdate = useCallback((data: BudgetFormState) => {
     const currentPreviewNumber = lastSubmittedBudgetNumber;
@@ -98,7 +98,7 @@ export default function Home() {
     
     const updatedPreview = createPreviewObject(data, currentPreviewNumber, currentPreviewDate, companyInfo);
     setPreviewData(updatedPreview);
-  }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate]); // companyInfo is stable
+  }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate]); 
 
 
   const handleFillWithDemoData = async (): Promise<BudgetDemoData | null> => {
@@ -116,7 +116,6 @@ export default function Home() {
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
         
-        // Update preview directly using "PREVIEW" and current date for demo data
         const demoPreview = createPreviewObject(
             demoFormState, 
             "PREVIEW", 
@@ -124,9 +123,6 @@ export default function Home() {
             companyInfo
         );
         setPreviewData(demoPreview);
-        // The BudgetForm's useEffect will pick up the reset and call onPreviewUpdate if needed,
-        // but for filling demo data, we want the form itself to reflect these values first.
-        // So, we'll let BudgetForm's reset and its own watch subscription handle the preview update.
     }
     return data;
   };
@@ -156,7 +152,7 @@ export default function Home() {
     const clientNameSanitized = previewData.clientName ? previewData.clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'cliente';
     const opt = {
       margin:       0.5,
-      filename:     `orcamento_${clientNameSanitized || 'orcamento_pro'}.pdf`,
+      filename:     `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
