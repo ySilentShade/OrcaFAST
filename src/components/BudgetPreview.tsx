@@ -43,7 +43,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
                 alt={`${companyInfo.name} Logo`} 
                 width={100} 
                 height={100} 
-                className="mr-4 rounded"
+                className="mr-4 rounded object-contain"
                 data-ai-hint="company logo"
               />
             )}
@@ -61,7 +61,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
       </CardHeader>
       
       <CardContent className="p-8 flex-grow flex flex-col min-h-0"> 
-        <div className="mb-6"> {/* Informações do Cliente */}
+        <div className="mb-6 flex-shrink-0"> {/* Informações do Cliente */}
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
           <p className="font-bold text-lg" style={{ color: '#FFFFFF' }}>{clientName}</p>
           <p className="text-sm whitespace-pre-line" style={{ color: '#B0B0B0' }}>{clientAddress}</p>
@@ -91,7 +91,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </Table>
         </div>
         
-        <div className="mt-auto"> {/* Rodapé: Total, Termos, Agradecimento */}
+        <div className="mt-auto flex-shrink-0"> {/* Rodapé: Total, Termos, Agradecimento */}
           <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <div className="flex justify-end mb-8 pr-4">
             <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
