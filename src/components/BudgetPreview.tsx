@@ -41,8 +41,8 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
               <Image 
                 src={companyInfo.logoUrl} 
                 alt={`${companyInfo.name} Logo`} 
-                width={100} 
-                height={100} 
+                width={80} // Reduced width
+                height={80} // Reduced height
                 className="mr-4 rounded object-contain"
                 data-ai-hint="company logo"
               />
@@ -60,14 +60,14 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
         </div>
       </CardHeader>
       
-      <CardContent className="p-8 flex-grow flex flex-col min-h-0"> 
-        <div className="mb-6 flex-shrink-0"> {/* Informações do Cliente */}
+      <CardContent className="p-8 flex-grow flex flex-col min-h-0 overflow-y-auto"> 
+        <div className="mb-6 flex-shrink-0">
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
           <p className="font-bold text-lg" style={{ color: '#FFFFFF' }}>{clientName}</p>
           <p className="text-sm whitespace-pre-line" style={{ color: '#B0B0B0' }}>{clientAddress}</p>
         </div>
 
-        <div className="mb-6 flex-grow overflow-y-auto min-h-0"> {/* Seção de Itens com rolagem */}
+        <div className="mb-6 flex-grow min-h-0"> 
           <h3 className="text-lg font-semibold mb-2 sticky top-0 py-1 z-10" style={{ color: '#D0D0D0', backgroundColor: '#18191b'}}>Itens do Orçamento:</h3>
           <Table style={{ color: '#D0D0D0' }}>
             <TableHeader>
@@ -91,7 +91,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </Table>
         </div>
         
-        <div className="mt-auto flex-shrink-0"> {/* Rodapé: Total, Termos, Agradecimento */}
+        <div className="mt-auto flex-shrink-0"> 
           <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <div className="flex justify-end mb-8 pr-4">
             <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
@@ -106,7 +106,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </div>
           <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <p className="text-center text-sm font-medium" style={{ color: '#D0D0D0' }}>
-            Obrigado pela preferência! — {companyInfo.name}
+            Obrigado pela preferência! — FastFilms
           </p>
         </div>
       </CardContent>
