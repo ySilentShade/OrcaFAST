@@ -6,17 +6,73 @@ import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideo
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
 import { FileText } from 'lucide-react';
 
-interface ContractPreviewProps {
-  data: AnyContractData | null;
-  companyInfo: CompanyInfo; // FastFilms info
-}
-
 const formatCurrency = (value: string | number | undefined): string => {
   if (value === undefined || value === null) return 'R$ 0,00';
   const num = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(num)) return 'R$ 0,00';
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
 };
+
+// --- Início da Lógica para Conversão de Número para Extenso em PT-BR ---
+const unidades: string[] = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
+const especiais: string[] = ["dez", "onze", "doze", "treze", "catorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+const dezenas: string[] = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+const centenas: string[] = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+
+function converterInteiroParaExtensoPTBR(n: number): string {
+    if (n === 0) return "zero"; // Caso especial para zero
+    if (n < 0) return "menos " + converterInteiroParaExtensoPTBR(Math.abs(n)); // Negativos
+
+    let extenso = "";
+
+    if (n >= 1000) {
+        const milhar = Math.floor(n / 1000);
+        extenso += (milhar === 1 ? "mil" : converterInteiroParaExtensoPTBR(milhar) + " mil");
+        n %= 1000;
+        if (n > 0) {
+             // Para evitar "mil e e cem" ou "mil e e vinte"
+            if (n % 100 === 0 || n < 100 || (n > 100 && n % 10 === 0 && n < 110) ) { // ex: 1100 (mil e cem), 1020 (mil e vinte), 1001 (mil e um)
+                 extenso += " e ";
+            } else if (n > 0) { // ex: 1234 (mil, duzentos e trinta e quatro)
+                extenso += ", ";
+            }
+        }
+    }
+    
+    if (n === 100) {
+        extenso += "cem";
+        n=0;
+    } else if (n >= 100) {
+        extenso += centenas[Math.floor(n / 100)];
+        n %= 100;
+        if (n > 0) extenso += " e ";
+    }
+
+    if (n >= 20) {
+        extenso += dezenas[Math.floor(n / 10)];
+        n %= 10;
+        if (n > 0) extenso += " e ";
+    } else if (n >= 10) {
+        extenso += especiais[n - 10];
+        n = 0; 
+    }
+
+    if (n > 0) {
+        extenso += unidades[n];
+    }
+    
+    // Remover " e " redundante no final se for o caso (ex: 1000 -> "mil e ")
+    if (extenso.endsWith(" e ")) {
+        extenso = extenso.substring(0, extenso.length - 3);
+    }
+     // Remover vírgula redundante no final se for o caso
+    if (extenso.endsWith(", ")) {
+        extenso = extenso.substring(0, extenso.length - 2);
+    }
+
+
+    return extenso.trim();
+}
 
 const numberToWords = (numStr: string | number | undefined): string => {
     if (numStr === undefined || numStr === null) return '';
@@ -26,14 +82,48 @@ const numberToWords = (numStr: string | number | undefined): string => {
     const integerPart = Math.floor(num);
     const decimalPart = Math.round((num - integerPart) * 100);
 
-    let words = `${integerPart} reais`;
-    if (decimalPart > 0) {
-        words += ` e ${decimalPart.toString().padStart(2, '0')} centavos`;
-    } else {
-        words += ` e 00 centavos`; // Consistent "e 00 centavos" for whole numbers
+    let extensoInteiro = "";
+    if (integerPart === 0 && decimalPart === 0) {
+        extensoInteiro = "zero";
+    } else if (integerPart === 0 && decimalPart > 0) {
+        // Não mostrar "zero reais" se houver apenas centavos
+        extensoInteiro = "";
     }
-    return words;
+    else {
+        extensoInteiro = converterInteiroParaExtensoPTBR(integerPart);
+    }
+    
+    let extensoFinal = "";
+
+    if (extensoInteiro) {
+      const unidadeMoeda = (integerPart === 1 && !extensoInteiro.includes("mil")) ? "real" : "reais";
+      extensoFinal = `${extensoInteiro} ${unidadeMoeda}`;
+    }
+
+
+    if (decimalPart > 0) {
+        const extensoDecimal = converterInteiroParaExtensoPTBR(decimalPart);
+        const unidadeCentavos = decimalPart === 1 ? "centavo" : "centavos";
+        if (extensoFinal) { // Se já tem a parte dos reais
+             extensoFinal += ` e ${extensoDecimal} ${unidadeCentavos}`;
+        } else { // Se for apenas centavos (ex: R$ 0,50)
+            extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
+        }
+    }
+
+    if (!extensoFinal && integerPart === 0 && decimalPart === 0) { // Caso R$ 0,00
+        extensoFinal = "Zero reais";
+    }
+
+
+    // Capitalizar a primeira letra do resultado final
+    if (extensoFinal) {
+      extensoFinal = extensoFinal.charAt(0).toUpperCase() + extensoFinal.slice(1);
+      return `(${extensoFinal})`;
+    }
+    return ""; // Caso não haja nada a converter
 };
+// --- Fim da Lógica para Conversão de Número para Extenso em PT-BR ---
 
 
 const PartyDetails: React.FC<{ party: ContractParty, title: string }> = ({ party, title }) => (
@@ -90,7 +180,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
       <div className="space-y-3">
         <p><span className="font-bold">CLÁUSULA 1 - DO OBJETO</span><br/>
-        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do PERMUTANTE, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` (${equipmentValueInWords})` : ''}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo PERMUTADO.</p>
+        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do PERMUTANTE, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo PERMUTADO.</p>
 
         {paymentClause && (
             <p><span className="font-bold">CLÁUSULA 2 - DA FORMA DE PAGAMENTO</span><br/>
@@ -113,7 +203,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
       </div>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
-
+      
       <div className="mt-12 space-y-10">
         <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
         <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
@@ -148,8 +238,16 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   const totalValueFormatted = formatCurrency(totalValue);
   const totalValueInWords = numberToWords(totalValue);
-  const rescissionNoticePeriodInWords = numberToWords(rescissionNoticePeriodDays);
-  const rescissionPenaltyInWords = numberToWords(rescissionPenaltyPercentage);
+  
+  let rescissionNoticePeriodInWords = "";
+  if (rescissionNoticePeriodDays && !isNaN(parseInt(rescissionNoticePeriodDays))) {
+      rescissionNoticePeriodInWords = converterInteiroParaExtensoPTBR(parseInt(rescissionNoticePeriodDays));
+  }
+
+  let rescissionPenaltyInWords = "";
+  if (rescissionPenaltyPercentage && !isNaN(parseFloat(rescissionPenaltyPercentage))) {
+     rescissionPenaltyInWords = converterInteiroParaExtensoPTBR(parseFloat(rescissionPenaltyPercentage));
+  }
 
 
   let paymentDescription = '';
@@ -176,7 +274,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       A CONTRATADA prestará ao CONTRATANTE os serviços de {objectDescription || '___________________'}.</p>
 
       <p className="mb-4"><span className="font-bold">VALOR E FORMA DE PAGAMENTO:</span><br/>
-      O valor total pelos serviços é de {totalValueFormatted}{totalValueInWords ? ` (${totalValueInWords})` : ''}, a ser pago da seguinte forma:<br/>
+      O valor total pelos serviços é de {totalValueFormatted}{totalValueInWords ? ` ${totalValueInWords}` : ''}, a ser pago da seguinte forma:<br/>
       {paymentDescription}</p>
 
       <p className="mb-4"><span className="font-bold">PRAZO DE ENTREGA:</span><br/>
@@ -198,7 +296,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       {copyrightClause || '___________________'}</p>
 
       <p className="mb-4"><span className="font-bold">RESCISÃO:</span><br/>
-      O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {rescissionNoticePeriodDays || '__'} ({rescissionNoticePeriodInWords ? rescissionNoticePeriodInWords.replace(" reais e 00 centavos", "") : '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de {rescissionPenaltyPercentage || '__'}% ({rescissionPenaltyInWords ? rescissionPenaltyInWords.replace(" reais e 00 centavos", " por cento") : '______ por cento'}) sobre o valor do contrato.</p>
+      O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {rescissionNoticePeriodDays || '__'} ({rescissionNoticePeriodInWords || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de {rescissionPenaltyPercentage || '__'}% ({rescissionPenaltyInWords || '______ por cento'}) sobre o valor do contrato.</p>
 
       {generalDispositions && (
         <p className="mb-4"><span className="font-bold">DISPOSIÇÕES GERAIS:</span><br/>
@@ -233,8 +331,6 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
     );
   }
 
-  // This div is purely for html2pdf.js to target a white background
-  // The internal contract previews handle their own text styling (typically dark text on white implied bg)
   return (
     <div id="contract-preview-content" className="bg-white p-8 text-black shadow-md print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
