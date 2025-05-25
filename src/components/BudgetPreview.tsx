@@ -49,7 +49,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
             )}
             <div>
               <h2 className="text-2xl font-bold text-gray-100">{companyInfo.name}</h2>
-              {/* Endereço, e-mail e telefone da empresa removidos conforme solicitado para o PDF */}
+              <p className="text-sm text-gray-400 italic">cada momento merece um bom take!</p>
             </div>
           </div>
           <div className="text-right">
@@ -62,7 +62,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
       <CardContent className="p-8">
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-1 text-gray-300">Cliente:</h3>
-          <p className="font-medium text-gray-100">{clientName}</p>
+          <p className="font-bold text-gray-100">{clientName}</p>
           <p className="text-sm whitespace-pre-line text-gray-400">{clientAddress}</p>
         </div>
 
@@ -89,6 +89,8 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
             </TableBody>
           </Table>
         </div>
+        
+        <Separator className="my-6 border-gray-600" />
 
         <div className="flex justify-end mb-8">
           <div className="text-right">
