@@ -2,14 +2,15 @@
 // Defines the types of contracts supported by the application.
 // This will be expanded as more contract functionalities are added.
 
-export type SupportedContractType = 
-  | 'PERMUTA_EQUIPMENT_SERVICE' 
+export type SupportedContractType =
+  | 'PERMUTA_EQUIPMENT_SERVICE'
   | 'SERVICE_VIDEO'
   | 'FREELANCE_HIRE_EDITOR'
   | 'FREELANCE_HIRE_FILMMAKER';
 
 // Basic structure for contact information, reusable across contracts
 export interface ContractParty {
+  id?: string; // Optional ID for useFieldArray key
   name: string;
   cpfCnpj: string; // Can be CPF or CNPJ
   address: string;
@@ -23,14 +24,14 @@ export interface PermutaEquipmentServiceContractData {
   contractTitle: string;
   permutante: ContractParty;
   // Permutado is FastFilms (Contratada) - Handled by CompanyInfo prop
-  equipmentDescription: string; 
+  equipmentDescription: string;
   equipmentValue: string; // Keep as string for form input
-  serviceDescription: string; 
+  serviceDescription: string;
   paymentClause?: string; // "CLÁUSULA 2 - DA FORMA DE PAGAMENTO"
-  conditions: string; 
-  transferClause: string; 
+  conditions: string;
+  transferClause: string;
   generalDispositions?: string; // "CLÁUSULA 5 - DAS DISPOSIÇÕES GERAIS"
-  foro: string; 
+  foro: string;
   contractCity: string; // e.g., "Lagoa Santa/MG" for the signature line
   contractFullDate: string; // e.g., "15 de maio de 2025" for the signature line
 }
@@ -39,14 +40,14 @@ export interface PermutaEquipmentServiceContractData {
 export interface ServiceVideoContractData {
   contractType: 'SERVICE_VIDEO';
   contractTitle: string;
-  contratante: ContractParty;
+  contratantes: ContractParty[]; // Changed to an array
   // Contratada is FastFilms - Handled by CompanyInfo prop
   objectDescription: string; // e.g., "gravação e edição de 10 (dez) vídeos..."
   totalValue: string; // Keep as string for form input
   paymentType: 'vista' | 'sinal_entrega' | 'outro';
   sinalValuePercentage?: string; // if 'sinal_entrega', e.g., "50"
   paymentOutroDescription?: string; // if 'outro'
-  deliveryDeadline: string; // e.g., "3 dias úteis após a última gravação"
+  deliveryDeadline: string; // e.g., "7 dias úteis após a última gravação"
   responsibilitiesContratada: string; // List of responsibilities as a single string for Textarea
   responsibilitiesContratante: string; // List of responsibilities as a single string for Textarea
   copyrightClause: string;
@@ -56,7 +57,6 @@ export interface ServiceVideoContractData {
   foro: string;
   contractCity: string;
   contractFullDate: string;
-  // contratanteSignatories?: number; // For multiple signatories - simplifying for now
 }
 
 // --- Data for "Contratação Freelancer" Contract ---
@@ -79,8 +79,8 @@ export interface FreelanceHireContractData {
 
 
 // Union type for all possible contract data structures for form state
-export type AnyContractFormState = 
-  | PermutaEquipmentServiceContractData 
+export type AnyContractFormState =
+  | PermutaEquipmentServiceContractData
   | ServiceVideoContractData
   | Partial<FreelanceHireContractData>; // Use partial for other types until fully implemented
 
@@ -110,7 +110,7 @@ export const initialPermutaData: PermutaEquipmentServiceContractData = {
 export const initialServiceVideoData: ServiceVideoContractData = {
   contractType: 'SERVICE_VIDEO',
   contractTitle: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE GRAVAÇÃO E EDIÇÃO DE VÍDEOS',
-  contratante: { name: '', cpfCnpj: '', address: '', email: '' },
+  contratantes: [{ id: crypto.randomUUID(), name: '', cpfCnpj: '', address: '', email: '' }], // Initialized as an array
   objectDescription: 'gravação e edição de 10 (dez) vídeos, conforme briefing e orientações fornecidas pelo CONTRATANTE.',
   totalValue: '2299.00',
   paymentType: 'sinal_entrega',
@@ -138,3 +138,5 @@ export const initialFreelanceHireFilmmakerData: Partial<FreelanceHireContractDat
   contractType: 'FREELANCE_HIRE_FILMMAKER',
   // ... other fields
 };
+
+    

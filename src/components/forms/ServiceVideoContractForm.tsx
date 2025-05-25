@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import type { ServiceVideoContractData } from '@/types/contract';
-import { FileText, Send, User, CaseSensitive, DollarSign, CalendarDays, Percent, Settings, MapPinIcon, Mail, Briefcase } from 'lucide-react';
+import type { ServiceVideoContractData, ContractParty } from '@/types/contract';
+import { FileText, Send, User, CaseSensitive, DollarSign, CalendarDays, Percent, Settings, MapPinIcon, Mail, Briefcase, PlusCircle, Trash2 } from 'lucide-react';
 
 const contratanteSchema = z.object({
+  id: z.string().optional(), // For useFieldArray key
   name: z.string().min(1, "Nome do contratante é obrigatório"),
   cpfCnpj: z.string().min(1, "CPF/CNPJ do contratante é obrigatório"),
   address: z.string().min(1, "Endereço do contratante é obrigatório"),
@@ -24,7 +25,7 @@ const contratanteSchema = z.object({
 export const serviceVideoContractFormSchema = z.object({
   contractType: z.literal('SERVICE_VIDEO'),
   contractTitle: z.string().min(1, "Título do contrato é obrigatório"),
-  contratante: contratanteSchema,
+  contratantes: z.array(contratanteSchema).min(1, "Pelo menos um contratante é obrigatório"),
   objectDescription: z.string().min(1, "Descrição do objeto é obrigatória"),
   totalValue: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor total deve ser um número não negativo" }),
   paymentType: z.enum(['vista', 'sinal_entrega', 'outro']),
@@ -72,6 +73,11 @@ const ServiceVideoContractForm: React.FC<ServiceVideoContractFormProps> = ({ ini
     defaultValues: initialData,
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "contratantes",
+  });
+
   const watchedPaymentType = watch("paymentType");
 
   React.useEffect(() => {
@@ -80,6 +86,10 @@ const ServiceVideoContractForm: React.FC<ServiceVideoContractFormProps> = ({ ini
     });
     return () => subscription.unsubscribe();
   }, [watch, onPreviewUpdate]);
+
+  const addNewContratante = () => {
+    append({ id: crypto.randomUUID(), name: '', cpfCnpj: '', address: '', email: '' });
+  };
 
   return (
     <Card className="shadow-xl bg-card text-card-foreground w-full">
@@ -102,29 +112,52 @@ const ServiceVideoContractForm: React.FC<ServiceVideoContractFormProps> = ({ ini
           </section>
 
           <section>
-            <h3 className="text-lg font-semibold mb-3 text-primary border-b pb-2">CONTRATANTE</h3>
-            <div className="space-y-3">
-              <div className="mb-3">
-                <Label htmlFor="contratante.name" className="flex items-center mb-1"><User className="mr-2 h-4 w-4"/>Nome</Label>
-                <Controller name="contratante.name" control={control} render={({ field }) => <Input id="contratante.name" {...field} />} />
-                {errors.contratante?.name && <p className="text-sm text-destructive mt-1">{errors.contratante.name.message}</p>}
-              </div>
-              <div className="mb-3">
-                <Label htmlFor="contratante.cpfCnpj" className="flex items-center mb-1"><Briefcase className="mr-2 h-4 w-4"/>CPF/CNPJ</Label>
-                <Controller name="contratante.cpfCnpj" control={control} render={({ field }) => <Input id="contratante.cpfCnpj" {...field} />} />
-                {errors.contratante?.cpfCnpj && <p className="text-sm text-destructive mt-1">{errors.contratante.cpfCnpj.message}</p>}
-              </div>
-              <div className="mb-3">
-                <Label htmlFor="contratante.address" className="flex items-center mb-1"><MapPinIcon className="mr-2 h-4 w-4"/>Endereço Completo</Label>
-                <Controller name="contratante.address" control={control} render={({ field }) => <Textarea id="contratante.address" {...field} />} />
-                {errors.contratante?.address && <p className="text-sm text-destructive mt-1">{errors.contratante.address.message}</p>}
-              </div>
-              <div className="mb-3">
-                <Label htmlFor="contratante.email" className="flex items-center mb-1"><Mail className="mr-2 h-4 w-4"/>E-mail</Label>
-                <Controller name="contratante.email" control={control} render={({ field }) => <Input id="contratante.email" type="email" {...field} />} />
-                {errors.contratante?.email && <p className="text-sm text-destructive mt-1">{errors.contratante.email.message}</p>}
-              </div>
+            <div className="flex justify-between items-center mb-3 border-b pb-2">
+                <h3 className="text-lg font-semibold text-primary">CONTRATANTE(S)</h3>
+                <Button type="button" variant="outline" size="sm" onClick={addNewContratante}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Contratante
+                </Button>
             </div>
+            {fields.map((field, index) => (
+                <div key={field.id} className="space-y-3 p-3 border rounded-md mb-4 relative bg-card/30">
+                    {fields.length > 1 && (
+                        <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => remove(index)} 
+                            className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
+                            aria-label="Remover Contratante"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    )}
+                    <h4 className="text-md font-medium text-muted-foreground">Contratante {index + 1}</h4>
+                    <div className="mb-3">
+                        <Label htmlFor={`contratantes.${index}.name`} className="flex items-center mb-1"><User className="mr-2 h-4 w-4"/>Nome</Label>
+                        <Controller name={`contratantes.${index}.name`} control={control} render={({ field: controllerField }) => <Input id={`contratantes.${index}.name`} {...controllerField} />} />
+                        {errors.contratantes?.[index]?.name && <p className="text-sm text-destructive mt-1">{errors.contratantes[index]?.name?.message}</p>}
+                    </div>
+                    <div className="mb-3">
+                        <Label htmlFor={`contratantes.${index}.cpfCnpj`} className="flex items-center mb-1"><Briefcase className="mr-2 h-4 w-4"/>CPF/CNPJ</Label>
+                        <Controller name={`contratantes.${index}.cpfCnpj`} control={control} render={({ field: controllerField }) => <Input id={`contratantes.${index}.cpfCnpj`} {...controllerField} />} />
+                        {errors.contratantes?.[index]?.cpfCnpj && <p className="text-sm text-destructive mt-1">{errors.contratantes[index]?.cpfCnpj?.message}</p>}
+                    </div>
+                    <div className="mb-3">
+                        <Label htmlFor={`contratantes.${index}.address`} className="flex items-center mb-1"><MapPinIcon className="mr-2 h-4 w-4"/>Endereço Completo</Label>
+                        <Controller name={`contratantes.${index}.address`} control={control} render={({ field: controllerField }) => <Textarea id={`contratantes.${index}.address`} {...controllerField} />} />
+                        {errors.contratantes?.[index]?.address && <p className="text-sm text-destructive mt-1">{errors.contratantes[index]?.address?.message}</p>}
+                    </div>
+                    <div className="mb-3">
+                        <Label htmlFor={`contratantes.${index}.email`} className="flex items-center mb-1"><Mail className="mr-2 h-4 w-4"/>E-mail</Label>
+                        <Controller name={`contratantes.${index}.email`} control={control} render={({ field: controllerField }) => <Input id={`contratantes.${index}.email`} type="email" {...controllerField} />} />
+                        {errors.contratantes?.[index]?.email && <p className="text-sm text-destructive mt-1">{errors.contratantes[index]?.email?.message}</p>}
+                    </div>
+                </div>
+            ))}
+            {errors.contratantes && typeof errors.contratantes === 'object' && !Array.isArray(errors.contratantes) && ( // For root array errors like min(1)
+                 <p className="text-sm text-destructive mt-1">{errors.contratantes.message}</p>
+            )}
           </section>
 
           <section>

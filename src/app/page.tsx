@@ -176,7 +176,13 @@ export default function Home() {
     if (contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
       initialData = { ...initialPermutaData, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
     } else if (contractType === 'SERVICE_VIDEO') {
-      initialData = { ...initialServiceVideoData, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
+      // Ensure contratantes array in initialServiceVideoData has unique IDs for keys
+      const serviceVideoInitial = {
+        ...initialServiceVideoData,
+        contratantes: initialServiceVideoData.contratantes.map(c => ({...c, id: crypto.randomUUID()})),
+        contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+      };
+      initialData = serviceVideoInitial;
     } else {
       // Placeholder for other contract types - they are currently disabled in ContractTypeDialog
       initialData = { contractType } as AnyContractFormState; 
@@ -216,10 +222,13 @@ export default function Home() {
     if (finalContractDataForPdf.contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
         partyName = (finalContractDataForPdf as PermutaEquipmentServiceContractData).permutante.name;
     } else if (finalContractDataForPdf.contractType === 'SERVICE_VIDEO') {
-        partyName = (finalContractDataForPdf as ServiceVideoContractData).contratante.name;
+        const serviceContractData = finalContractDataForPdf as ServiceVideoContractData;
+        if (serviceContractData.contratantes && serviceContractData.contratantes.length > 0) {
+            partyName = serviceContractData.contratantes[0].name; // Use the first contratante's name
+        }
     }
     // Add more specific naming for other contract types if needed
-    clientNameSanitized = partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || finalContractDataForPdf.contractType.toLowerCase();
+    clientNameSanitized = partyName ? partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : finalContractDataForPdf.contractType.toLowerCase();
 
 
     const opt = {
@@ -299,3 +308,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
