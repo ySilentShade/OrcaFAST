@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { SupportedContractType } from '@/types/contract';
+import { FileText, Video, Repeat, UserCheck } from 'lucide-react'; // Added icons
 
 interface ContractTypeDialogProps {
   isOpen: boolean;
@@ -19,54 +20,66 @@ interface ContractTypeDialogProps {
   onContractTypeSelect: (contractType: SupportedContractType) => void;
 }
 
+const contractTypesWithOptions = [
+  { 
+    type: 'PERMUTA_EQUIPMENT_SERVICE' as SupportedContractType, 
+    label: 'Permuta de Equipamento por Serviços', 
+    icon: Repeat,
+    disabled: false 
+  },
+  { 
+    type: 'SERVICE_VIDEO' as SupportedContractType, 
+    label: 'Prestação de Serviços de Vídeo', 
+    icon: Video,
+    disabled: false 
+  },
+  { 
+    type: 'FREELANCE_HIRE_EDITOR' as SupportedContractType, 
+    label: 'Contratação Freelancer (Editor)', 
+    icon: UserCheck,
+    disabled: true 
+  },
+  { 
+    type: 'FREELANCE_HIRE_FILMMAKER' as SupportedContractType, 
+    label: 'Contratação Freelancer (Cinegrafista)', 
+    icon: UserCheck,
+    disabled: true 
+  },
+];
+
+
 const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenChange, onContractTypeSelect }) => {
   const handleSelect = (type: SupportedContractType) => {
     onContractTypeSelect(type);
-    // onOpenChange(false); // Dialog will be closed by the parent (page.tsx) after selection
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
-        <DialogHeader>
-          <DialogTitle>Selecionar Tipo de Contrato</DialogTitle>
+      <DialogContent className="sm:max-w-md bg-card text-card-foreground">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-2xl">Selecionar Tipo de Contrato</DialogTitle>
           <DialogDescription>
             Escolha o modelo de contrato que deseja gerar. Os dados específicos serão solicitados a seguir.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-3 py-4"> {/* Changed from grid to flex col */}
-          <Button 
-            variant="outline" 
-            onClick={() => handleSelect('PERMUTA_EQUIPMENT_SERVICE')}
-            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
-          >
-            Permuta de Equipamento por Serviços
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => handleSelect('SERVICE_VIDEO')}
-            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
-          >
-            Prestação de Serviços de Vídeo
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => handleSelect('FREELANCE_HIRE_EDITOR')}
-            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
-            disabled // Remove disabled once implemented
-          >
-            Contratação Freelancer (Editor de Vídeo) (Em breve)
-          </Button>
-           <Button 
-            variant="outline" 
-            onClick={() => handleSelect('FREELANCE_HIRE_FILMMAKER')}
-            className="w-full justify-start text-left h-auto py-3 hover:bg-primary/90 hover:text-primary-foreground"
-            disabled // Remove disabled once implemented
-          >
-            Contratação Freelancer (Cinegrafista/Captação) (Em breve)
-          </Button>
+        <div className="flex flex-col gap-3">
+          {contractTypesWithOptions.map(({ type, label, icon: Icon, disabled }) => (
+            <Button
+              key={type}
+              variant="outline"
+              onClick={() => handleSelect(type)}
+              disabled={disabled}
+              className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-all
+                         border-border hover:border-primary/70 
+                         bg-card hover:bg-muted/50 
+                         focus:ring-2 focus:ring-primary/50 focus:outline-none"
+            >
+              <Icon className="mr-3 h-5 w-5 text-primary" />
+              <span className="flex-1">{label}{disabled ? " (Em breve)" : ""}</span>
+            </Button>
+          ))}
         </div>
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
               Cancelar

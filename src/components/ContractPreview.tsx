@@ -4,7 +4,7 @@
 import React from 'react';
 import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
-import { Card, CardContent } from '@/components/ui/card'; // Keep CardContent for structure if needed, or remove if simple div is enough
+import { Card, CardContent } from '@/components/ui/card'; 
 import { FileText } from 'lucide-react';
 
 interface ContractPreviewProps {
@@ -15,7 +15,7 @@ interface ContractPreviewProps {
 const formatCurrency = (value: string | number | undefined): string => {
   if (value === undefined || value === null) return 'R$ 0,00';
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return 'R$ 0,00'; // Or handle as an error/placeholder
+  if (isNaN(num)) return 'R$ 0,00'; 
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
 };
 
@@ -26,28 +26,25 @@ const numberToWords = (numStr: string | number | undefined): string => {
 
     const toWords = require('number-to-words'); 
     try {
-        // Ensure toWords is called correctly, pt-BR might not be directly supported for currency names
-        // We'll get the words for the number and append 'reais' manually if needed
         let words = toWords.toWords(num); 
         if (typeof words === 'string') {
-             // Basic pluralization for 'real' - improve if needed
             const integerPart = Math.floor(num);
             const decimalPart = Math.round((num - integerPart) * 100);
             
-            words = toWords.toWords(integerPart); // Words for integer part
+            words = toWords.toWords(integerPart); 
             
             let decimalWords = '';
             if (decimalPart > 0) {
                 decimalWords = toWords.toWords(decimalPart);
-                if (integerPart > 0) {
-                  words += ` vírgula ${decimalWords}`; // "um vírgula cinquenta"
+                if (integerPart > 0 || decimalPart > 0) { // handle 0.50 case
+                  words += ` vírgula ${decimalWords}`; 
                 } else {
-                  words = decimalWords; // just "cinquenta" for 0.50
+                  words = decimalWords; 
                 }
             }
             return words;
         }
-        return String(num); // Fallback
+        return String(num); 
     } catch (e) {
         console.warn("Error converting number to words with 'number-to-words'. Falling back. Error:", e);
         const [integerPart, decimalPart = '00'] = String(num.toFixed(2)).split('.');
@@ -70,7 +67,7 @@ const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string,
  <div className="mb-6">
     <p className="font-semibold">{title}:</p>
     <p><span className="font-bold">NOME:</span> {companyInfo.name}</p>
-    <p><span className="font-bold">CNPJ:</span> {cnpj || '53.525.841/0001-89'}</p> {/* Default CNPJ for FastFilms */}
+    <p><span className="font-bold">CNPJ:</span> {cnpj || '53.525.841/0001-89'}</p>
     <p><span className="font-bold">ENDEREÇO:</span> {companyInfo.address}</p>
     <p><span className="font-bold">E-MAIL:</span> {companyInfo.email}</p>
   </div>
@@ -134,12 +131,12 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
       
-      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-
-      <div className="mt-12 space-y-8">
+      <div className="mt-12 space-y-10"> {/* Increased spacing */}
         <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
-        <p className="text-center">__________________________________________<br/>{companyInfo.name} (PERMUTADO)</p>
+        <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
       </div>
+      
+      <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p> {/* Moved below and centered */}
 
     </div>
   );
@@ -227,12 +224,12 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
-      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-
-      <div className="mt-12 space-y-8">
+      <div className="mt-12 space-y-10"> {/* Increased spacing */}
         <p className="text-center">__________________________________________<br/>{contratante.name || 'CONTRATANTE'}</p>
-        <p className="text-center">__________________________________________<br/>{companyInfo.name} (CONTRATADA)</p>
+        <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
       </div>
+
+      <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p> {/* Moved below and centered */}
 
     </div>
   );
@@ -242,20 +239,14 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) => {
   if (!data) {
     return (
-      // Fallback when no data, kept the Card for consistent UI for this specific state
-      <Card className="sticky top-8 shadow-lg bg-white"> 
-        <CardContent className="p-6 text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px]">
-          <FileText className="h-16 w-16 mb-4 text-gray-400" />
-          <p className="text-lg">Nenhum contrato selecionado ou dados preenchidos.</p>
-          <p className="text-sm">Escolha um tipo de contrato e preencha o formulário.</p>
-        </CardContent>
-      </Card>
+      <div className="p-6 text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px] bg-white">
+        <FileText className="h-16 w-16 mb-4 text-gray-400" />
+        <p className="text-lg">Nenhum contrato selecionado ou dados preenchidos.</p>
+        <p className="text-sm">Escolha um tipo de contrato e preencha o formulário.</p>
+      </div>
     );
   }
 
-  // Use a div with id for html2pdf.js to target, ensure white background for PDF
-  // No borders, no artificial height limits from this component itself.
-  // Shadow-md is for UI distinction in the dialog, html2pdf will use backgroundColor from options.
   return (
     <div id="contract-preview-content" className="bg-white p-8 text-black shadow-md print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
@@ -264,7 +255,6 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
       {data.contractType === 'SERVICE_VIDEO' && (
         <ServiceVideoPreview contractData={data as ServiceVideoContractData} companyInfo={companyInfo} />
       )}
-      {/* Add other contract type previews here as they are implemented */}
       {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && data.contractType !== 'SERVICE_VIDEO') && (
         <p>Pré-visualização para este tipo de contrato ainda não implementada.</p>
       )}
@@ -273,4 +263,3 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
 };
 
 export default ContractPreview;
-
