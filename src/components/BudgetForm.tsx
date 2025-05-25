@@ -60,13 +60,19 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     name: 'items',
   });
 
-  const watchedAllFields = watch(); // Watch all fields for simplicity or specify them
-
   useEffect(() => {
-    const currentFormData = getValues();
-    onPreviewUpdate(currentFormData);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedAllFields, onPreviewUpdate, getValues]); // getValues is stable, onPreviewUpdate is now stable
+    // Initial preview update when the component mounts with default/loaded values
+    onPreviewUpdate(getValues());
+
+    const subscription = watch((value, { name, type }) => {
+      // type can be 'change', 'blur', etc.
+      // name is the field that changed
+      if (type === 'change') { // Only update on actual value changes
+        onPreviewUpdate(value as BudgetFormState);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, onPreviewUpdate, getValues]);
 
 
   const handleFormSubmitInternal = (data: BudgetFormState) => {
@@ -80,10 +86,10 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
   const handleApplyPreset = (itemIndex: number, presetId: string) => {
     const preset = presets.find(p => p.id === presetId);
     if (preset) {
-      setValue(`items.${itemIndex}.description`, preset.description, { shouldValidate: true, shouldDirty: true });
-      setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString(), { shouldValidate: true, shouldDirty: true });
-      // Optionally set quantity if presets define it, e.g., to '1'
-      // setValue(`items.${itemIndex}.quantity`, '1', { shouldValidate: true, shouldDirty: true });
+      setValue(`items.${itemIndex}.description`, preset.description, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString(), { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setValue(`items.${itemIndex}.quantity`, '1', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      
       toast({
         title: "Preset Aplicado!",
         description: `"${preset.description}" foi aplicado ao item ${itemIndex + 1}.`,
@@ -102,7 +108,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
     try {
       const demoData = await onFillWithDemoData();
       if (demoData) {
-        reset({ 
+        const newFormState: BudgetFormState = { 
           clientName: demoData.clientName,
           clientAddress: demoData.clientAddress,
           items: [{ 
@@ -112,8 +118,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
             unitPrice: demoData.item.unitPrice.toString() 
           }],
           terms: defaultTerms,
-        });
-        // onPreviewUpdate will be called by the useEffect due to reset changing watched values
+        };
+        reset(newFormState);
+        // onPreviewUpdate will be called by the watch subscription due to reset changing values
         toast({ title: "Dados de Teste Carregados!", description: "O formulário foi preenchido com dados de exemplo.", variant: "default" });
       } else {
         toast({ title: "Erro ao Carregar Dados", description: "Não foi possível preencher com dados de teste.", variant: "destructive" });
