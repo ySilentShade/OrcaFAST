@@ -59,16 +59,17 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </div>
         </div>
       </CardHeader>
-      {/* CardContent agora não tem overflow-y-auto, mas permite que seus filhos flex cresçam */}
-      <CardContent className="p-8 flex-grow flex flex-col min-h-0">
-        <div className="mb-6 flex-shrink-0"> {/* Informações do Cliente não encolhem */}
+      
+      {/* CardContent agora é o container de scroll principal */}
+      <CardContent className="p-8 flex-grow overflow-y-auto min-h-0"> 
+        <div className="mb-6"> {/* Informações do Cliente */}
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
           <p className="font-bold" style={{ color: '#FFFFFF' }}>{clientName}</p>
           <p className="text-sm whitespace-pre-line" style={{ color: '#B0B0B0' }}>{clientAddress}</p>
         </div>
 
-        {/* Esta div é a área de scroll para os itens */}
-        <div className="mb-6 flex-grow overflow-y-auto min-h-0">
+        <div className="mb-6"> {/* Seção de Itens */}
+          {/* O título dos itens será sticky relativo ao CardContent */}
           <h3 className="text-lg font-semibold mb-2 sticky top-0 py-1 z-10" style={{ color: '#D0D0D0', backgroundColor: '#18191b'}}>Itens do Orçamento:</h3>
           <Table style={{ color: '#D0D0D0' }}>
             <TableHeader>
@@ -92,8 +93,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           </Table>
         </div>
         
-        {/* Rodapé não encolhe */}
-        <div className="flex-shrink-0">
+        <div> {/* Rodapé: Total, Termos, Agradecimento */}
           <Separator className="my-6" style={{ backgroundColor: '#4A4A4A' }} />
           <div className="flex justify-end mb-8 pr-4">
             <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
