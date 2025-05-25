@@ -12,6 +12,7 @@ import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog'; // New Import
 import type { SupportedContractType } from '@/types/contract'; // New Import
+import { cn } from '@/lib/utils'; // Import cn utility
 
 const companyInfo: CompanyInfo = {
   name: "FastFilms",
@@ -121,15 +122,18 @@ export default function Home() {
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
         
+        // Use PREVIEW and current date for demo data until submitted
         const demoPreview = createPreviewObject(
             demoFormState, 
             "PREVIEW", 
             new Date().toLocaleDateString('pt-BR'), 
             companyInfo
         );
-        setPreviewData(demoPreview);
+        setPreviewData(demoPreview); // Update previewData with demo content
+        // Do not call handleFormSubmit here, as it's for actual submission
+        // The form component will call onPreviewUpdate internally when reset
     }
-    return data;
+    return data; // Return the raw demo data for the form to reset itself
   };
 
   const handleDownloadPdf = async () => {
@@ -210,7 +214,7 @@ export default function Home() {
                 variant="outline" 
                 size="icon" 
                 onClick={() => setIsContractTypeDialogOpen(true)}
-                className={!previewData ? "w-full" : ""}
+                className={cn(!previewData ? "w-full" : "", "hover:bg-primary/90 hover:text-primary-foreground")}
                 title="Gerar Contrato"
               >
                 <FileSignature className="h-5 w-5" />
