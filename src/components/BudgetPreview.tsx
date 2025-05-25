@@ -30,7 +30,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
     );
   }
 
-  const { clientName, clientAddress, items, terms, budgetNumber, budgetDate, companyInfo, totalAmount } = data;
+  const { clientName, clientAddress, items, terms, budgetNumber, budgetDate, companyInfo, totalAmount, isDroneFeatureEnabled } = data;
 
   return (
     <Card id="budget-preview-content" className="sticky top-8 shadow-lg flex flex-col" style={{ backgroundColor: '#18191b', color: '#e0e0e0' }}>
@@ -41,8 +41,8 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
               <Image 
                 src={companyInfo.logoUrl} 
                 alt={`${companyInfo.name} Logo`} 
-                width={80} // Reduced width
-                height={80} // Reduced height
+                width={80} 
+                height={80} 
                 className="mr-4 rounded object-contain"
                 data-ai-hint="company logo"
               />
@@ -53,21 +53,24 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
             </div>
           </div>
           <div className="text-right">
-            <h1 className="text-3xl font-bold" style={{ color: '#FFFFFF' }}>ORÇAMENTO</h1>
+            <h1 className="text-3xl font-bold" style={{ color: '#FFFFFF' }}>
+              ORÇAMENTO
+              {isDroneFeatureEnabled && <span className="text-drone-active text-xl"> (com Drone)</span>}
+            </h1>
             <p className="text-sm" style={{ color: '#B0B0B0' }}>Número: {budgetNumber}</p>
             <p className="text-sm" style={{ color: '#B0B0B0' }}>Data: {budgetDate}</p>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="p-8 flex-grow flex flex-col min-h-0 overflow-y-auto"> 
+      <CardContent className="p-8 flex-grow flex flex-col min-h-0"> 
         <div className="mb-6 flex-shrink-0">
           <h3 className="text-lg font-semibold mb-1" style={{ color: '#D0D0D0' }}>Cliente:</h3>
           <p className="font-bold text-lg" style={{ color: '#FFFFFF' }}>{clientName}</p>
           <p className="text-sm whitespace-pre-line" style={{ color: '#B0B0B0' }}>{clientAddress}</p>
         </div>
 
-        <div className="mb-6 flex-grow min-h-0"> 
+        <div className="mb-6 flex-grow overflow-y-auto min-h-0"> 
           <h3 className="text-lg font-semibold mb-2 sticky top-0 py-1 z-10" style={{ color: '#D0D0D0', backgroundColor: '#18191b'}}>Itens do Orçamento:</h3>
           <Table style={{ color: '#D0D0D0' }}>
             <TableHeader>

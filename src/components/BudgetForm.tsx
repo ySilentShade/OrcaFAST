@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray, Controller, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -37,10 +37,33 @@ const budgetFormSchema = z.object({
 interface BudgetFormProps {
   onSubmitForm: (data: BudgetFormState) => void;
   onFillWithDemoData: () => Promise<BudgetDemoData | null>;
-  onPreviewUpdate: (data: BudgetFormState) => void;
+  onPreviewUpdate: (data: Partial<BudgetFormState>) => void;
+  isDroneFeatureEnabled: boolean;
+  onToggleDroneFeature: (
+    getFormValues: UseFormGetValues<BudgetFormState>,
+    setFormValue: UseFormSetValue<BudgetFormState>
+  ) => void;
 }
 
-const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoData, onPreviewUpdate }) => {
+// Simple Drone SVG Icon
+const DroneIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+    <circle cx="12" cy="12" r="3.5"/>
+    <path d="M12 2V8.5"/> <path d="M12 15.5V22"/>
+    <path d="M2 12H8.5"/> <path d="M15.5 12H22"/>
+    <path d="M16.95 7.05L14.12 9.88"/> <path d="M9.88 14.12L7.05 16.95"/>
+    <path d="M16.95 16.95L14.12 14.12"/> <path d="M9.88 9.88L7.05 7.05"/>
+  </svg>
+);
+
+
+const BudgetForm: React.FC<BudgetFormProps> = ({ 
+  onSubmitForm, 
+  onFillWithDemoData, 
+  onPreviewUpdate,
+  isDroneFeatureEnabled,
+  onToggleDroneFeature
+ }) => {
   const { toast } = useToast();
   const [isPresetManagerOpen, setIsPresetManagerOpen] = useState(false);
   const [presets] = useLocalStorage<PresetItem[]>('fastfilms-presets', initialPresetsData);
@@ -61,15 +84,10 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
   });
 
   useEffect(() => {
-    // Initial preview update when the component mounts with default/loaded values
-    onPreviewUpdate(getValues());
+    onPreviewUpdate(getValues()); // Initial preview
 
-    const subscription = watch((value, { name, type }) => {
-      // type can be 'change', 'blur', etc.
-      // name is the field that changed
-      if (type === 'change') { // Only update on actual value changes
-        onPreviewUpdate(value as BudgetFormState);
-      }
+    const subscription = watch((value) => {
+      onPreviewUpdate(value as BudgetFormState);
     });
     return () => subscription.unsubscribe();
   }, [watch, onPreviewUpdate, getValues]);
@@ -120,7 +138,6 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
           terms: defaultTerms,
         };
         reset(newFormState);
-        // onPreviewUpdate will be called by the watch subscription due to reset changing values
         toast({ title: "Dados de Teste Carregados!", description: "O formulário foi preenchido com dados de exemplo.", variant: "default" });
       } else {
         toast({ title: "Erro ao Carregar Dados", description: "Não foi possível preencher com dados de teste.", variant: "destructive" });
@@ -139,10 +156,21 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
             <Briefcase className="h-6 w-6 mr-2 text-primary" />
             <CardTitle>Criar Novo Orçamento</CardTitle>
           </div>
-          <Button variant="outline" onClick={() => setIsPresetManagerOpen(true)}>
-            <Settings className="mr-2 h-4 w-4" />
-            Gerenciar Presets
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onToggleDroneFeature(getValues, setValue)}
+              className={isDroneFeatureEnabled ? 'bg-accent text-accent-foreground hover:bg-accent/90' : 'hover:bg-accent/10'}
+              title={isDroneFeatureEnabled ? "Desativar Filmagem com Drone" : "Ativar Filmagem com Drone"}
+            >
+              <DroneIcon />
+            </Button>
+            <Button variant="outline" onClick={() => setIsPresetManagerOpen(true)}>
+              <Settings className="mr-2 h-4 w-4" />
+              Gerenciar Presets
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(handleFormSubmitInternal)} className="space-y-6">
@@ -150,7 +178,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
               <h3 className="text-lg font-semibold mb-2 text-primary">Dados do Cliente</h3>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="clientName" className="flex items-center">
+                  <Label htmlFor="clientName" className="flex items-center mb-1">
                     <User className="h-4 w-4 mr-2 text-muted-foreground" /> Nome do Cliente
                   </Label>
                   <Controller
@@ -161,7 +189,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmitForm, onFillWithDemoDat
                   {errors.clientName && <p className="text-sm text-destructive mt-1">{errors.clientName.message}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="clientAddress" className="flex items-center">
+                  <Label htmlFor="clientAddress" className="flex items-center mb-1">
                     <MapPin className="h-4 w-4 mr-2 text-muted-foreground" /> Endereço
                   </Label>
                   <Controller

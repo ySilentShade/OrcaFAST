@@ -52,6 +52,9 @@ body {
     --sidebar-accent-foreground: 220 10% 10%;
     --sidebar-border: 220 10% 20%;
     --sidebar-ring: 343 100% 51%;
+
+    /* Custom green for drone feature */
+    --custom-green-text: 130 55% 55%; /* A noticeable green */
   }
 
   .dark {
@@ -89,6 +92,8 @@ body {
     --sidebar-accent-foreground: 220 10% 10%;
     --sidebar-border: 220 10% 20%;
     --sidebar-ring: 343 100% 51%;
+
+    --custom-green-text: 130 55% 55%;
   }
 }
 
@@ -99,4 +104,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom utility class for drone text color */
+.text-drone-active {
+  color: hsl(var(--custom-green-text));
 }

@@ -44,6 +44,7 @@ export interface BudgetPreviewData {
   budgetDate: string;
   companyInfo: CompanyInfo;
   totalAmount: number;
+  isDroneFeatureEnabled?: boolean;
 }
 
 // For AI demo data

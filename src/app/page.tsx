@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import type { UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import AppHeader from '@/components/AppHeader';
 import BudgetForm from '@/components/BudgetForm';
 import BudgetPreview from '@/components/BudgetPreview';
@@ -13,15 +14,17 @@ import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
 import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData } from '@/types/contract';
 import { initialPermutaData, initialServiceVideoData } from '@/types/contract';
-import ContractFormDialog from '@/components/ContractFormDialog'; // New Dialog for contract forms
+import ContractFormDialog from '@/components/ContractFormDialog';
 import { cn } from '@/lib/utils';
+import initialPresetsData from '@/data/presets.json';
+
 
 export const companyInfo: CompanyInfo = {
   name: "FastFilms",
   logoUrl: "https://raw.githubusercontent.com/Lyd09/FF/587b5eb4cf0fc07885618620dc1f18e8d6e0aef4/LOGO%20SVG.svg",
   address: "Rua Bartolomeu Bueno de Gusmao, 594 - Aeronautas, Lagoa Santa - MG, 33.236- 454",
   email: "fastfilmsoficial@gmail.com",
-  phone: "(11) 98765-4321", // Example, adjust as needed
+  phone: "(11) 98765-4321",
 };
 
 const generateBudgetNumber = () => {
@@ -31,13 +34,13 @@ const generateBudgetNumber = () => {
 };
 
 const createPreviewObject = (
-  formData: Partial<BudgetFormState>, // Allow partial for live updates
+  formData: Partial<BudgetFormState>,
   budgetNumber: string,
   budgetDate: string,
-  currentCompanyInfo: CompanyInfo
+  currentCompanyInfo: CompanyInfo,
+  isDroneFeatureEnabled: boolean
 ): BudgetPreviewData | null => {
   if (!formData || (!formData.clientName && !formData.clientAddress && (!formData.items || formData.items.length === 0 || !formData.items.some(i => i.description || i.quantity || i.unitPrice)))) {
-     // If form is essentially empty for preview purposes, return null
     if (budgetNumber === "PREVIEW") return null;
   }
 
@@ -46,7 +49,7 @@ const createPreviewObject = (
     const unitPrice = parseFloat(item.unitPrice) || 0;
     return {
       id: item.id,
-      description: item.description || "", // Ensure description is a string
+      description: item.description || "",
       quantity,
       unitPrice,
       total: quantity * unitPrice,
@@ -64,6 +67,7 @@ const createPreviewObject = (
     budgetDate,
     companyInfo: currentCompanyInfo,
     totalAmount,
+    isDroneFeatureEnabled,
   };
 };
 
@@ -75,11 +79,9 @@ export default function Home() {
   
   const [lastSubmittedBudgetNumber, setLastSubmittedBudgetNumber] = useState("PREVIEW");
   const [lastSubmittedBudgetDate, setLastSubmittedBudgetDate] = useState(() => new Date().toLocaleDateString('pt-BR'));
+  const [isDroneFeatureEnabled, setIsDroneFeatureEnabled] = useState(false);
 
-  // State for contract type selection dialog
   const [isContractTypeDialogOpen, setIsContractTypeDialogOpen] = useState(false);
-  
-  // State for contract form dialog
   const [isContractFormDialogOpen, setIsContractFormDialogOpen] = useState(false);
   const [selectedContractType, setSelectedContractType] = useState<SupportedContractType | null>(null);
   const [currentContractFormData, setCurrentContractFormData] = useState<AnyContractFormState | null>(null);
@@ -87,7 +89,6 @@ export default function Home() {
 
 
   useEffect(() => {
-    // Initialize last submitted date on mount
     setLastSubmittedBudgetDate(new Date().toLocaleDateString('pt-BR'));
   }, []);
 
@@ -99,35 +100,34 @@ export default function Home() {
     setLastSubmittedBudgetNumber(finalBudgetNumber);
     setLastSubmittedBudgetDate(finalBudgetDate);
 
-    const finalPreview = createPreviewObject(data, finalBudgetNumber, finalBudgetDate, companyInfo);
+    const finalPreview = createPreviewObject(data, finalBudgetNumber, finalBudgetDate, companyInfo, isDroneFeatureEnabled);
     setBudgetPreviewData(finalPreview);
 
     if (finalPreview) {
         toast({ title: "Orçamento Gerado!", description: "A pré-visualização foi atualizada.", variant: "default" });
     }
-  }, [toast]); 
+  }, [toast, isDroneFeatureEnabled]); 
 
   const handleBudgetPreviewUpdate = useCallback((data: Partial<BudgetFormState>) => {
     const currentPreviewNumber = lastSubmittedBudgetNumber;
     const currentPreviewDate = lastSubmittedBudgetDate;
     
-    const updatedPreview = createPreviewObject(data, currentPreviewNumber, currentPreviewDate, companyInfo);
+    const updatedPreview = createPreviewObject(data, currentPreviewNumber, currentPreviewDate, companyInfo, isDroneFeatureEnabled);
     setBudgetPreviewData(updatedPreview);
-  }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate]);
+  }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate, isDroneFeatureEnabled]);
 
 
   const handleFillWithDemoData = async (): Promise<BudgetDemoData | null> => {
-    const data = await fetchDemoBudgetData(); // data is BudgetDemoData | null
-    if (data) {
-        // This section is for updating the preview in page.tsx based on the fetched demo data
+    const demoApiData = await fetchDemoBudgetData(); 
+    if (demoApiData) {
         const demoFormStateForPreview: BudgetFormState = {
-            clientName: data.clientName,
-            clientAddress: data.clientAddress,
+            clientName: demoApiData.clientName,
+            clientAddress: demoApiData.clientAddress,
             items: [{
                 id: crypto.randomUUID(),
-                description: data.item.description,
-                quantity: data.item.quantity.toString(),
-                unitPrice: data.item.unitPrice.toString(),
+                description: demoApiData.item.description,
+                quantity: demoApiData.item.quantity.toString(),
+                unitPrice: demoApiData.item.unitPrice.toString(),
             }],
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
@@ -136,12 +136,11 @@ export default function Home() {
             demoFormStateForPreview, 
             "PREVIEW", 
             new Date().toLocaleDateString('pt-BR'), 
-            companyInfo
+            companyInfo,
+            isDroneFeatureEnabled // pass current drone state
         );
         setBudgetPreviewData(demoPreview); 
-        
-        // Return the original BudgetDemoData for BudgetForm.tsx to use for its reset logic
-        return data; 
+        return demoApiData; 
     }
     return null;
   };
@@ -161,12 +160,40 @@ export default function Home() {
     const opt = {
       margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, // Dark background for budget
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, 
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(element).set(opt).save();
     toast({ title: "PDF do Orçamento Gerado", description: `O arquivo ${opt.filename} está sendo baixado.` });
   };
+
+  const handleToggleDroneFeature = useCallback((
+    getFormValues: UseFormGetValues<BudgetFormState>,
+    setFormValue: UseFormSetValue<BudgetFormState>
+  ) => {
+    const newDroneState = !isDroneFeatureEnabled;
+    setIsDroneFeatureEnabled(newDroneState);
+
+    const currentItems = getFormValues().items;
+    const videoProductionItemIndex = currentItems.findIndex(item => item.description === "Produção de Vídeo");
+
+    if (videoProductionItemIndex !== -1) {
+      if (newDroneState) {
+        setFormValue(`items.${videoProductionItemIndex}.unitPrice`, "500.00", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+        toast({ title: "Drone Ativado!", description: "Preço de 'Produção de Vídeo' ajustado para R$500,00." });
+      } else {
+        const videoPreset = initialPresetsData.find(p => p.description === "Produção de Vídeo");
+        const defaultPrice = videoPreset ? videoPreset.unitPrice.toString() : "250.00"; // Fallback if preset not found
+        setFormValue(`items.${videoProductionItemIndex}.unitPrice`, defaultPrice, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+        toast({ title: "Drone Desativado!", description: `Preço de 'Produção de Vídeo' ajustado para R$${defaultPrice}.` });
+      }
+    } else if (newDroneState) {
+      toast({ title: "Aviso", description: "Item 'Produção de Vídeo' não encontrado para aplicar o preço do drone.", variant: "default" });
+    }
+    // Trigger preview update after state change and potential price update
+    // The watch in BudgetForm will handle this due to setValue changing form values
+  }, [isDroneFeatureEnabled, setIsDroneFeatureEnabled, toast]);
+
 
   // --- Contract Logic ---
   const handleContractTypeSelect = (contractType: SupportedContractType) => {
@@ -176,7 +203,6 @@ export default function Home() {
     if (contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
       initialData = { ...initialPermutaData, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
     } else if (contractType === 'SERVICE_VIDEO') {
-      // Ensure contratantes array in initialServiceVideoData has unique IDs for keys
       const serviceVideoInitial = {
         ...initialServiceVideoData,
         contratantes: initialServiceVideoData.contratantes.map(c => ({...c, id: crypto.randomUUID()})),
@@ -184,27 +210,25 @@ export default function Home() {
       };
       initialData = serviceVideoInitial;
     } else {
-      // Placeholder for other contract types - they are currently disabled in ContractTypeDialog
       initialData = { contractType } as AnyContractFormState; 
     }
 
     if (initialData) {
       setCurrentContractFormData(initialData);
-      setFinalContractDataForPdf(initialData); // Also set for initial PDF download readiness
+      setFinalContractDataForPdf(initialData); 
     }
-    setIsContractTypeDialogOpen(false); // Close selection dialog
-    setIsContractFormDialogOpen(true); // Open form dialog
+    setIsContractTypeDialogOpen(false); 
+    setIsContractFormDialogOpen(true); 
   };
 
   const handleContractFormChange = useCallback((data: AnyContractFormState) => {
     setCurrentContractFormData(data);
-    setFinalContractDataForPdf(data); // Update data for PDF as well
+    setFinalContractDataForPdf(data); 
   }, []);
 
   const handleContractFormSubmit = useCallback((data: AnyContractFormState) => {
-    setFinalContractDataForPdf(data); // This data will be used for PDF generation
-    setCurrentContractFormData(data); // Keep form in sync
-    // Potentially save to a backend or list in the future
+    setFinalContractDataForPdf(data); 
+    setCurrentContractFormData(data); 
     toast({ title: "Dados do Contrato Salvos", description: "Pronto para gerar o PDF do contrato." });
   }, [toast]);
 
@@ -224,18 +248,17 @@ export default function Home() {
     } else if (finalContractDataForPdf.contractType === 'SERVICE_VIDEO') {
         const serviceContractData = finalContractDataForPdf as ServiceVideoContractData;
         if (serviceContractData.contratantes && serviceContractData.contratantes.length > 0) {
-            partyName = serviceContractData.contratantes[0].name; // Use the first contratante's name
+            partyName = serviceContractData.contratantes[0].name; 
         }
     }
-    // Add more specific naming for other contract types if needed
     clientNameSanitized = partyName ? partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : finalContractDataForPdf.contractType.toLowerCase();
 
 
     const opt = {
-      margin: [0.75, 0.75, 0.75, 0.75], // Standard margin for contracts [top, right, bottom, left] in inches
+      margin: [0.75, 0.75, 0.75, 0.75], 
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, // White background for contracts
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
@@ -252,7 +275,9 @@ export default function Home() {
             <BudgetForm 
               onSubmitForm={handleBudgetFormSubmit} 
               onFillWithDemoData={handleFillWithDemoData}
-              onPreviewUpdate={handleBudgetPreviewUpdate} 
+              onPreviewUpdate={handleBudgetPreviewUpdate}
+              isDroneFeatureEnabled={isDroneFeatureEnabled}
+              onToggleDroneFeature={handleToggleDroneFeature}
             />
           </div>
           <div className="lg:col-span-1">
@@ -271,7 +296,7 @@ export default function Home() {
                 onClick={() => setIsContractTypeDialogOpen(true)}
                 className={cn(
                   "hover:bg-primary/90 hover:text-primary-foreground",
-                  !budgetPreviewData && "w-full" // Make full width if no budget preview
+                  !budgetPreviewData && "w-full" 
                 )}
                 title="Gerar Contrato"
               >
@@ -294,7 +319,7 @@ export default function Home() {
             isOpen={isContractFormDialogOpen}
             onOpenChange={(isOpen) => {
               setIsContractFormDialogOpen(isOpen);
-              if (!isOpen) setSelectedContractType(null); // Reset selected type when closing
+              if (!isOpen) setSelectedContractType(null); 
             }}
             contractType={selectedContractType}
             companyInfo={companyInfo}
@@ -308,5 +333,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
