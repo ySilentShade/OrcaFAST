@@ -10,7 +10,6 @@ import { Download } from 'lucide-react';
 import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetDemoData } from '@/types/budget';
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
-// import html2pdf from 'html2pdf.js'; // Removed static import
 
 const companyInfo: CompanyInfo = {
   name: "FastFilms",
@@ -86,7 +85,7 @@ export default function Home() {
     const clientNameSanitized = previewData.clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const opt = {
       margin:       0.5,
-      filename:     `orcamento_${clientNameSanitized || 'fastfilms'}.pdf`,
+      filename:     `orcamento_${clientNameSanitized || 'orcamento_pro'}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, // Ensure background is captured
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -112,7 +111,7 @@ export default function Home() {
           </div>
           <div className="lg:col-span-1">
             {previewData && (
-              <Button onClick={handleDownloadPdf} className="mb-4 w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Button onClick={handleDownloadPdf} className="mb-4 w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Download className="mr-2 h-4 w-4" /> Baixar PDF
               </Button>
             )}
