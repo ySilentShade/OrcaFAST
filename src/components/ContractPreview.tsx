@@ -133,13 +133,14 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
       </div>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
+      
+      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
 
       <div className="mt-12 space-y-8">
-        <p className="text-center">__________________________________________<br/>PERMUTANTE</p>
-        <p className="text-center">__________________________________________<br/>PERMUTADO ({companyInfo.name})</p>
+        <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
+        <p className="text-center">__________________________________________<br/>{companyInfo.name} (PERMUTADO)</p>
       </div>
 
-      <p className="mt-12 text-left">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
     </div>
   );
 };
@@ -226,12 +227,13 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
+      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+
       <div className="mt-12 space-y-8">
-        <p className="text-center">__________________________________________<br/>CONTRATANTE</p>
-        <p className="text-center">__________________________________________<br/>CONTRATADA ({companyInfo.name})</p>
+        <p className="text-center">__________________________________________<br/>{contratante.name || 'CONTRATANTE'}</p>
+        <p className="text-center">__________________________________________<br/>{companyInfo.name} (CONTRATADA)</p>
       </div>
 
-      <p className="mt-12 text-left">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
     </div>
   );
 };
@@ -251,10 +253,10 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
     );
   }
 
+  // Use a div with id for html2pdf.js to target, ensure white background for PDF
+  // No borders, no artificial height limits from this component itself.
+  // Shadow-md is for UI distinction in the dialog, html2pdf will use backgroundColor from options.
   return (
-    // Main container for the actual contract content, targeted by html2pdf.js
-    // No Card wrapper here, no borders, no artificial height limits from this component itself.
-    // Shadow-md is for UI distinction in the dialog, html2pdf will use backgroundColor from options.
     <div id="contract-preview-content" className="bg-white p-8 text-black shadow-md print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
         <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
@@ -271,3 +273,4 @@ const ContractPreview: React.FC<ContractPreviewProps> = ({ data, companyInfo }) 
 };
 
 export default ContractPreview;
+

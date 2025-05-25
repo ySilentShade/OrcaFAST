@@ -100,7 +100,6 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                 {currentContractData && (
                     <Button 
                         onClick={onDownloadPdf} 
-                        variant="outline"
                         className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                         <Download className="mr-2 h-4 w-4" /> Baixar PDF do Contrato
@@ -125,3 +124,4 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
 };
 
 export default ContractFormDialog;
+
