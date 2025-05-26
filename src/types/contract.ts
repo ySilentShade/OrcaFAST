@@ -1,4 +1,5 @@
 
+
 // Defines the types of contracts supported by the application.
 // This will be expanded as more contract functionalities are added.
 
@@ -117,8 +118,8 @@ export const initialServiceVideoData: ServiceVideoContractData = {
   sinalValuePercentage: '50',
   paymentOutroDescription: '',
   deliveryDeadline: '7 dias úteis após a realização da última gravação, salvo acordo diferente entre as partes.',
-  responsibilitiesContratada: "- Gravar os vídeos conforme combinado;\n- Editar os vídeos conforme briefing aprovado;\n- Entregar os vídeos finalizados em formato digital.",
-  responsibilitiesContratante: "- Fornecer todas as informações necessárias para o trabalho;\n- Aprovar o roteiro ou briefing, quando necessário;\n- Efetuar os pagamentos nas condições previstas.",
+  responsibilitiesContratada: "Gravar os vídeos conforme combinado;\nEditar os vídeos conforme briefing aprovado;\nEntregar os vídeos finalizados em formato digital.",
+  responsibilitiesContratante: "Fornecer todas as informações necessárias para o trabalho;\nAprovar o roteiro ou briefing, quando necessário;\nEfetuar os pagamentos nas condições previstas.",
   copyrightClause: 'Os direitos sobre os vídeos finalizados serão cedidos ao CONTRATANTE após o pagamento integral.',
   rescissionNoticePeriodDays: '7',
   rescissionPenaltyPercentage: '20',
