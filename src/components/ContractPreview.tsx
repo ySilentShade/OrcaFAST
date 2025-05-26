@@ -76,13 +76,14 @@ function converterInteiroParaExtensoPTBR(n: number): string {
         extenso += unidades[n];
     }
     
+    // Remove trailing " e " or ", "
     if (extenso.endsWith(" e ")) {
         extenso = extenso.substring(0, extenso.length - 3);
     }
     if (extenso.endsWith(", ")) {
         extenso = extenso.substring(0, extenso.length - 2);
     }
-
+    
     return extenso.trim();
 }
 
@@ -111,9 +112,12 @@ const numberToWords = (numStr: string | number | undefined): string => {
     if (decimalPart > 0) {
         const extensoDecimal = converterInteiroParaExtensoPTBR(decimalPart);
         const unidadeCentavos = decimalPart === 1 ? "centavo" : "centavos";
-        if (extensoFinal) { 
+        if (extensoFinal && extensoFinal !== "zero reais") { 
              extensoFinal += ` e ${extensoDecimal} ${unidadeCentavos}`;
-        } else { 
+        } else if (extensoFinal === "zero reais" && decimalPart > 0) {
+            extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
+        }
+         else { 
             extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
         }
     }
@@ -121,6 +125,7 @@ const numberToWords = (numStr: string | number | undefined): string => {
     if (!extensoFinal && integerPart === 0 && decimalPart === 0) { 
         extensoFinal = "Zero reais";
     }
+
 
     if (extensoFinal) {
       extensoFinal = extensoFinal.charAt(0).toUpperCase() + extensoFinal.slice(1);
@@ -132,14 +137,17 @@ const numberToWords = (numStr: string | number | undefined): string => {
 
 // Helper function to bolden specific terms in a text
 const boldenContractTerms = (text: string | undefined, termsToBold: string[]): React.ReactNode[] => {
-  if (!text) return [];
+  if (!text) return [<React.Fragment key="empty"></React.Fragment>]; // Return an empty fragment or similar for undefined text
   if (termsToBold.length === 0) return [text];
 
-  const regex = new RegExp(`(${termsToBold.join('|')})`, 'g');
+  // Ensure terms are escaped for regex and create a case-insensitive regex
+  const escapedTerms = termsToBold.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const regex = new RegExp(`(${escapedTerms.join('|')})`, 'gi'); // Added 'i' for case-insensitive
   const parts = text.split(regex); 
 
   return parts.map((part, index) => {
-    if (termsToBold.includes(part)) {
+    // Check if the part (ignoring case) is one of the terms to bold
+    if (termsToBold.some(term => term.toLowerCase() === part.toLowerCase())) {
       return <strong key={index}>{part}</strong>;
     }
     return part;
@@ -150,20 +158,20 @@ const boldenContractTerms = (text: string | undefined, termsToBold: string[]): R
 const PartyDetails: React.FC<{ party: ContractParty, title: string, index?: number }> = ({ party, title, index }) => (
   <div className="mb-4">
     <p className="font-semibold">{title}{typeof index === 'number' ? ` ${index + 1}` : ''}:</p>
-    <p><span className="font-bold">NOME:</span> {party.name || '____________________________________________'}</p>
-    <p><span className="font-bold">CPF/CNPJ:</span> {party.cpfCnpj || '____________________________________________'}</p>
-    <p><span className="font-bold">ENDEREÇO:</span> {party.address || '____________________________________________'}</p>
-    <p><span className="font-bold">E-MAIL:</span> {party.email || '____________________________________________'}</p>
+    <p><strong className="font-bold">NOME:</strong> {party.name || '____________________________________________'}</p>
+    <p><strong className="font-bold">CPF/CNPJ:</strong> {party.cpfCnpj || '____________________________________________'}</p>
+    <p><strong className="font-bold">ENDEREÇO:</strong> {party.address || '____________________________________________'}</p>
+    <p><strong className="font-bold">E-MAIL:</strong> {party.email || '____________________________________________'}</p>
   </div>
 );
 
 const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string }> = ({ companyInfo, title, cnpj }) => (
  <div className="mb-6">
     <p className="font-semibold">{title}:</p>
-    <p><span className="font-bold">NOME:</span> {companyInfo.name}</p>
-    <p><span className="font-bold">CNPJ:</span> {cnpj || '53.525.841/0001-89'}</p>
-    <p><span className="font-bold">ENDEREÇO:</span> {companyInfo.address}</p>
-    <p><span className="font-bold">E-MAIL:</span> {companyInfo.email}</p>
+    <p><strong className="font-bold">NOME:</strong> {companyInfo.name}</p>
+    <p><strong className="font-bold">CNPJ:</strong> {cnpj || '53.525.841/0001-89'}</p>
+    <p><strong className="font-bold">ENDEREÇO:</strong> {companyInfo.address}</p>
+    <p><strong className="font-bold">E-MAIL:</strong> {companyInfo.email}</p>
   </div>
 );
 
@@ -197,31 +205,31 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
       <PartyDetails party={permutante} title="PERMUTANTE (Cede o equipamento e recebe os serviços)" />
       <CompanyAsPartyDetails companyInfo={companyInfo} title="PERMUTADO (Recebe o equipamento e presta os serviços)" />
 
-      <p className="mb-6">têm, entre si, justo e contratado o presente {contractTitle?.toUpperCase() || "CONTRATO DE PERMUTA"}, que se regerá pelas cláusulas e condições seguintes:</p>
+      <p className="mb-6">têm, entre si, justo e contratado o presente {boldenContractTerms(contractTitle?.toUpperCase() || "CONTRATO DE PERMUTA", permutaTerms)}, que se regerá pelas cláusulas e condições seguintes:</p>
 
       <div className="space-y-3">
-        <p><span className="font-bold">CLÁUSULA 1 - DO OBJETO</span><br/>
-        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do <strong>PERMUTANTE</strong>, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo <strong>PERMUTADO</strong>.
+        <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/>
+        O presente contrato tem como objeto a permuta de {boldenContractTerms(equipmentDescription, permutaTerms) || '___________________'}, de propriedade do <strong>PERMUTANTE</strong>, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {boldenContractTerms(serviceDescription, permutaTerms) || '___________________'} a ser prestado pelo <strong>PERMUTADO</strong>.
         </p>
 
         {paymentClause && (
-            <p><span className="font-bold">CLÁUSULA 2 - DA FORMA DE PAGAMENTO</span><br/>
+            <p><strong className="font-bold">CLÁUSULA 2 - DA FORMA DE PAGAMENTO</strong><br/>
             {boldenContractTerms(paymentClause, permutaTerms)}</p>
         )}
 
-        <p><span className="font-bold">CLÁUSULA {paymentClause ? '3' : '2'} - DAS CONDIÇÕES</span><br/>
+        <p><strong className="font-bold">CLÁUSULA {paymentClause ? '3' : '2'} - DAS CONDIÇÕES</strong><br/>
         {boldenContractTerms(conditions, permutaTerms) || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
 
-        <p><span className="font-bold">CLÁUSULA {paymentClause ? '4' : '3'} - DA TRANSFERÊNCIA DE PROPRIEDADE</span><br/>
+        <p><strong className="font-bold">CLÁUSULA {paymentClause ? '4' : '3'} - DA TRANSFERÊNCIA DE PROPRIEDADE</strong><br/>
         {boldenContractTerms(transferClause, permutaTerms) || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
 
         {generalDispositions && (
-            <p><span className="font-bold">CLÁUSULA {paymentClause ? '5' : '4'} - DAS DISPOSIÇÕES GERAIS</span><br/>
+            <p><strong className="font-bold">CLÁUSULA {paymentClause ? '5' : '4'} - DAS DISPOSIÇÕES GERAIS</strong><br/>
             {boldenContractTerms(generalDispositions, permutaTerms)}</p>
         )}
 
-        <p><span className="font-bold">CLÁUSULA {paymentClause ? (generalDispositions ? '6' : '5') : (generalDispositions ? '5' : '4')} - DO FORO</span><br/>
-        Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de {foro || '___________________'}.</p>
+        <p><strong className="font-bold">CLÁUSULA {paymentClause ? (generalDispositions ? '6' : '5') : (generalDispositions ? '5' : '4')} - DO FORO</strong><br/>
+        Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de {boldenContractTerms(foro, permutaTerms) || '___________________'}.</p>
       </div>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
@@ -260,7 +268,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   const totalValueFormatted = formatCurrency(totalValue);
   const totalValueInWords = numberToWords(totalValue);
-  const serviceTerms = ["CONTRATANTE", "CONTRATADA"];
+  const serviceTerms = ["CONTRATANTE", "CONTRATADA", "CONTRATANTES"]; // Added "CONTRATANTES" for plural
   
   let rescissionNoticePeriodInWords = "";
   if (rescissionNoticePeriodDays && !isNaN(parseInt(rescissionNoticePeriodDays))) {
@@ -290,23 +298,23 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{contractTitle || "CONTRATO DE PRESTAÇÃO DE SERVIÇOS"}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, serviceTerms) || "CONTRATO DE PRESTAÇÃO DE SERVIÇOS"}</h1>
 
       {contratantes.map((contratante, index) => (
         <PartyDetails key={contratante.id || index} party={contratante} title="CONTRATANTE" index={contratantes.length > 1 ? index : undefined} />
       ))}
       <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATADA" />
 
-      <p className="mb-4"><span className="font-bold">OBJETO DO CONTRATO:</span><br/>
-      A <strong>CONTRATADA</strong> prestará ao(s) <strong>CONTRATANTE</strong>{contratantes.length > 1 ? '(S)' : ''} os serviços de {objectDescription || '___________________'}.
+      <p className="mb-4"><strong className="font-bold">OBJETO DO CONTRATO:</strong><br/>
+      A <strong>CONTRATADA</strong> prestará ao(s) <strong>CONTRATANTE</strong>{contratantes.length > 1 ? '(S)' : ''} os serviços de {boldenContractTerms(objectDescription, serviceTerms) || '___________________'}.
       </p>
 
-      <p className="mb-4"><span className="font-bold">VALOR E FORMA DE PAGAMENTO:</span><br/>
+      <p className="mb-4"><strong className="font-bold">VALOR E FORMA DE PAGAMENTO:</strong><br/>
       O valor total pelos serviços é de {totalValueFormatted}{totalValueInWords ? ` ${totalValueInWords}` : ''}, a ser pago da seguinte forma:<br/>
       {boldenContractTerms(paymentDescription, serviceTerms)}</p>
 
-      <p className="mb-4"><span className="font-bold">PRAZO DE ENTREGA:</span><br/>
-      {deliveryDeadline || '___________________'}</p>
+      <p className="mb-4"><strong className="font-bold">PRAZO DE ENTREGA:</strong><br/>
+      {boldenContractTerms(deliveryDeadline, serviceTerms) || '___________________'}</p>
 
       <p className="mb-2 font-bold">RESPONSABILIDADES DA CONTRATADA:</p>
       <ul className="list-disc list-inside mb-4 ml-4">
@@ -320,20 +328,20 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
         {!responsibilitiesContratante?.trim() && <li>___________________</li>}
       </ul>
 
-      <p className="mb-4"><span className="font-bold">DIREITOS AUTORAIS:</span><br/>
+      <p className="mb-4"><strong className="font-bold">DIREITOS AUTORAIS:</strong><br/>
       {boldenContractTerms(copyrightClause, serviceTerms) || '___________________'}</p>
 
-      <p className="mb-4"><span className="font-bold">RESCISÃO:</span><br/>
+      <p className="mb-4"><strong className="font-bold">RESCISÃO:</strong><br/>
       {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticePeriodDays || '__'} (${rescissionNoticePeriodInWords || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de ${rescissionPenaltyPercentage || '__'}% (${rescissionPenaltyInWords || '______ por cento'}) sobre o valor do contrato.`, serviceTerms)}
       </p>
 
       {generalDispositions && (
-        <p className="mb-4"><span className="font-bold">DISPOSIÇÕES GERAIS:</span><br/>
+        <p className="mb-4"><strong className="font-bold">DISPOSIÇÕES GERAIS:</strong><br/>
         {boldenContractTerms(generalDispositions, serviceTerms)}</p>
       )}
 
-      <p className="mb-4"><span className="font-bold">FORO:</span><br/>
-      As partes elegem o foro da comarca de {foro || '___________________'} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.</p>
+      <p className="mb-4"><strong className="font-bold">FORO:</strong><br/>
+      As partes elegem o foro da comarca de {boldenContractTerms(foro, serviceTerms) || '___________________'} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.</p>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
@@ -386,3 +394,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
