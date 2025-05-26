@@ -25,14 +25,14 @@ function converterInteiroParaExtensoPTBR(n: number): string {
 
     let extenso = "";
 
-    if (n >= 1000000000) { // Bilhões - Adicionado para maior robustez
+    if (n >= 1000000000) { // Bilhões
         const bilhao = Math.floor(n / 1000000000);
         extenso += (bilhao === 1 ? "um bilhão" : converterInteiroParaExtensoPTBR(bilhao) + " bilhões");
         n %= 1000000000;
         if (n > 0) extenso += (n < 100 || n % 100 === 0 ? " e " : ", ");
     }
     
-    if (n >= 1000000) { // Milhões - Adicionado para maior robustez
+    if (n >= 1000000) { // Milhões
         const milhao = Math.floor(n / 1000000);
         extenso += (milhao === 1 ? "um milhão" : converterInteiroParaExtensoPTBR(milhao) + " milhões");
         n %= 1000000;
@@ -54,18 +54,14 @@ function converterInteiroParaExtensoPTBR(n: number): string {
         }
     }
     
-    if (n === 100) {
+    if (n === 100) { // Tratar "cem" especificamente
         extenso += "cem";
-        n=0;
-    } else if (n > 100) { // Alterado de >= 100 para > 100 para tratar "cem" separadamente
+        n = 0; // Zera n para não processar mais
+    } else if (n > 100) { 
         extenso += centenas[Math.floor(n / 100)];
         n %= 100;
         if (n > 0) extenso += " e ";
-    } else if (n === 100) { // Caso específico para 100 quando não é parte de um número maior (ex: R$ 100,00)
-        extenso += "cem";
-        n = 0;
     }
-
 
     if (n >= 20) {
         extenso += dezenas[Math.floor(n / 10)];
@@ -80,6 +76,7 @@ function converterInteiroParaExtensoPTBR(n: number): string {
         extenso += unidades[n];
     }
     
+    // Limpeza final para remover " e " ou ", " no final
     if (extenso.endsWith(" e ")) {
         extenso = extenso.substring(0, extenso.length - 3);
     }
@@ -92,25 +89,24 @@ function converterInteiroParaExtensoPTBR(n: number): string {
 
 const numberToWords = (numStr: string | number | undefined): string => {
     if (numStr === undefined || numStr === null) return '';
-    const numValue = typeof numStr === 'string' ? parseFloat(numStr.replace(',', '.')) : numStr; // Handle comma as decimal separator for input
+    const numValue = typeof numStr === 'string' ? parseFloat(numStr.replace(',', '.')) : numStr;
     if (isNaN(numValue)) return '';
 
     const integerPart = Math.floor(numValue);
     const decimalPart = Math.round((numValue - integerPart) * 100);
 
     let extensoInteiro = "";
-    if (integerPart === 0 && decimalPart === 0) {
+    if (integerPart === 0 && decimalPart === 0) { // Se o valor for R$ 0,00
         extensoInteiro = "zero";
-    } else if (integerPart === 0 && decimalPart > 0) {
-        extensoInteiro = "";
-    }
-    else {
+    } else if (integerPart > 0) { // Apenas converte a parte inteira se for maior que zero
         extensoInteiro = converterInteiroParaExtensoPTBR(integerPart);
     }
+    // Se integerPart for 0 e decimalPart > 0, extensoInteiro permanece ""
     
     let extensoFinal = "";
 
     if (extensoInteiro) {
+      // Correção para "um real" vs "reais"
       const unidadeMoeda = (integerPart === 1 && !extensoInteiro.includes("mil") && !extensoInteiro.includes("milhão") && !extensoInteiro.includes("bilhão") ) ? "real" : "reais";
       extensoFinal = `${extensoInteiro} ${unidadeMoeda}`;
     }
@@ -119,19 +115,21 @@ const numberToWords = (numStr: string | number | undefined): string => {
     if (decimalPart > 0) {
         const extensoDecimal = converterInteiroParaExtensoPTBR(decimalPart);
         const unidadeCentavos = decimalPart === 1 ? "centavo" : "centavos";
-        if (extensoFinal) { 
+        if (extensoFinal) { // Se já existe a parte inteira por extenso
              extensoFinal += ` e ${extensoDecimal} ${unidadeCentavos}`;
-        } else { 
+        } else { // Se a parte inteira é zero, mas tem centavos
             extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
         }
     }
 
+    // Caso especial para R$ 0,00 (zero reais e zero centavos)
     if (!extensoFinal && integerPart === 0 && decimalPart === 0) { 
         extensoFinal = "Zero reais";
     }
 
 
     if (extensoFinal) {
+      // Capitalizar apenas a primeira letra
       extensoFinal = extensoFinal.charAt(0).toUpperCase() + extensoFinal.slice(1);
       return `(${extensoFinal})`;
     }
@@ -232,7 +230,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
   const {
     contractTitle,
-    contratantes, // Changed from contratante
+    contratantes, 
     objectDescription,
     totalValue,
     paymentType,
@@ -274,7 +272,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   }
 
   const renderList = (text: string = '') => {
-    return text.split('\\n').map((item, index) => item.trim() ? <li key={index}>{item.trim()}</li> : null).filter(Boolean);
+    return text.split('\n').map((item, index) => item.trim() ? <li key={index}>{item.trim()}</li> : null).filter(Boolean);
   };
 
   return (
