@@ -30,7 +30,7 @@ const budgetItemSchema = z.object({
 
 const budgetFormSchema = z.object({
   clientName: z.string().min(1, "Nome do cliente é obrigatório"),
-  clientAddress: z.string().min(1, "Endereço é obrigatório"),
+  clientAddress: z.string().optional(), // Changed from .min(1, "Endereço é obrigatório")
   items: z.array(budgetItemSchema).min(1, "Adicione pelo menos um item ao orçamento"),
   terms: z.string().min(1, "Termos e condições são obrigatórios"),
 });
@@ -191,7 +191,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                 </div>
                 <div>
                   <Label htmlFor="clientAddress" className="flex items-center mb-1">
-                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" /> Endereço
+                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" /> Endereço (Opcional)
                   </Label>
                   <Controller
                     name="clientAddress"
