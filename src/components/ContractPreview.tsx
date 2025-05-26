@@ -25,14 +25,14 @@ function converterInteiroParaExtensoPTBR(n: number): string {
 
     let extenso = "";
 
-    if (n >= 1000000000) { // Bilhões
+    if (n >= 1000000000) { 
         const bilhao = Math.floor(n / 1000000000);
         extenso += (bilhao === 1 ? "um bilhão" : converterInteiroParaExtensoPTBR(bilhao) + " bilhões");
         n %= 1000000000;
         if (n > 0) extenso += (n < 100 || n % 100 === 0 ? " e " : ", ");
     }
     
-    if (n >= 1000000) { // Milhões
+    if (n >= 1000000) { 
         const milhao = Math.floor(n / 1000000);
         extenso += (milhao === 1 ? "um milhão" : converterInteiroParaExtensoPTBR(milhao) + " milhões");
         n %= 1000000;
@@ -54,9 +54,9 @@ function converterInteiroParaExtensoPTBR(n: number): string {
         }
     }
     
-    if (n === 100) { // Tratar "cem" especificamente
+    if (n === 100) { 
         extenso += "cem";
-        n = 0; // Zera n para não processar mais
+        n = 0; 
     } else if (n > 100) { 
         extenso += centenas[Math.floor(n / 100)];
         n %= 100;
@@ -76,7 +76,6 @@ function converterInteiroParaExtensoPTBR(n: number): string {
         extenso += unidades[n];
     }
     
-    // Limpeza final para remover " e " ou ", " no final
     if (extenso.endsWith(" e ")) {
         extenso = extenso.substring(0, extenso.length - 3);
     }
@@ -96,46 +95,56 @@ const numberToWords = (numStr: string | number | undefined): string => {
     const decimalPart = Math.round((numValue - integerPart) * 100);
 
     let extensoInteiro = "";
-    if (integerPart === 0 && decimalPart === 0) { // Se o valor for R$ 0,00
+    if (integerPart === 0 && decimalPart === 0) { 
         extensoInteiro = "zero";
-    } else if (integerPart > 0) { // Apenas converte a parte inteira se for maior que zero
+    } else if (integerPart > 0) { 
         extensoInteiro = converterInteiroParaExtensoPTBR(integerPart);
     }
-    // Se integerPart for 0 e decimalPart > 0, extensoInteiro permanece ""
     
     let extensoFinal = "";
 
     if (extensoInteiro) {
-      // Correção para "um real" vs "reais"
       const unidadeMoeda = (integerPart === 1 && !extensoInteiro.includes("mil") && !extensoInteiro.includes("milhão") && !extensoInteiro.includes("bilhão") ) ? "real" : "reais";
       extensoFinal = `${extensoInteiro} ${unidadeMoeda}`;
     }
 
-
     if (decimalPart > 0) {
         const extensoDecimal = converterInteiroParaExtensoPTBR(decimalPart);
         const unidadeCentavos = decimalPart === 1 ? "centavo" : "centavos";
-        if (extensoFinal) { // Se já existe a parte inteira por extenso
+        if (extensoFinal) { 
              extensoFinal += ` e ${extensoDecimal} ${unidadeCentavos}`;
-        } else { // Se a parte inteira é zero, mas tem centavos
+        } else { 
             extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
         }
     }
 
-    // Caso especial para R$ 0,00 (zero reais e zero centavos)
     if (!extensoFinal && integerPart === 0 && decimalPart === 0) { 
         extensoFinal = "Zero reais";
     }
 
-
     if (extensoFinal) {
-      // Capitalizar apenas a primeira letra
       extensoFinal = extensoFinal.charAt(0).toUpperCase() + extensoFinal.slice(1);
       return `(${extensoFinal})`;
     }
     return "";
 };
 // --- Fim da Lógica para Conversão de Número para Extenso em PT-BR ---
+
+// Helper function to bolden specific terms in a text
+const boldenContractTerms = (text: string | undefined, termsToBold: string[]): React.ReactNode[] => {
+  if (!text) return [];
+  if (termsToBold.length === 0) return [text];
+
+  const regex = new RegExp(`(${termsToBold.join('|')})`, 'g');
+  const parts = text.split(regex); 
+
+  return parts.map((part, index) => {
+    if (termsToBold.includes(part)) {
+      return <strong key={index}>{part}</strong>;
+    }
+    return part;
+  }).filter(part => part !== '');
+};
 
 
 const PartyDetails: React.FC<{ party: ContractParty, title: string, index?: number }> = ({ party, title, index }) => (
@@ -177,7 +186,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
   const equipmentValueFormatted = formatCurrency(equipmentValue);
   const equipmentValueInWords = numberToWords(equipmentValue);
-
+  const permutaTerms = ["PERMUTANTE", "PERMUTADO"];
 
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -192,22 +201,23 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
       <div className="space-y-3">
         <p><span className="font-bold">CLÁUSULA 1 - DO OBJETO</span><br/>
-        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do PERMUTANTE, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo PERMUTADO.</p>
+        O presente contrato tem como objeto a permuta de {equipmentDescription || '___________________'}, de propriedade do <strong>PERMUTANTE</strong>, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {serviceDescription || '___________________'} a ser prestado pelo <strong>PERMUTADO</strong>.
+        </p>
 
         {paymentClause && (
             <p><span className="font-bold">CLÁUSULA 2 - DA FORMA DE PAGAMENTO</span><br/>
-            {paymentClause}</p>
+            {boldenContractTerms(paymentClause, permutaTerms)}</p>
         )}
 
         <p><span className="font-bold">CLÁUSULA {paymentClause ? '3' : '2'} - DAS CONDIÇÕES</span><br/>
-        {conditions || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
+        {boldenContractTerms(conditions, permutaTerms) || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
 
         <p><span className="font-bold">CLÁUSULA {paymentClause ? '4' : '3'} - DA TRANSFERÊNCIA DE PROPRIEDADE</span><br/>
-        {transferClause || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
+        {boldenContractTerms(transferClause, permutaTerms) || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
 
         {generalDispositions && (
             <p><span className="font-bold">CLÁUSULA {paymentClause ? '5' : '4'} - DAS DISPOSIÇÕES GERAIS</span><br/>
-            {generalDispositions}</p>
+            {boldenContractTerms(generalDispositions, permutaTerms)}</p>
         )}
 
         <p><span className="font-bold">CLÁUSULA {paymentClause ? (generalDispositions ? '6' : '5') : (generalDispositions ? '5' : '4')} - DO FORO</span><br/>
@@ -250,6 +260,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   const totalValueFormatted = formatCurrency(totalValue);
   const totalValueInWords = numberToWords(totalValue);
+  const serviceTerms = ["CONTRATANTE", "CONTRATADA"];
   
   let rescissionNoticePeriodInWords = "";
   if (rescissionNoticePeriodDays && !isNaN(parseInt(rescissionNoticePeriodDays))) {
@@ -261,7 +272,6 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
      rescissionPenaltyInWords = converterInteiroParaExtensoPTBR(parseFloat(rescissionPenaltyPercentage));
   }
 
-
   let paymentDescription = '';
   if (paymentType === 'vista') {
     paymentDescription = 'À vista na assinatura deste contrato.';
@@ -271,8 +281,11 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
     paymentDescription = paymentOutroDescription || 'Conforme especificado pelas partes.';
   }
 
-  const renderList = (text: string = '') => {
-    return text.split('\n').map((item, index) => item.trim() ? <li key={index}>{item.trim()}</li> : null).filter(Boolean);
+  const renderList = (text: string = '', termsToBold: string[]) => {
+    return text.split('\n').map((item, index) => {
+      const trimmedItem = item.trim();
+      return trimmedItem ? <li key={index}>{boldenContractTerms(trimmedItem, termsToBold)}</li> : null;
+    }).filter(Boolean);
   };
 
   return (
@@ -285,36 +298,38 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATADA" />
 
       <p className="mb-4"><span className="font-bold">OBJETO DO CONTRATO:</span><br/>
-      A CONTRATADA prestará ao(s) CONTRATANTE(S) os serviços de {objectDescription || '___________________'}.</p>
+      A <strong>CONTRATADA</strong> prestará ao(s) <strong>CONTRATANTE</strong>{contratantes.length > 1 ? '(S)' : ''} os serviços de {objectDescription || '___________________'}.
+      </p>
 
       <p className="mb-4"><span className="font-bold">VALOR E FORMA DE PAGAMENTO:</span><br/>
       O valor total pelos serviços é de {totalValueFormatted}{totalValueInWords ? ` ${totalValueInWords}` : ''}, a ser pago da seguinte forma:<br/>
-      {paymentDescription}</p>
+      {boldenContractTerms(paymentDescription, serviceTerms)}</p>
 
       <p className="mb-4"><span className="font-bold">PRAZO DE ENTREGA:</span><br/>
       {deliveryDeadline || '___________________'}</p>
 
       <p className="mb-2 font-bold">RESPONSABILIDADES DA CONTRATADA:</p>
       <ul className="list-disc list-inside mb-4 ml-4">
-        {renderList(responsibilitiesContratada)}
+        {renderList(responsibilitiesContratada, serviceTerms)}
         {!responsibilitiesContratada?.trim() && <li>___________________</li>}
       </ul>
 
       <p className="mb-2 font-bold">RESPONSABILIDADES DO(S) CONTRATANTE(S):</p>
       <ul className="list-disc list-inside mb-4 ml-4">
-        {renderList(responsibilitiesContratante)}
+        {renderList(responsibilitiesContratante, serviceTerms)}
         {!responsibilitiesContratante?.trim() && <li>___________________</li>}
       </ul>
 
       <p className="mb-4"><span className="font-bold">DIREITOS AUTORAIS:</span><br/>
-      {copyrightClause || '___________________'}</p>
+      {boldenContractTerms(copyrightClause, serviceTerms) || '___________________'}</p>
 
       <p className="mb-4"><span className="font-bold">RESCISÃO:</span><br/>
-      O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {rescissionNoticePeriodDays || '__'} ({rescissionNoticePeriodInWords || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de {rescissionPenaltyPercentage || '__'}% ({rescissionPenaltyInWords || '______ por cento'}) sobre o valor do contrato.</p>
+      {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticePeriodDays || '__'} (${rescissionNoticePeriodInWords || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de ${rescissionPenaltyPercentage || '__'}% (${rescissionPenaltyInWords || '______ por cento'}) sobre o valor do contrato.`, serviceTerms)}
+      </p>
 
       {generalDispositions && (
         <p className="mb-4"><span className="font-bold">DISPOSIÇÕES GERAIS:</span><br/>
-        {generalDispositions}</p>
+        {boldenContractTerms(generalDispositions, serviceTerms)}</p>
       )}
 
       <p className="mb-4"><span className="font-bold">FORO:</span><br/>
@@ -371,5 +386,3 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
-    
