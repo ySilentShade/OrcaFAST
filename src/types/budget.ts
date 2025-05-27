@@ -1,8 +1,10 @@
+
 export interface BudgetItemForm {
   id: string;
   description: string;
   quantity: string; // Use string for form input, convert to number on submission
   unitPrice: string; // Use string for form input, convert to number on submission
+  totalOverride?: string; // Optional field to override the total calculation
 }
 
 export interface BudgetFormState {
@@ -24,7 +26,7 @@ export interface BudgetItem {
   description: string;
   quantity: number;
   unitPrice: number;
-  total: number;
+  total: number; // This total will reflect the override if applied
 }
 
 export interface CompanyInfo {

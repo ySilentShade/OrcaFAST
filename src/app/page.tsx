@@ -8,7 +8,7 @@ import BudgetForm from '@/components/BudgetForm';
 import BudgetPreview from '@/components/BudgetPreview';
 import { Button } from '@/components/ui/button';
 import { Download, FileSignature } from 'lucide-react';
-import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetDemoData } from '@/types/budget';
+import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetItemForm, BudgetDemoData } from '@/types/budget';
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
@@ -34,7 +34,7 @@ const generateBudgetNumber = () => {
 };
 
 const createPreviewObject = (
-  formData: Partial<BudgetFormState>,
+  formData: Partial<BudgetFormState>, // formData.items[n].totalOverride é string
   budgetNumber: string,
   budgetDate: string,
   currentCompanyInfo: CompanyInfo,
@@ -44,15 +44,30 @@ const createPreviewObject = (
     if (budgetNumber === "PREVIEW") return null;
   }
 
-  const items: BudgetItem[] = (formData.items || []).map(item => {
-    const quantity = parseFloat(item.quantity) || 0;
-    const unitPrice = parseFloat(item.unitPrice) || 0;
+  const items: BudgetItem[] = (formData.items || []).map((itemFormData: Partial<BudgetItemForm>) => {
+    const quantity = parseFloat(itemFormData.quantity || '0') || 0;
+    const unitPrice = parseFloat(itemFormData.unitPrice || '0') || 0;
+    const totalOverrideString = itemFormData.totalOverride;
+    
+    let finalItemTotal: number;
+
+    if (totalOverrideString && totalOverrideString.trim() !== '') {
+      const parsedOverride = parseFloat(totalOverrideString);
+      if (!isNaN(parsedOverride) && parsedOverride >=0) {
+        finalItemTotal = parsedOverride;
+      } else {
+        finalItemTotal = quantity * unitPrice; // Fallback se override for inválido
+      }
+    } else {
+      finalItemTotal = quantity * unitPrice;
+    }
+
     return {
-      id: item.id,
-      description: item.description || "",
+      id: itemFormData.id || crypto.randomUUID(), // Garantir ID
+      description: itemFormData.description || "",
       quantity,
       unitPrice,
-      total: quantity * unitPrice,
+      total: finalItemTotal,
     };
   });
 
@@ -128,6 +143,7 @@ export default function Home() {
                 description: demoApiData.item.description,
                 quantity: demoApiData.item.quantity.toString(),
                 unitPrice: demoApiData.item.unitPrice.toString(),
+                totalOverride: '',
             }],
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
@@ -137,7 +153,7 @@ export default function Home() {
             "PREVIEW", 
             new Date().toLocaleDateString('pt-BR'), 
             companyInfo,
-            isDroneFeatureEnabled // pass current drone state
+            isDroneFeatureEnabled
         );
         setBudgetPreviewData(demoPreview); 
         return demoApiData; 
@@ -178,6 +194,9 @@ export default function Home() {
     const videoProductionItemIndex = currentItems.findIndex(item => item.description === "Produção de Vídeo");
 
     if (videoProductionItemIndex !== -1) {
+      // Clear totalOverride for the "Produção de Vídeo" item so unitPrice change takes effect
+      setFormValue(`items.${videoProductionItemIndex}.totalOverride`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+
       if (newDroneState) {
         setFormValue(`items.${videoProductionItemIndex}.unitPrice`, "500.00", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
         toast({ title: "Drone Ativado!", description: "Preço de 'Produção de Vídeo' ajustado para R$500,00." });
@@ -190,8 +209,7 @@ export default function Home() {
     } else if (newDroneState) {
       toast({ title: "Aviso", description: "Item 'Produção de Vídeo' não encontrado para aplicar o preço do drone.", variant: "default" });
     }
-    // Trigger preview update after state change and potential price update
-    // The watch in BudgetForm will handle this due to setValue changing form values
+    // Preview will be updated by the watch in BudgetForm due to setValue changing form values
   }, [isDroneFeatureEnabled, setIsDroneFeatureEnabled, toast]);
 
 

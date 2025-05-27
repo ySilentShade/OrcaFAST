@@ -26,11 +26,14 @@ const budgetItemSchema = z.object({
   description: z.string().min(1, "Descrição é obrigatória"),
   quantity: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) > 0, { message: "Quantidade deve ser um número positivo" }),
   unitPrice: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Preço deve ser um número não negativo" }),
+  totalOverride: z.string().optional().refine(val => val === undefined || val.trim() === '' || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), {
+    message: "Total Item (Opcional) deve ser um número não negativo se preenchido",
+  }),
 });
 
 const budgetFormSchema = z.object({
   clientName: z.string().min(1, "Nome do cliente é obrigatório"),
-  clientAddress: z.string().optional(), // Changed from .min(1, "Endereço é obrigatório")
+  clientAddress: z.string().optional(),
   items: z.array(budgetItemSchema).min(1, "Adicione pelo menos um item ao orçamento"),
   terms: z.string().min(1, "Termos e condições são obrigatórios"),
 });
@@ -74,7 +77,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
     defaultValues: {
       clientName: '',
       clientAddress: '',
-      items: [{ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0' }],
+      items: [{ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' }],
       terms: defaultTerms,
     },
   });
@@ -85,9 +88,11 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   });
 
   useEffect(() => {
-    onPreviewUpdate(getValues()); // Initial preview
+    // Initial preview on mount
+    onPreviewUpdate(getValues());
 
-    const subscription = watch((value) => {
+    const subscription = watch((value, { name, type }) => {
+      // value here is the entire form value
       onPreviewUpdate(value as Partial<BudgetFormState>);
     });
     return () => subscription.unsubscribe();
@@ -99,7 +104,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   };
 
   const handleAddItem = () => {
-    append({ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0' });
+    append({ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' });
   };
 
   const handleApplyPreset = (itemIndex: number, presetId: string) => {
@@ -108,6 +113,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
       setValue(`items.${itemIndex}.description`, preset.description, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
       setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString(), { shouldValidate: true, shouldDirty: true, shouldTouch: true });
       setValue(`items.${itemIndex}.quantity`, '1', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setValue(`items.${itemIndex}.totalOverride`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true }); // Clear override when preset is applied
       
       toast({
         title: "Preset Aplicado!",
@@ -134,7 +140,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
             id: crypto.randomUUID(), 
             description: demoData.item.description, 
             quantity: demoData.item.quantity.toString(), 
-            unitPrice: demoData.item.unitPrice.toString() 
+            unitPrice: demoData.item.unitPrice.toString(),
+            totalOverride: '' 
           }],
           terms: defaultTerms,
         };
@@ -217,7 +224,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                   errors={errors}
                 />
               ))}
-               {errors.items && typeof errors.items === 'object' && !Array.isArray(errors.items) && (
+               {errors.items && typeof errors.items === 'object' && !Array.isArray(errors.items) && ( // For root array errors like min(1)
                 <p className="text-sm text-destructive mt-1">{errors.items.message}</p>
               )}
               <Button type="button" variant="outline" onClick={handleAddItem} className="mt-2">

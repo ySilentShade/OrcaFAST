@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Control, UseFieldArrayRemove, FieldErrors } from 'react-hook-form';
@@ -31,7 +32,7 @@ const BudgetItemRow: React.FC<BudgetItemRowProps> = ({ index, control, remove, i
         />
         {itemErrors?.description && <p className="text-sm text-destructive mt-1">{itemErrors.description.message}</p>}
       </div>
-      <div className="md:col-span-3">
+      <div className="md:col-span-2">
         <Select onValueChange={(value) => onApplyPreset(index, value)}>
           <SelectTrigger>
             <SelectValue placeholder="Aplicar Preset" />
@@ -46,7 +47,7 @@ const BudgetItemRow: React.FC<BudgetItemRowProps> = ({ index, control, remove, i
           </SelectContent>
         </Select>
       </div>
-      <div className="md:col-span-2">
+      <div className="md:col-span-1">
         <Controller
           name={`items.${index}.quantity`}
           control={control}
@@ -61,6 +62,14 @@ const BudgetItemRow: React.FC<BudgetItemRowProps> = ({ index, control, remove, i
           render={({ field }) => <Input type="number" placeholder="Preço Unit. (R$)" {...field} step="0.01" min="0" />}
         />
         {itemErrors?.unitPrice && <p className="text-sm text-destructive mt-1">{itemErrors.unitPrice.message}</p>}
+      </div>
+      <div className="md:col-span-2">
+        <Controller
+          name={`items.${index}.totalOverride`}
+          control={control}
+          render={({ field }) => <Input type="number" placeholder="Total Item (Opc.)" {...field} step="0.01" min="0"/>}
+        />
+        {itemErrors?.totalOverride && <p className="text-sm text-destructive mt-1">{itemErrors.totalOverride.message}</p>}
       </div>
       <div className="md:col-span-1 flex items-center justify-end md:justify-center">
         {itemCount > 1 && (
