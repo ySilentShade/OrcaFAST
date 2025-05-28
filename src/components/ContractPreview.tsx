@@ -255,7 +255,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
         </div>
       </div>
       
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <div>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
         <div className="mt-12 space-y-10">
@@ -316,7 +316,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   const renderList = (text: string = '', termsToBold: string[]) => {
     return text.split('\n').map((item, index) => {
       const trimmedItem = item.trim();
-      return trimmedItem ? <li key={index}>{boldenContractTerms(trimmedItem, termsToBold)}</li> : null;
+      return trimmedItem ? <li key={index} className="mb-1">{boldenContractTerms(trimmedItem, termsToBold)}</li> : null;
     }).filter(Boolean);
   };
 
@@ -387,7 +387,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
         {boldenContractTerms(`As partes elegem o foro da comarca de ${foro} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.`, serviceTerms)}</p>
       </div>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <div>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
         <div className="mt-12 space-y-10">
@@ -465,19 +465,19 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
         <p className="mb-1">{boldenContractTerms(`3.1. O CONTRATADO receberá o valor de ${remunerationValueFormatted}${remunerationValueInWords} por ${remunerationUnit}, conforme acordado previamente entre as partes.`, freelanceTerms)}</p>
         <p className="mb-1">{boldenContractTerms('3.2. A CONTRATANTE realiza seus pagamentos mediante sinal de 50% do valor contratado junto ao cliente e os 50% restantes na entrega final. O CONTRATADO somente fará jus ao pagamento após a entrega e aceitação do projeto pelo cliente da CONTRATANTE, no qual o CONTRATADO tenha efetivamente prestado os serviços.', freelanceTerms)}</p>
         <div style={{ pageBreakBefore: 'always' }}>
-          <p className="mb-4">{boldenContractTerms(paymentMethodDescription, freelanceTerms)}</p> {/* Refers to paymentMethodDescription for 3.3 */}
+          <p className="mb-4">{boldenContractTerms(`3.3. ${paymentMethodDescription}`, freelanceTerms)}</p>
         </div>
       </div>
 
       <div style={{ pageBreakInside: 'avoid' }}>
         <p className="mb-4"><strong className="font-bold">CLÁUSULA 4 – DOS PRAZOS E ENTREGAS</strong></p>
-        <p className="mb-1">{boldenContractTerms(deliveryDeadlineDetails, freelanceTerms)}</p> {/* Refers to deliveryDeadlineDetails for 4.1 */}
+        <p className="mb-1">{boldenContractTerms(`4.1. ${deliveryDeadlineDetails}`, freelanceTerms)}</p>
         <p className="mb-4">{boldenContractTerms('4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de 20% sobre o valor do serviço e possível rescisão contratual.', freelanceTerms)}</p>
       </div>
 
       <div style={{ pageBreakInside: 'avoid' }}>
         <p className="mb-4"><strong className="font-bold">CLÁUSULA 5 – DOS EQUIPAMENTOS</strong></p>
-        <p className="mb-1">{boldenContractTerms(equipmentDetails, freelanceTerms)}</p> {/* Refers to equipmentDetails for 5.1 */}
+        <p className="mb-1">{boldenContractTerms(`5.1. ${equipmentDetails}`, freelanceTerms)}</p>
         <p className="mb-4">{boldenContractTerms('5.2. Em caso de dano, extravio ou mau uso de equipamento fornecido pela CONTRATANTE, o CONTRATADO se compromete a ressarcir integralmente o valor de mercado do item afetado.', freelanceTerms)}</p>
       </div>
 
@@ -515,7 +515,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
         <p className="mb-4">{boldenContractTerms(`10.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, freelanceTerms)}</p>
       </div>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <div>
         <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
 
         <div className="mt-12 space-y-10">
@@ -560,6 +560,4 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
-
     
