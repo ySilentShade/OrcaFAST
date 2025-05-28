@@ -176,7 +176,7 @@ export default function Home() {
     const opt = {
       margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, 
+      html2canvas:  { useCORS: true, backgroundColor: '#18191b' }, // Removed scale: 2
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(element).set(opt).save();
@@ -229,7 +229,7 @@ export default function Home() {
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
-      initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; // Placeholder
+      initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; 
     } else {
       initialData = { contractType } as AnyContractFormState; 
     }
@@ -284,7 +284,7 @@ export default function Home() {
       margin: [0.75, 0.75, 0.75, 0.75], 
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
+      html2canvas: { useCORS: true, backgroundColor: '#ffffff' }, // Removed scale: 2
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
@@ -318,13 +318,14 @@ export default function Home() {
               )}
               <Button 
                 variant="outline" 
-                size="icon" 
                 onClick={() => setIsContractTypeDialogOpen(true)}
                 className={cn(
                   "hover:bg-primary/90 hover:text-primary-foreground",
-                  !budgetPreviewData && "w-full" 
+                  !budgetPreviewData && "w-full",
+                  "p-2" // Ensure icon button padding is consistent if size="icon" isn't enough
                 )}
                 title="Gerar Contrato"
+                size="icon"
               >
                 <FileSignature className="h-5 w-5" />
               </Button>
