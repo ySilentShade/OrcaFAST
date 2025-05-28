@@ -288,7 +288,7 @@ export default function Home() {
     const opt = {
       margin: [0.75, 0.75, 0.75, 0.75], 
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
-      image: { type: 'jpeg', quality: 0.95 },
+      image: { type: 'png', quality: 0.98 }, // Use PNG for better sharpness
       html2canvas: { useCORS: true, backgroundColor: '#ffffff' }, 
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
