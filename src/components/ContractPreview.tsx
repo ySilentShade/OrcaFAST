@@ -143,12 +143,15 @@ const numberToWords = (numStr: string | number | undefined): string => {
 
 // Helper function to bolden specific terms in a text
 const boldenContractTerms = (text: string | undefined, termsToBold: string[]): React.ReactNode[] => {
-  if (!text) return [<React.Fragment key="empty"></React.Fragment>]; 
+  if (!text) return [<React.Fragment key="empty"></React.Fragment>];
   if (termsToBold.length === 0) return [text];
 
+  // Escape special characters in terms for regex
   const escapedTerms = termsToBold.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const regex = new RegExp(`(${escapedTerms.join('|')})`, 'gi'); 
-  const parts = text.split(regex); 
+  // Create a regex that matches any of the terms, case-insensitively, and ensures word boundaries
+  // for more precise matching (e.g., doesn't match "CONTRATANTE" inside "CONTRATANTES").
+  const regex = new RegExp(`\\b(${escapedTerms.join('|')})\\b`, 'gi');
+  const parts = text.split(regex);
 
   return parts.map((part, index) => {
     if (termsToBold.some(term => term.toLowerCase() === part.toLowerCase())) {
@@ -221,7 +224,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
             </p>
         </div>
 
-        {paymentClause && (
+        {paymentClause && paymentClause.trim() !== '' && (
             <div style={{ pageBreakInside: 'avoid' }}>
                 <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DA FORMA DE PAGAMENTO</strong><br/>
                 {boldenContractTerms(paymentClause, permutaTerms)}</p>
@@ -238,7 +241,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
             {boldenContractTerms(transferClause, permutaTerms)}</p>
         </div>
 
-        {generalDispositions && (
+        {generalDispositions && generalDispositions.trim() !== '' && (
             <div style={{ pageBreakInside: 'avoid' }}>
                 <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DAS DISPOSIÇÕES GERAIS</strong><br/>
                 {boldenContractTerms(generalDispositions, permutaTerms)}</p>
@@ -372,7 +375,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
         </p>
       </div>
 
-      {generalDispositions && (
+      {generalDispositions && generalDispositions.trim() !== '' && (
         <div style={{ pageBreakInside: 'avoid' }}>
             <p className="mb-4"><strong className="font-bold">DISPOSIÇÕES GERAIS:</strong><br/>
             {boldenContractTerms(generalDispositions, serviceTerms)}</p>
@@ -457,11 +460,13 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
         <p className="mb-4">{boldenContractTerms('2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis.', freelanceTerms)}</p>
       </div>
       
-      <div style={{ pageBreakInside: 'avoid', pageBreakBefore: 'always' }}>
+      <div style={{ pageBreakInside: 'avoid' }}>
         <p className="mb-4"><strong className="font-bold">CLÁUSULA 3 – DA REMUNERAÇÃO</strong></p>
         <p className="mb-1">{boldenContractTerms(`3.1. O CONTRATADO receberá o valor de ${remunerationValueFormatted}${remunerationValueInWords} por ${remunerationUnit}, conforme acordado previamente entre as partes.`, freelanceTerms)}</p>
         <p className="mb-1">{boldenContractTerms('3.2. A CONTRATANTE realiza seus pagamentos mediante sinal de 50% do valor contratado junto ao cliente e os 50% restantes na entrega final. O CONTRATADO somente fará jus ao pagamento após a entrega e aceitação do projeto pelo cliente da CONTRATANTE, no qual o CONTRATADO tenha efetivamente prestado os serviços.', freelanceTerms)}</p>
-        <p className="mb-4">{boldenContractTerms(paymentMethodDescription, freelanceTerms)}</p> {/* Refers to paymentMethodDescription for 3.3 */}
+        <div style={{ pageBreakBefore: 'always' }}>
+          <p className="mb-4">{boldenContractTerms(paymentMethodDescription, freelanceTerms)}</p> {/* Refers to paymentMethodDescription for 3.3 */}
+        </div>
       </div>
 
       <div style={{ pageBreakInside: 'avoid' }}>
@@ -528,7 +533,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
 const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: CompanyInfo }> = ({ data, companyInfo }) => {
   if (!data) {
     return (
-      <div className=" text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px] bg-white">
+      <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px] bg-white">
         <FileText className="h-16 w-16 mb-4 text-gray-400" />
         <p className="text-lg">Nenhum contrato selecionado ou dados preenchidos.</p>
         <p className="text-sm">Escolha um tipo de contrato e preencha o formulário.</p>
@@ -555,3 +560,6 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+
+    
