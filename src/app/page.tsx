@@ -12,7 +12,7 @@ import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, Budge
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelanceEditorContractData, FreelancerMaterialAuthorizationData } from '@/types/contract';
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelancerMaterialAuthorizationData, FreelanceEditorContractData } from '@/types/contract';
 import { initialPermutaData, initialServiceVideoData, initialFreelanceFilmmakerData, initialFreelanceEditorData, initialFreelancerMaterialAuthorizationData } from '@/types/contract';
 import ContractFormDialog from '@/components/ContractFormDialog';
 import { cn } from '@/lib/utils';
@@ -230,7 +230,7 @@ export default function Home() {
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
-      initialData = { ...initialFreelancerMaterialAuthorizationData, companyInfoCnpj: companyInfo.cnpj, contractFullDate: currentDate };
+      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
       initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; 
     } else {
@@ -288,8 +288,8 @@ export default function Home() {
     const opt = {
       margin: [0.75, 0.75, 0.75, 0.75], 
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
-      image: { type: 'png', quality: 0.98 }, // Use PNG for better sharpness
-      html2canvas: { useCORS: true, backgroundColor: '#ffffff' }, 
+      image: { type: 'png', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
