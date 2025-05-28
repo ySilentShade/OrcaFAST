@@ -57,7 +57,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
               ORÇAMENTO
             </h1>
             {isDroneFeatureEnabled && (
-              <p className="text-drone-active text-base -mt-1"> {/* Adjusted size and margin */}
+              <p className="text-drone-active text-base -mt-1">
                 (com Drone)
               </p>
             )}
@@ -88,10 +88,10 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.id} className="border-b" style={{ borderColor: 'hsl(var(--border))', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell className="text-right">{item.quantity}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.total)}</TableCell>
+                  <TableCell className="align-middle leading-none">{item.description}</TableCell>
+                  <TableCell className="text-right align-middle leading-none">{item.quantity}</TableCell>
+                  <TableCell className="text-right align-middle leading-none">{formatCurrency(item.unitPrice)}</TableCell>
+                  <TableCell className="text-right align-middle leading-none">{formatCurrency(item.total)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
