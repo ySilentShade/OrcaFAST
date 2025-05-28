@@ -195,7 +195,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
     contractFullDate,
   } = contractData;
 
-  const permutaTerms = ["PERMUTANTE", "PERMUTADO"];
+  const permutaTerms = ["PERMUTANTE", "PERMUTADO", "CONTRATO DE PERMUTA DE EQUIPAMENTO POR PRESTAÇÃO DE SERVIÇOS"];
   const equipmentValueFormatted = formatCurrency(equipmentValue);
   const equipmentValueInWords = numberToWords(equipmentValue);
   
@@ -270,7 +270,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
     contractFullDate,
   } = contractData;
 
-  const serviceTerms = ["CONTRATANTE", "CONTRATADA", "CONTRATANTES"]; 
+  const serviceTerms = ["CONTRATANTE", "CONTRATADA", "CONTRATANTES", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE GRAVAÇÃO E EDIÇÃO DE VÍDEOS"]; 
   const totalValueFormatted = formatCurrency(totalValue);
   const totalValueInWords = numberToWords(totalValue);
   
@@ -321,7 +321,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       {boldenContractTerms(deliveryDeadline, serviceTerms)}</p>
 
       <p className="mb-2 font-bold">RESPONSABILIDADES DA CONTRATADA:</p>
-      <ul className="list-disc list-inside mb-4 ml-4">
+      <ul className="list-disc list-inside ml-4 mb-4">
         {renderList(responsibilitiesContratada, serviceTerms)}
         {!responsibilitiesContratada?.trim() && <li>___________________</li>}
       </ul>
@@ -387,7 +387,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
     contractFullDate,
   } = contractData;
 
-  const freelanceTerms = ["CONTRATANTE", "CONTRATADO"];
+  const freelanceTerms = ["CONTRATANTE", "CONTRATADO", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS FREELANCER PARA CAPTAÇÃO DE VÍDEO"];
   const remunerationValueFormatted = formatCurrency(remunerationValue);
   const remunerationValueInWords = numberToWords(remunerationValue);
   const confidentialityPenaltyFormatted = formatCurrency(confidentialityBreachPenaltyValue);
@@ -475,7 +475,7 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
   }
 
   return (
-    <div id="contract-preview-content" className="bg-white p-8 text-black print:shadow-none print:border-none">
+    <div id="contract-preview-content" className="bg-white text-black print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
         <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
       )}
@@ -493,3 +493,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+
