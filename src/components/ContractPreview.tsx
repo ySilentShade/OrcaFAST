@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty } from '@/types/contract';
+import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty, FreelanceFilmmakerContractData } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
 import { FileText } from 'lucide-react';
 
@@ -24,6 +24,13 @@ function converterInteiroParaExtensoPTBR(n: number): string {
     if (n < 0) return "menos " + converterInteiroParaExtensoPTBR(Math.abs(n));
 
     let extenso = "";
+    
+    if (n >= 1000000000000) { // Trilhão
+        const trilhao = Math.floor(n / 1000000000000);
+        extenso += (trilhao === 1 ? "um trilhão" : converterInteiroParaExtensoPTBR(trilhao) + " trilhões");
+        n %= 1000000000000;
+        if (n > 0) extenso += (n < 100 || n % 100 === 0 ? " e " : ", ");
+    }
 
     if (n >= 1000000000) { 
         const bilhao = Math.floor(n / 1000000000);
@@ -76,7 +83,6 @@ function converterInteiroParaExtensoPTBR(n: number): string {
         extenso += unidades[n];
     }
     
-    // Remove trailing " e " or ", "
     if (extenso.endsWith(" e ")) {
         extenso = extenso.substring(0, extenso.length - 3);
     }
@@ -126,7 +132,6 @@ const numberToWords = (numStr: string | number | undefined): string => {
         extensoFinal = "Zero reais";
     }
 
-
     if (extensoFinal) {
       extensoFinal = extensoFinal.charAt(0).toUpperCase() + extensoFinal.slice(1);
       return `(${extensoFinal})`;
@@ -137,16 +142,14 @@ const numberToWords = (numStr: string | number | undefined): string => {
 
 // Helper function to bolden specific terms in a text
 const boldenContractTerms = (text: string | undefined, termsToBold: string[]): React.ReactNode[] => {
-  if (!text) return [<React.Fragment key="empty"></React.Fragment>]; // Return an empty fragment or similar for undefined text
+  if (!text) return [<React.Fragment key="empty"></React.Fragment>]; 
   if (termsToBold.length === 0) return [text];
 
-  // Ensure terms are escaped for regex and create a case-insensitive regex
   const escapedTerms = termsToBold.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const regex = new RegExp(`(${escapedTerms.join('|')})`, 'gi'); // Added 'i' for case-insensitive
+  const regex = new RegExp(`(${escapedTerms.join('|')})`, 'gi'); 
   const parts = text.split(regex); 
 
   return parts.map((part, index) => {
-    // Check if the part (ignoring case) is one of the terms to bold
     if (termsToBold.some(term => term.toLowerCase() === part.toLowerCase())) {
       return <strong key={index}>{part}</strong>;
     }
@@ -192,24 +195,24 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
     contractFullDate,
   } = contractData;
 
+  const permutaTerms = ["PERMUTANTE", "PERMUTADO"];
   const equipmentValueFormatted = formatCurrency(equipmentValue);
   const equipmentValueInWords = numberToWords(equipmentValue);
-  const permutaTerms = ["PERMUTANTE", "PERMUTADO"];
-
+  
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{contractTitle || "CONTRATO DE PERMUTA"}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, permutaTerms)}</h1>
 
       <p className="mb-4">Pelo presente instrumento particular, as partes abaixo identificadas:</p>
 
       <PartyDetails party={permutante} title="PERMUTANTE (Cede o equipamento e recebe os serviços)" />
       <CompanyAsPartyDetails companyInfo={companyInfo} title="PERMUTADO (Recebe o equipamento e presta os serviços)" />
 
-      <p className="mb-6">têm, entre si, justo e contratado o presente {boldenContractTerms(contractTitle?.toUpperCase() || "CONTRATO DE PERMUTA", permutaTerms)}, que se regerá pelas cláusulas e condições seguintes:</p>
+      <p className="mb-6">têm, entre si, justo e contratado o presente {boldenContractTerms(contractTitle?.toUpperCase(), permutaTerms)}, que se regerá pelas cláusulas e condições seguintes:</p>
 
       <div className="space-y-3">
         <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/>
-        O presente contrato tem como objeto a permuta de {boldenContractTerms(equipmentDescription, permutaTerms) || '___________________'}, de propriedade do <strong>PERMUTANTE</strong>, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {boldenContractTerms(serviceDescription, permutaTerms) || '___________________'} a ser prestado pelo <strong>PERMUTADO</strong>.
+        O presente contrato tem como objeto a permuta de {boldenContractTerms(equipmentDescription, permutaTerms)}, de propriedade do <strong>PERMUTANTE</strong>, avaliada em {equipmentValueFormatted}{equipmentValueInWords ? ` ${equipmentValueInWords}` : ''}, pelo serviço de {boldenContractTerms(serviceDescription, permutaTerms)} a ser prestado pelo <strong>PERMUTADO</strong>.
         </p>
 
         {paymentClause && (
@@ -218,10 +221,10 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
         )}
 
         <p><strong className="font-bold">CLÁUSULA {paymentClause ? '3' : '2'} - DAS CONDIÇÕES</strong><br/>
-        {boldenContractTerms(conditions, permutaTerms) || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
+        {boldenContractTerms(conditions, permutaTerms)}</p>
 
         <p><strong className="font-bold">CLÁUSULA {paymentClause ? '4' : '3'} - DA TRANSFERÊNCIA DE PROPRIEDADE</strong><br/>
-        {boldenContractTerms(transferClause, permutaTerms) || '________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________'}</p>
+        {boldenContractTerms(transferClause, permutaTerms)}</p>
 
         {generalDispositions && (
             <p><strong className="font-bold">CLÁUSULA {paymentClause ? '5' : '4'} - DAS DISPOSIÇÕES GERAIS</strong><br/>
@@ -229,7 +232,8 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
         )}
 
         <p><strong className="font-bold">CLÁUSULA {paymentClause ? (generalDispositions ? '6' : '5') : (generalDispositions ? '5' : '4')} - DO FORO</strong><br/>
-        Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de {boldenContractTerms(foro, permutaTerms) || '___________________'}.</p>
+        Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de {boldenContractTerms(foro, permutaTerms)}.
+        </p>
       </div>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
@@ -266,9 +270,9 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
     contractFullDate,
   } = contractData;
 
+  const serviceTerms = ["CONTRATANTE", "CONTRATADA", "CONTRATANTES"]; 
   const totalValueFormatted = formatCurrency(totalValue);
   const totalValueInWords = numberToWords(totalValue);
-  const serviceTerms = ["CONTRATANTE", "CONTRATADA", "CONTRATANTES"]; // Added "CONTRATANTES" for plural
   
   let rescissionNoticePeriodInWords = "";
   if (rescissionNoticePeriodDays && !isNaN(parseInt(rescissionNoticePeriodDays))) {
@@ -298,7 +302,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, serviceTerms) || "CONTRATO DE PRESTAÇÃO DE SERVIÇOS"}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, serviceTerms)}</h1>
 
       {contratantes.map((contratante, index) => (
         <PartyDetails key={contratante.id || index} party={contratante} title="CONTRATANTE" index={contratantes.length > 1 ? index : undefined} />
@@ -306,7 +310,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATADA" />
 
       <p className="mb-4"><strong className="font-bold">OBJETO DO CONTRATO:</strong><br/>
-      A <strong>CONTRATADA</strong> prestará ao(s) <strong>CONTRATANTE</strong>{contratantes.length > 1 ? '(S)' : ''} os serviços de {boldenContractTerms(objectDescription, serviceTerms) || '___________________'}.
+      A <strong>CONTRATADA</strong> prestará ao(s) <strong>CONTRATANTE</strong>{contratantes.length > 1 ? '(S)' : ''} os serviços de {boldenContractTerms(objectDescription, serviceTerms)}.
       </p>
 
       <p className="mb-4"><strong className="font-bold">VALOR E FORMA DE PAGAMENTO:</strong><br/>
@@ -314,7 +318,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       {boldenContractTerms(paymentDescription, serviceTerms)}</p>
 
       <p className="mb-4"><strong className="font-bold">PRAZO DE ENTREGA:</strong><br/>
-      {boldenContractTerms(deliveryDeadline, serviceTerms) || '___________________'}</p>
+      {boldenContractTerms(deliveryDeadline, serviceTerms)}</p>
 
       <p className="mb-2 font-bold">RESPONSABILIDADES DA CONTRATADA:</p>
       <ul className="list-disc list-inside mb-4 ml-4">
@@ -329,7 +333,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       </ul>
 
       <p className="mb-4"><strong className="font-bold">DIREITOS AUTORAIS:</strong><br/>
-      {boldenContractTerms(copyrightClause, serviceTerms) || '___________________'}</p>
+      {boldenContractTerms(copyrightClause, serviceTerms)}</p>
 
       <p className="mb-4"><strong className="font-bold">RESCISÃO:</strong><br/>
       {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticePeriodDays || '__'} (${rescissionNoticePeriodInWords || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de ${rescissionPenaltyPercentage || '__'}% (${rescissionPenaltyInWords || '______ por cento'}) sobre o valor do contrato.`, serviceTerms)}
@@ -341,7 +345,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       )}
 
       <p className="mb-4"><strong className="font-bold">FORO:</strong><br/>
-      As partes elegem o foro da comarca de {boldenContractTerms(foro, serviceTerms) || '___________________'} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.</p>
+      As partes elegem o foro da comarca de {boldenContractTerms(foro, serviceTerms)} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.</p>
 
       <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
@@ -366,6 +370,98 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   );
 };
 
+const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
+  const {
+    contractTitle,
+    contratado,
+    remunerationValue,
+    remunerationUnit,
+    paymentMethodDescription,
+    deliveryDeadlineDetails,
+    equipmentDetails,
+    confidentialityBreachPenaltyValue,
+    rescissionNoticeDays,
+    unjustifiedRescissionPenaltyPercentage,
+    foro,
+    contractCity,
+    contractFullDate,
+  } = contractData;
+
+  const freelanceTerms = ["CONTRATANTE", "CONTRATADO"];
+  const remunerationValueFormatted = formatCurrency(remunerationValue);
+  const remunerationValueInWords = numberToWords(remunerationValue);
+  const confidentialityPenaltyFormatted = formatCurrency(confidentialityBreachPenaltyValue);
+  const confidentialityPenaltyInWords = numberToWords(confidentialityBreachPenaltyValue);
+  const rescissionNoticeDaysInWords = rescissionNoticeDays ? converterInteiroParaExtensoPTBR(parseInt(rescissionNoticeDays)) : '______';
+  
+  return (
+    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
+
+      <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
+      <PartyDetails party={contratado} title="CONTRATADO" />
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 1 – DO OBJETO</strong></p>
+      <p className="mb-1">1.1. O presente contrato tem como objeto a prestação de serviços de captação de vídeo, conforme demandas da <strong>CONTRATANTE</strong>, incluindo, mas não se limitando a:</p>
+      <ul className="list-disc list-inside ml-4 mb-4">
+        <li>Gravação de eventos, cenas externas ou internas;</li>
+        <li>Operação de câmeras e equipamentos fornecidos;</li>
+        <li>Cumprimento do roteiro e direção pré-estabelecida.</li>
+      </ul>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 2 – DA NATUREZA DO VÍNCULO</strong></p>
+      <p className="mb-4">2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o <strong>CONTRATADO</strong> responsável por seus encargos tributários, previdenciários, trabalhistas e civis.</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 3 – DA REMUNERAÇÃO</strong></p>
+      <p className="mb-1">3.1. O <strong>CONTRATADO</strong> receberá o valor de {remunerationValueFormatted}{remunerationValueInWords ? ` ${remunerationValueInWords}` : ''} por {boldenContractTerms(remunerationUnit, freelanceTerms)}, conforme acordado previamente entre as partes.</p>
+      <p className="mb-1">3.2. A <strong>CONTRATANTE</strong> realiza seus pagamentos mediante sinal de 50% do valor contratado junto ao cliente e os 50% restantes na entrega final. O <strong>CONTRATADO</strong> somente fará jus ao pagamento após a entrega e aceitação do projeto pelo cliente da <strong>CONTRATANTE</strong>, no qual o <strong>CONTRATADO</strong> tenha efetivamente prestado os serviços.</p>
+      <p className="mb-4">3.3. {boldenContractTerms(paymentMethodDescription, freelanceTerms)}</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 4 – DOS PRAZOS E ENTREGAS</strong></p>
+      <p className="mb-1">4.1. {boldenContractTerms(deliveryDeadlineDetails, freelanceTerms)}</p>
+      <p className="mb-4">4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de 20% sobre o valor do serviço e possível rescisão contratual.</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 5 – DOS EQUIPAMENTOS</strong></p>
+      <p className="mb-1">5.1. {boldenContractTerms(equipmentDetails, freelanceTerms)}</p>
+      <p className="mb-4">5.2. Em caso de dano, extravio ou mau uso de equipamento fornecido pela <strong>CONTRATANTE</strong>, o <strong>CONTRATADO</strong> se compromete a ressarcir integralmente o valor de mercado do item afetado.</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 6 – DOS DIREITOS AUTORAIS E DE IMAGEM</strong></p>
+      <p className="mb-1">6.1. Todo o material captado durante os serviços prestados será de propriedade integral e irrevogável da <strong>CONTRATANTE</strong>.</p>
+      <p className="mb-4">6.2. O <strong>CONTRATADO</strong> cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material captado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da <strong>CONTRATANTE</strong>.</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 7 – DA CONFIDENCIALIDADE</strong></p>
+      <p className="mb-1">7.1. O <strong>CONTRATADO</strong> compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da <strong>CONTRATANTE</strong> ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.</p>
+      <p className="mb-4">7.2. Em caso de quebra de confidencialidade, será aplicada multa de {confidentialityPenaltyFormatted}{confidentialityPenaltyInWords ? ` ${confidentialityPenaltyInWords}` : ''}, sem prejuízo de eventuais indenizações por perdas e danos.</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 8 – DAS PENALIDADES</strong></p>
+      <p className="mb-1">8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o <strong>CONTRATADO</strong> às seguintes penalidades:</p>
+      <ul className="list-disc list-inside ml-4 mb-4">
+        <li>Advertência formal;</li>
+        <li>Multa de até 50% do valor acordado;</li>
+        <li>Rescisão imediata do contrato;</li>
+        <li>Responsabilização cível e criminal, conforme o caso.</li>
+      </ul>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 9 – DA RESCISÃO</strong></p>
+      <p className="mb-1">9.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {boldenContractTerms(rescissionNoticeDays, freelanceTerms)} ({rescissionNoticeDaysInWords}) dias corridos.</p>
+      <p className="mb-4">9.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o <strong>CONTRATADO</strong> deverá arcar com multa equivalente a {boldenContractTerms(unjustifiedRescissionPenaltyPercentage, freelanceTerms)}% do valor do serviço acordado.</p>
+
+      <p className="mb-4"><strong className="font-bold">CLÁUSULA 10 – DO FORO</strong></p>
+      <p className="mb-4">10.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de {boldenContractTerms(foro, freelanceTerms)}, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
+
+
+      <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
+
+      <div className="mt-12 space-y-10">
+        <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>(CONTRATANTE)</p>
+        <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>(CONTRATADO)</p>
+      </div>
+      
+      <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+    </div>
+  );
+};
+
 
 const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: CompanyInfo }> = ({ data, companyInfo }) => {
   if (!data) {
@@ -386,7 +482,10 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
       {data.contractType === 'SERVICE_VIDEO' && (
         <ServiceVideoPreview contractData={data as ServiceVideoContractData} companyInfo={companyInfo} />
       )}
-      {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && data.contractType !== 'SERVICE_VIDEO') && (
+      {data.contractType === 'FREELANCE_HIRE_FILMMAKER' && (
+        <FreelanceFilmmakerPreview contractData={data as FreelanceFilmmakerContractData} companyInfo={companyInfo} />
+      )}
+      {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && data.contractType !== 'SERVICE_VIDEO' && data.contractType !== 'FREELANCE_HIRE_FILMMAKER') && (
         <p>Pré-visualização para este tipo de contrato ainda não implementada.</p>
       )}
     </div>
@@ -394,5 +493,3 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
-    

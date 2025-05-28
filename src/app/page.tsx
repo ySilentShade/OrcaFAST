@@ -12,8 +12,8 @@ import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, Budge
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData } from '@/types/contract';
-import { initialPermutaData, initialServiceVideoData } from '@/types/contract';
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelanceEditorContractData } from '@/types/contract';
+import { initialPermutaData, initialServiceVideoData, initialFreelanceFilmmakerData, initialFreelanceEditorData } from '@/types/contract';
 import ContractFormDialog from '@/components/ContractFormDialog';
 import { cn } from '@/lib/utils';
 import initialPresetsData from '@/data/presets.json';
@@ -34,7 +34,7 @@ const generateBudgetNumber = () => {
 };
 
 const createPreviewObject = (
-  formData: Partial<BudgetFormState>, // formData.items[n].totalOverride é string
+  formData: Partial<BudgetFormState>, 
   budgetNumber: string,
   budgetDate: string,
   currentCompanyInfo: CompanyInfo,
@@ -56,14 +56,14 @@ const createPreviewObject = (
       if (!isNaN(parsedOverride) && parsedOverride >=0) {
         finalItemTotal = parsedOverride;
       } else {
-        finalItemTotal = quantity * unitPrice; // Fallback se override for inválido
+        finalItemTotal = quantity * unitPrice; 
       }
     } else {
       finalItemTotal = quantity * unitPrice;
     }
 
     return {
-      id: itemFormData.id || crypto.randomUUID(), // Garantir ID
+      id: itemFormData.id || crypto.randomUUID(), 
       description: itemFormData.description || "",
       quantity,
       unitPrice,
@@ -194,7 +194,6 @@ export default function Home() {
     const videoProductionItemIndex = currentItems.findIndex(item => item.description === "Produção de Vídeo");
 
     if (videoProductionItemIndex !== -1) {
-      // Clear totalOverride for the "Produção de Vídeo" item so unitPrice change takes effect
       setFormValue(`items.${videoProductionItemIndex}.totalOverride`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
 
       if (newDroneState) {
@@ -202,14 +201,13 @@ export default function Home() {
         toast({ title: "Drone Ativado!", description: "Preço de 'Produção de Vídeo' ajustado para R$500,00." });
       } else {
         const videoPreset = initialPresetsData.find(p => p.description === "Produção de Vídeo");
-        const defaultPrice = videoPreset ? videoPreset.unitPrice.toString() : "250.00"; // Fallback if preset not found
+        const defaultPrice = videoPreset ? videoPreset.unitPrice.toString() : "250.00"; 
         setFormValue(`items.${videoProductionItemIndex}.unitPrice`, defaultPrice, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
         toast({ title: "Drone Desativado!", description: `Preço de 'Produção de Vídeo' ajustado para R$${defaultPrice}.` });
       }
     } else if (newDroneState) {
       toast({ title: "Aviso", description: "Item 'Produção de Vídeo' não encontrado para aplicar o preço do drone.", variant: "default" });
     }
-    // Preview will be updated by the watch in BudgetForm due to setValue changing form values
   }, [isDroneFeatureEnabled, setIsDroneFeatureEnabled, toast]);
 
 
@@ -217,16 +215,21 @@ export default function Home() {
   const handleContractTypeSelect = (contractType: SupportedContractType) => {
     setSelectedContractType(contractType);
     let initialData: AnyContractFormState | null = null;
+    const currentDate = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 
     if (contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
-      initialData = { ...initialPermutaData, contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) };
+      initialData = { ...initialPermutaData, contractFullDate: currentDate };
     } else if (contractType === 'SERVICE_VIDEO') {
       const serviceVideoInitial = {
         ...initialServiceVideoData,
         contratantes: initialServiceVideoData.contratantes.map(c => ({...c, id: crypto.randomUUID()})),
-        contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+        contractFullDate: currentDate
       };
       initialData = serviceVideoInitial;
+    } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
+      initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
+    } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
+      initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; // Placeholder
     } else {
       initialData = { contractType } as AnyContractFormState; 
     }
@@ -268,7 +271,12 @@ export default function Home() {
         if (serviceContractData.contratantes && serviceContractData.contratantes.length > 0) {
             partyName = serviceContractData.contratantes[0].name; 
         }
+    } else if (finalContractDataForPdf.contractType === 'FREELANCE_HIRE_FILMMAKER') {
+        partyName = (finalContractDataForPdf as FreelanceFilmmakerContractData).contratado.name;
+    } else if (finalContractDataForPdf.contractType === 'FREELANCE_HIRE_EDITOR') {
+        partyName = (finalContractDataForPdf as FreelanceEditorContractData).editorName || 'editor_freelancer';
     }
+
     clientNameSanitized = partyName ? partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : finalContractDataForPdf.contractType.toLowerCase();
 
 

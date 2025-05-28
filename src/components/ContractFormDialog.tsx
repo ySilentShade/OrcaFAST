@@ -5,9 +5,10 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData } from '@/types/contract'; // Adjust path as needed
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData } from '@/types/contract'; // Adjust path as needed
 import PermutaContractForm from './forms/PermutaContractForm';
 import ServiceVideoContractForm from './forms/ServiceVideoContractForm';
+import FreelanceFilmmakerContractForm from './forms/FreelanceFilmmakerContractForm';
 import ContractPreview from './ContractPreview';
 import type { CompanyInfo } from '@/types/budget';
 import { useToast } from "@/hooks/use-toast";
@@ -90,7 +91,14 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                 onPreviewUpdate={onFormChange}
               />
             )}
-            {contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && contractType !== 'SERVICE_VIDEO' && (
+             {contractType === 'FREELANCE_HIRE_FILMMAKER' && (
+              <FreelanceFilmmakerContractForm
+                initialData={initialFormData as FreelanceFilmmakerContractData}
+                onSubmitForm={handleSubmit}
+                onPreviewUpdate={onFormChange}
+              />
+            )}
+            {(contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && contractType !== 'SERVICE_VIDEO' && contractType !== 'FREELANCE_HIRE_FILMMAKER') && (
                 <p className="text-center p-10">Formulário para {getContractTypeDisplayName(contractType)} ainda não implementado.</p>
             )}
           </div>
@@ -106,7 +114,6 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                     </Button>
                 )}
             </div>
-            {/* ContractPreview component itself should not have artificial height limits or internal scroll for its main content div */}
             <ContractPreview data={currentContractData} companyInfo={companyInfo} />
           </div>
         </div>
@@ -124,4 +131,3 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
 };
 
 export default ContractFormDialog;
-

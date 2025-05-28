@@ -34,16 +34,16 @@ const contractTypesWithOptions = [
     disabled: false 
   },
   { 
+    type: 'FREELANCE_HIRE_FILMMAKER' as SupportedContractType, 
+    label: 'Contratação Freelancer (Cinegrafista)', 
+    icon: UserCheck, // Using UserCheck for both filmmaker and editor for consistency
+    disabled: false 
+  },
+  { 
     type: 'FREELANCE_HIRE_EDITOR' as SupportedContractType, 
     label: 'Contratação Freelancer (Editor)', 
     icon: UserCheck,
-    disabled: true 
-  },
-  { 
-    type: 'FREELANCE_HIRE_FILMMAKER' as SupportedContractType, 
-    label: 'Contratação Freelancer (Cinegrafista)', 
-    icon: UserCheck,
-    disabled: true 
+    disabled: true // Still disabled as per prior setup
   },
 ];
 
@@ -70,10 +70,10 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
               disabled={disabled}
               className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-colors
                          border border-border bg-card text-card-foreground
-                         hover:bg-primary/90 hover:text-primary-foreground
+                         hover:bg-primary/90 hover:text-primary-foreground [&_svg]:text-primary-foreground
                          focus:ring-2 focus:ring-ring focus:outline-none"
             >
-              <Icon className="mr-3 h-5 w-5" /> {/* Icon inherits color from button's text color */}
+              <Icon className="mr-3 h-5 w-5" /> 
               <span className="flex-1">{label}{disabled ? " (Em breve)" : ""}</span>
             </Button>
           ))}

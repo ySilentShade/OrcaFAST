@@ -1,12 +1,11 @@
 
-
 // Defines the types of contracts supported by the application.
 // This will be expanded as more contract functionalities are added.
 
 export type SupportedContractType =
   | 'PERMUTA_EQUIPMENT_SERVICE'
   | 'SERVICE_VIDEO'
-  | 'FREELANCE_HIRE_EDITOR'
+  | 'FREELANCE_HIRE_EDITOR' // Remains disabled for now
   | 'FREELANCE_HIRE_FILMMAKER';
 
 // Basic structure for contact information, reusable across contracts
@@ -60,22 +59,32 @@ export interface ServiceVideoContractData {
   contractFullDate: string;
 }
 
-// --- Data for "Contratação Freelancer" Contract ---
-export interface FreelanceHireContractData {
-  contractType: 'FREELANCE_HIRE_EDITOR' | 'FREELANCE_HIRE_FILMMAKER';
-  // Contratante is FastFilms
-  freelancer: ContractParty; // The freelancer being hired
-  serviceObject: string; // Specific description of services
-  paymentValue: string; // Keep as string
-  paymentMethod: string; // e.g., "PIX", "Transferência Bancária"
-  deliveryTerms: string; // Deadlines, format, etc.
-  confidentialityClause?: boolean;
-  equipmentResponsibility?: 'FREELANCER' | 'FASTFILMS' | 'SHARED'; // Who provides equipment
-  copyrightOwnership: 'FASTFILMS' | 'FREELANCER_LIMITED_LICENSE' | 'SHARED_USAGE';
-  rescissionConditions?: string;
+// --- Data for "Contratação Freelancer Filmmaker" Contract ---
+export interface FreelanceFilmmakerContractData {
+  contractType: 'FREELANCE_HIRE_FILMMAKER';
+  contractTitle: string;
+  contratado: ContractParty; // The freelancer being hired
+  remunerationValue: string; // e.g., "150.00"
+  remunerationUnit: 'hora' | 'dia' | 'projeto'; // for "por [hora/dia/projeto]"
+  paymentMethodDescription: string; // for "A forma de pagamento ao CONTRATADO (mensal, semanal ou por projeto) será de sua escolha..."
+  deliveryDeadlineDetails: string; // for "Os prazos para execução e entrega dos arquivos serão definidos..."
+  equipmentDetails: string; // for "Os equipamentos utilizados poderão ser..."
+  confidentialityBreachPenaltyValue: string; // e.g., "15000.00"
+  rescissionNoticeDays: string; // e.g., "15"
+  unjustifiedRescissionPenaltyPercentage: string; // e.g., "30"
   foro: string;
   contractCity: string;
   contractFullDate: string;
+}
+
+// --- Data for "Contratação Freelancer Editor" Contract (Placeholder) ---
+export interface FreelanceEditorContractData {
+  contractType: 'FREELANCE_HIRE_EDITOR';
+  // Define fields as needed
+  // For now, just a placeholder to keep the type system happy
+  editorName?: string; 
+  contractCity?: string;
+  contractFullDate?: string;
 }
 
 
@@ -83,13 +92,16 @@ export interface FreelanceHireContractData {
 export type AnyContractFormState =
   | PermutaEquipmentServiceContractData
   | ServiceVideoContractData
-  | Partial<FreelanceHireContractData>; // Use partial for other types until fully implemented
+  | FreelanceFilmmakerContractData
+  | Partial<FreelanceEditorContractData>; // Use partial for editor until fully implemented
 
 // Union type for all possible complete contract data structures
 export type AnyContractData =
   | PermutaEquipmentServiceContractData
   | ServiceVideoContractData
-  | FreelanceHireContractData;
+  | FreelanceFilmmakerContractData
+  | FreelanceEditorContractData;
+
 
 // Initial data for forms
 export const initialPermutaData: PermutaEquipmentServiceContractData = {
@@ -118,8 +130,8 @@ export const initialServiceVideoData: ServiceVideoContractData = {
   sinalValuePercentage: '50',
   paymentOutroDescription: '',
   deliveryDeadline: '7 dias úteis após a realização da última gravação, salvo acordo diferente entre as partes.',
-  responsibilitiesContratada: "Gravar os vídeos conforme combinado;\nEditar os vídeos conforme briefing aprovado;\nEntregar os vídeos finalizados em formato digital.",
-  responsibilitiesContratante: "Fornecer todas as informações necessárias para o trabalho;\nAprovar o roteiro ou briefing, quando necessário;\nEfetuar os pagamentos nas condições previstas.",
+  responsibilitiesContratada: "Gravar os vídeos conforme combinado\nEditar os vídeos conforme briefing aprovado\nEntregar os vídeos finalizados em formato digital",
+  responsibilitiesContratante: "Fornecer todas as informações necessárias para o trabalho\nAprovar o roteiro ou briefing, quando necessário\nEfetuar os pagamentos nas condições previstas",
   copyrightClause: 'Os direitos sobre os vídeos finalizados serão cedidos ao CONTRATANTE após o pagamento integral.',
   rescissionNoticePeriodDays: '7',
   rescissionPenaltyPercentage: '20',
@@ -129,15 +141,27 @@ export const initialServiceVideoData: ServiceVideoContractData = {
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
 
-// Placeholder for freelance contracts - not fully implemented yet
-export const initialFreelanceHireEditorData: Partial<FreelanceHireContractData> = {
-  contractType: 'FREELANCE_HIRE_EDITOR',
-  // ... other fields
-};
-
-export const initialFreelanceHireFilmmakerData: Partial<FreelanceHireContractData> = {
+export const initialFreelanceFilmmakerData: FreelanceFilmmakerContractData = {
   contractType: 'FREELANCE_HIRE_FILMMAKER',
-  // ... other fields
+  contractTitle: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS FREELANCER PARA CAPTAÇÃO DE VÍDEO',
+  contratado: { name: '', cpfCnpj: '', address: '', email: '' },
+  remunerationValue: '150.00',
+  remunerationUnit: 'dia',
+  paymentMethodDescription: 'A forma de pagamento ao CONTRATADO (mensal, semanal ou por projeto) será de sua escolha, desde que acordada com a CONTRATANTE antes do início dos trabalhos, podendo esse acordo ser feito verbalmente, por e-mail ou qualquer outro meio eletrônico de comunicação aceito por ambas as partes.',
+  deliveryDeadlineDetails: 'Os prazos para execução e entrega dos arquivos serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.',
+  equipmentDetails: 'Os equipamentos utilizados poderão ser fornecidos pela CONTRATANTE ou do próprio CONTRATADO, desde que previamente aprovados.',
+  confidentialityBreachPenaltyValue: '15000.00',
+  rescissionNoticeDays: '15',
+  unjustifiedRescissionPenaltyPercentage: '30',
+  foro: 'Lagoa Santa/MG',
+  contractCity: 'Lagoa Santa/MG',
+  contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
 
-    
+
+// Placeholder for freelance editor contract - not fully implemented yet
+export const initialFreelanceEditorData: Partial<FreelanceEditorContractData> = {
+  contractType: 'FREELANCE_HIRE_EDITOR',
+  contractCity: 'Lagoa Santa/MG',
+  contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+};
