@@ -5,10 +5,11 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData } from '@/types/contract'; // Adjust path as needed
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelancerMaterialAuthorizationData } from '@/types/contract'; // Adjust path as needed
 import PermutaContractForm from './forms/PermutaContractForm';
 import ServiceVideoContractForm from './forms/ServiceVideoContractForm';
 import FreelanceFilmmakerContractForm from './forms/FreelanceFilmmakerContractForm';
+import FreelancerMaterialAuthorizationForm from './forms/FreelancerMaterialAuthorizationForm';
 import ContractPreview from './ContractPreview';
 import type { CompanyInfo } from '@/types/budget';
 import { useToast } from "@/hooks/use-toast";
@@ -54,10 +55,12 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
         return 'Permuta de Equipamento por Serviços';
       case 'SERVICE_VIDEO':
         return 'Prestação de Serviços de Vídeo';
-      case 'FREELANCE_HIRE_EDITOR':
-        return 'Contratação Freelancer (Editor)';
       case 'FREELANCE_HIRE_FILMMAKER':
         return 'Contratação Freelancer (Cinegrafista)';
+      case 'FREELANCER_MATERIAL_AUTHORIZATION':
+        return 'Autorização de Uso de Material (Freelancer)';
+      case 'FREELANCE_HIRE_EDITOR':
+        return 'Contratação Freelancer (Editor)';
       default:
         return 'Contrato';
     }
@@ -98,7 +101,18 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
                 onPreviewUpdate={onFormChange}
               />
             )}
-            {(contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && contractType !== 'SERVICE_VIDEO' && contractType !== 'FREELANCE_HIRE_FILMMAKER') && (
+            {contractType === 'FREELANCER_MATERIAL_AUTHORIZATION' && (
+              <FreelancerMaterialAuthorizationForm
+                initialData={initialFormData as FreelancerMaterialAuthorizationData}
+                onSubmitForm={handleSubmit}
+                onPreviewUpdate={onFormChange}
+              />
+            )}
+            {(contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && 
+              contractType !== 'SERVICE_VIDEO' && 
+              contractType !== 'FREELANCE_HIRE_FILMMAKER' &&
+              contractType !== 'FREELANCER_MATERIAL_AUTHORIZATION'
+             ) && (
                 <p className="text-center p-10">Formulário para {getContractTypeDisplayName(contractType)} ainda não implementado.</p>
             )}
           </div>
@@ -131,3 +145,4 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
 };
 
 export default ContractFormDialog;
+

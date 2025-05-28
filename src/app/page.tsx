@@ -12,8 +12,8 @@ import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, Budge
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
-import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelanceEditorContractData } from '@/types/contract';
-import { initialPermutaData, initialServiceVideoData, initialFreelanceFilmmakerData, initialFreelanceEditorData } from '@/types/contract';
+import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelanceEditorContractData, FreelancerMaterialAuthorizationData } from '@/types/contract';
+import { initialPermutaData, initialServiceVideoData, initialFreelanceFilmmakerData, initialFreelanceEditorData, initialFreelancerMaterialAuthorizationData } from '@/types/contract';
 import ContractFormDialog from '@/components/ContractFormDialog';
 import { cn } from '@/lib/utils';
 import initialPresetsData from '@/data/presets.json';
@@ -25,6 +25,7 @@ export const companyInfo: CompanyInfo = {
   address: "Rua Bartolomeu Bueno de Gusmao, 594 - Aeronautas, Lagoa Santa - MG, 33.236- 454",
   email: "fastfilmsoficial@gmail.com",
   phone: "(11) 98765-4321",
+  cnpj: "53.525.841/0001-89", // Added CNPJ for AUTORIZANTE
 };
 
 const generateBudgetNumber = () => {
@@ -176,7 +177,7 @@ export default function Home() {
     const opt = {
       margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { useCORS: true, backgroundColor: '#18191b' }, // Removed scale: 2
+      html2canvas:  { useCORS: true, backgroundColor: '#18191b' }, 
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(element).set(opt).save();
@@ -228,6 +229,8 @@ export default function Home() {
       initialData = serviceVideoInitial;
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
+    } else if (contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
+      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
       initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; 
     } else {
@@ -273,6 +276,8 @@ export default function Home() {
         }
     } else if (finalContractDataForPdf.contractType === 'FREELANCE_HIRE_FILMMAKER') {
         partyName = (finalContractDataForPdf as FreelanceFilmmakerContractData).contratado.name;
+    } else if (finalContractDataForPdf.contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
+        partyName = (finalContractDataForPdf as FreelancerMaterialAuthorizationData).autorizado.name;
     } else if (finalContractDataForPdf.contractType === 'FREELANCE_HIRE_EDITOR') {
         partyName = (finalContractDataForPdf as FreelanceEditorContractData).editorName || 'editor_freelancer';
     }
@@ -284,7 +289,7 @@ export default function Home() {
       margin: [0.75, 0.75, 0.75, 0.75], 
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { useCORS: true, backgroundColor: '#ffffff' }, // Removed scale: 2
+      html2canvas: { useCORS: true, backgroundColor: '#ffffff' }, 
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
@@ -320,9 +325,9 @@ export default function Home() {
                 variant="outline" 
                 onClick={() => setIsContractTypeDialogOpen(true)}
                 className={cn(
-                  "hover:bg-primary/90 hover:text-primary-foreground",
+                  "hover:bg-primary hover:text-primary-foreground",
                   !budgetPreviewData && "w-full",
-                  "p-2" // Ensure icon button padding is consistent if size="icon" isn't enough
+                  "p-2" 
                 )}
                 title="Gerar Contrato"
                 size="icon"
@@ -360,3 +365,4 @@ export default function Home() {
     </div>
   );
 }
+

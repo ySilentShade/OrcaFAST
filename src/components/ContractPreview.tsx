@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty, FreelanceFilmmakerContractData } from '@/types/contract';
+import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty, FreelanceFilmmakerContractData, FreelancerMaterialAuthorizationData } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
 import { FileText } from 'lucide-react';
 
@@ -172,12 +172,12 @@ const PartyDetails: React.FC<{ party: ContractParty, title: string, index?: numb
   </div>
 );
 
-const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string }> = ({ companyInfo, title, cnpj }) => (
+const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string, sede?: string }> = ({ companyInfo, title, cnpj, sede }) => (
  <div className="mb-6">
     <p className="font-semibold">{title}:</p>
     <p><strong className="font-bold">NOME:</strong> {companyInfo.name}</p>
     <p><strong className="font-bold">CNPJ:</strong> {cnpj || '53.525.841/0001-89'}</p>
-    <p><strong className="font-bold">ENDEREÇO:</strong> {companyInfo.address}</p>
+    <p><strong className="font-bold">ENDEREÇO / SEDE:</strong> {sede || companyInfo.address}</p>
     <p><strong className="font-bold">E-MAIL:</strong> {companyInfo.email}</p>
   </div>
 );
@@ -529,6 +529,106 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   );
 };
 
+const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: FreelancerMaterialAuthorizationData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
+  const {
+    contractTitle,
+    autorizado,
+    projectName,
+    finalClientName,
+    executionDate,
+    authorizedLinks,
+    penaltyValue,
+    foro,
+    contractCity,
+    contractFullDate,
+  } = contractData;
+
+  const authTerms = ["AUTORIZANTE", "AUTORIZADO(A)", "AUTORIZADO", "TERMO DE AUTORIZAÇÃO ESPECÍFICA DE USO DE MATERIAL – FREELANCER"];
+  const penaltyValueFormatted = formatCurrency(penaltyValue);
+  const penaltyValueInWords = numberToWords(penaltyValue);
+  
+  return (
+    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, authTerms)}</h1>
+
+      <div style={{ pageBreakInside: 'avoid' }}>
+        <CompanyAsPartyDetails 
+            companyInfo={companyInfo} 
+            title="AUTORIZANTE" 
+            cnpj={companyInfo.cnpj || 'N/A'} // Assuming companyInfo might have cnpj
+            sede={companyInfo.address}
+        />
+        <PartyDetails party={autorizado} title="AUTORIZADO(A)" />
+        <p className="mb-6">firmam o presente {boldenContractTerms(contractTitle?.toUpperCase(), authTerms)}, mediante as cláusulas seguintes:</p>
+      </div>
+      
+      <div className="space-y-3">
+        <div style={{ pageBreakInside: 'avoid' }}>
+            <p className="mb-1"><strong className="font-bold">CLÁUSULA 1 – DO OBJETO</strong></p>
+            <p className="mb-1">{boldenContractTerms('1.1. Este termo trata da autorização exclusiva e pontual para o uso de material audiovisual captado pelo AUTORIZADO(A) no projeto abaixo identificado:', authTerms)}</p>
+            <ul className="list-none ml-4 mb-2">
+                <li><strong className="font-bold">Projeto:</strong> {projectName || '____________________________________________'}</li>
+                <li><strong className="font-bold">Cliente final:</strong> {finalClientName || '____________________________________________'}</li>
+                <li><strong className="font-bold">Data de execução:</strong> {executionDate || '____________________________________________'}</li>
+                <li><strong className="font-bold">Link(s) autorizado(s):</strong> {authorizedLinks || '____________________________________________'}</li>
+            </ul>
+            <p>{boldenContractTerms('1.2. A presente autorização é limitada a este único projeto, e não se estende automaticamente a outros trabalhos executados para a AUTORIZANTE.', authTerms)}</p>
+        </div>
+
+        <div style={{ pageBreakInside: 'avoid' }}>
+            <p className="mb-1"><strong className="font-bold">CLÁUSULA 2 – FINALIDADE E LIMITAÇÕES DE USO</strong></p>
+            <p className="mb-1">{boldenContractTerms('2.1. O material descrito na Cláusula 1 poderá ser utilizado exclusivamente para fins de portfólio pessoal ou currículo profissional, em:', authTerms)}</p>
+            <ul className="list-disc list-inside ml-8 mb-2">
+                <li>{boldenContractTerms('Sites pessoais, plataformas de portfólio;', authTerms)}</li>
+                <li>{boldenContractTerms('Redes sociais de uso profissional (LinkedIn, Instagram, Vimeo etc.);', authTerms)}</li>
+                <li>{boldenContractTerms('Apresentações a clientes ou contratantes.', authTerms)}</li>
+            </ul>
+            <p className="mb-1">{boldenContractTerms('2.2. É vedado:', authTerms)}</p>
+            <ul className="list-disc list-inside ml-8 mb-2">
+                <li>{boldenContractTerms('Monetizar ou veicular o conteúdo em campanhas publicitárias;', authTerms)}</li>
+                <li>{boldenContractTerms('Utilizar imagens com pessoas identificáveis sem autorização expressa destas;', authTerms)}</li>
+                <li>{boldenContractTerms('Fazer edições que distorçam o trabalho, a identidade visual ou a marca do projeto;', authTerms)}</li>
+                <li>{boldenContractTerms('Sugerir que o projeto foi realizado exclusivamente pelo AUTORIZADO(A), sem citar a FastFilms.', authTerms)}</li>
+            </ul>
+            <p>{boldenContractTerms('2.3. O material deve conter o crédito à FastFilms como produtora do projeto.', authTerms)}</p>
+        </div>
+
+        <div style={{ pageBreakInside: 'avoid' }}>
+            <p className="mb-1"><strong className="font-bold">CLÁUSULA 3 – VIGÊNCIA E REVOGAÇÃO</strong></p>
+            <p>{boldenContractTerms('3.1. Esta autorização entra em vigor na data da assinatura e é válida por tempo indeterminado, podendo ser revogada a qualquer tempo pela AUTORIZANTE, mediante aviso prévio de 5 (cinco) dias.', authTerms)}</p>
+        </div>
+        
+        <div style={{ pageBreakInside: 'avoid' }}>
+            <p className="mb-1"><strong className="font-bold">CLÁUSULA 4 – DAS PENALIDADES</strong></p>
+            <p className="mb-1">{boldenContractTerms(`4.1. O uso indevido ou o descumprimento deste termo sujeitará o AUTORIZADO(A) às seguintes penalidades:`, authTerms)}</p>
+            <ul className="list-disc list-inside ml-8 mb-2">
+                <li>{boldenContractTerms('Cancelamento imediato da autorização;', authTerms)}</li>
+                <li>{boldenContractTerms(`Multa de ${penaltyValueFormatted}${penaltyValueInWords};`, authTerms)}</li>
+                <li>{boldenContractTerms('Eventual responsabilização cível e criminal.', authTerms)}</li>
+            </ul>
+        </div>
+        
+        <div style={{ pageBreakInside: 'avoid' }}>
+            <p><strong className="font-bold">CLÁUSULA 5 – DO FORO</strong><br/>
+            {boldenContractTerms(`5.1. Para dirimir quaisquer controvérsias oriundas deste termo, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, authTerms)}
+            </p>
+        </div>
+      </div>
+      
+      <div>
+        <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
+        
+        <div className="mt-12 space-y-10">
+          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'AUTORIZANTE'}<br/>(AUTORIZANTE)</p>
+          <p className="text-center">__________________________________________<br/>{autorizado.name || 'AUTORIZADO(A)'}<br/>(AUTORIZADO(A))</p>
+        </div>
+        
+        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+      </div>
+    </div>
+  );
+};
+
 
 const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: CompanyInfo }> = ({ data, companyInfo }) => {
   if (!data) {
@@ -552,7 +652,14 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
       {data.contractType === 'FREELANCE_HIRE_FILMMAKER' && (
         <FreelanceFilmmakerPreview contractData={data as FreelanceFilmmakerContractData} companyInfo={companyInfo} />
       )}
-      {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && data.contractType !== 'SERVICE_VIDEO' && data.contractType !== 'FREELANCE_HIRE_FILMMAKER') && (
+      {data.contractType === 'FREELANCER_MATERIAL_AUTHORIZATION' && (
+        <FreelancerMaterialAuthorizationPreview contractData={data as FreelancerMaterialAuthorizationData} companyInfo={companyInfo} />
+      )}
+      {(data.contractType !== 'PERMUTA_EQUIPMENT_SERVICE' && 
+        data.contractType !== 'SERVICE_VIDEO' && 
+        data.contractType !== 'FREELANCE_HIRE_FILMMAKER' &&
+        data.contractType !== 'FREELANCER_MATERIAL_AUTHORIZATION'
+        ) && (
         <p>Pré-visualização para este tipo de contrato ainda não implementada.</p>
       )}
     </div>

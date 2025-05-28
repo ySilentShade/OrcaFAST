@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { SupportedContractType } from '@/types/contract';
-import { FileText, Video, Repeat, UserCheck } from 'lucide-react'; 
+import { FileText, Video, Repeat, UserCheck, FileCheck2 } from 'lucide-react'; 
 
 interface ContractTypeDialogProps {
   isOpen: boolean;
@@ -36,14 +36,20 @@ const contractTypesWithOptions = [
   { 
     type: 'FREELANCE_HIRE_FILMMAKER' as SupportedContractType, 
     label: 'Contratação Freelancer (Cinegrafista)', 
-    icon: UserCheck, // Using UserCheck for both filmmaker and editor for consistency
+    icon: UserCheck, 
     disabled: false 
+  },
+  { 
+    type: 'FREELANCER_MATERIAL_AUTHORIZATION' as SupportedContractType,
+    label: 'Autorização de Uso de Material (Freelancer)',
+    icon: FileCheck2,
+    disabled: false
   },
   { 
     type: 'FREELANCE_HIRE_EDITOR' as SupportedContractType, 
     label: 'Contratação Freelancer (Editor)', 
     icon: UserCheck,
-    disabled: true // Still disabled as per prior setup
+    disabled: true 
   },
 ];
 
@@ -70,8 +76,8 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
               disabled={disabled}
               className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-colors
                          border border-border bg-card text-card-foreground
-                         hover:bg-primary/90 hover:text-primary-foreground [&_svg]:text-primary-foreground
-                         focus:ring-2 focus:ring-ring focus:outline-none"
+                         hover:bg-primary/90 hover:text-primary-foreground focus:ring-2 focus:ring-primary
+                         [&_svg]:text-primary-foreground" // Icon color set by text-primary-foreground on hover
             >
               <Icon className="mr-3 h-5 w-5" /> 
               <span className="flex-1">{label}{disabled ? " (Em breve)" : ""}</span>
@@ -91,3 +97,4 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
 };
 
 export default ContractTypeDialog;
+

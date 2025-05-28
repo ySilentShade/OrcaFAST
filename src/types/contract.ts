@@ -5,8 +5,9 @@
 export type SupportedContractType =
   | 'PERMUTA_EQUIPMENT_SERVICE'
   | 'SERVICE_VIDEO'
-  | 'FREELANCE_HIRE_EDITOR' // Remains disabled for now
-  | 'FREELANCE_HIRE_FILMMAKER';
+  | 'FREELANCE_HIRE_FILMMAKER'
+  | 'FREELANCER_MATERIAL_AUTHORIZATION' // New type
+  | 'FREELANCE_HIRE_EDITOR'; // Remains disabled for now
 
 // Basic structure for contact information, reusable across contracts
 export interface ContractParty {
@@ -77,6 +78,22 @@ export interface FreelanceFilmmakerContractData {
   contractFullDate: string;
 }
 
+// --- Data for "Termo de Autorização Específica de Uso de Material – Freelancer" Contract ---
+export interface FreelancerMaterialAuthorizationData {
+  contractType: 'FREELANCER_MATERIAL_AUTHORIZATION';
+  contractTitle: string;
+  autorizado: ContractParty; // The freelancer being authorized
+  projectName: string;
+  finalClientName: string;
+  executionDate: string;
+  authorizedLinks: string; // Could be a textarea for multiple links
+  penaltyValue: string; // e.g., "5000.00"
+  foro: string;
+  contractCity: string;
+  contractFullDate: string;
+}
+
+
 // --- Data for "Contratação Freelancer Editor" Contract (Placeholder) ---
 export interface FreelanceEditorContractData {
   contractType: 'FREELANCE_HIRE_EDITOR';
@@ -93,6 +110,7 @@ export type AnyContractFormState =
   | PermutaEquipmentServiceContractData
   | ServiceVideoContractData
   | FreelanceFilmmakerContractData
+  | FreelancerMaterialAuthorizationData // Added new type
   | Partial<FreelanceEditorContractData>; // Use partial for editor until fully implemented
 
 // Union type for all possible complete contract data structures
@@ -100,6 +118,7 @@ export type AnyContractData =
   | PermutaEquipmentServiceContractData
   | ServiceVideoContractData
   | FreelanceFilmmakerContractData
+  | FreelancerMaterialAuthorizationData // Added new type
   | FreelanceEditorContractData;
 
 
@@ -158,6 +177,20 @@ export const initialFreelanceFilmmakerData: FreelanceFilmmakerContractData = {
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
 
+export const initialFreelancerMaterialAuthorizationData: FreelancerMaterialAuthorizationData = {
+  contractType: 'FREELANCER_MATERIAL_AUTHORIZATION',
+  contractTitle: 'TERMO DE AUTORIZAÇÃO ESPECÍFICA DE USO DE MATERIAL – FREELANCER',
+  autorizado: { name: '', cpfCnpj: '', address: '', email: '' },
+  projectName: '',
+  finalClientName: '',
+  executionDate: '',
+  authorizedLinks: '',
+  penaltyValue: '5000.00',
+  foro: 'Lagoa Santa/MG',
+  contractCity: 'Lagoa Santa/MG',
+  contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+};
+
 
 // Placeholder for freelance editor contract - not fully implemented yet
 export const initialFreelanceEditorData: Partial<FreelanceEditorContractData> = {
@@ -165,3 +198,4 @@ export const initialFreelanceEditorData: Partial<FreelanceEditorContractData> = 
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
+
