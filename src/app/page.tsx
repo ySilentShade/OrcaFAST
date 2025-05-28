@@ -25,7 +25,7 @@ export const companyInfo: CompanyInfo = {
   address: "Rua Bartolomeu Bueno de Gusmao, 594 - Aeronautas, Lagoa Santa - MG, 33.236- 454",
   email: "fastfilmsoficial@gmail.com",
   phone: "(11) 98765-4321",
-  cnpj: "53.525.841/0001-89", // Added CNPJ for AUTORIZANTE
+  cnpj: "53.525.841/0001-89",
 };
 
 const generateBudgetNumber = () => {
@@ -230,7 +230,7 @@ export default function Home() {
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
-      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate };
+      initialData = { ...initialFreelancerMaterialAuthorizationData, companyInfoCnpj: companyInfo.cnpj, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
       initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; 
     } else {
@@ -365,4 +365,3 @@ export default function Home() {
     </div>
   );
 }
-
