@@ -25,8 +25,10 @@ export interface BudgetItem {
   id: string;
   description: string;
   quantity: number;
-  unitPrice: number;
-  total: number; // This total will reflect the override if applied
+  unitPrice: number; // Este é o PREÇO UNITÁRIO ORIGINAL (DE TABELA)
+  total: number;     // Este é o valor final do item (com override/desconto, se houver)
+  discountValue?: number; // Valor absoluto do desconto, se aplicável
+  discountPercentage?: number; // Percentual do desconto, se aplicável
 }
 
 export interface CompanyInfo {
@@ -35,6 +37,7 @@ export interface CompanyInfo {
   address: string;
   email: string;
   phone: string;
+  cnpj: string;
 }
 
 export interface BudgetPreviewData {

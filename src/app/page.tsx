@@ -50,35 +50,36 @@ const createPreviewObject = (
     const quantity = parseFloat(itemFormData.quantity || '0') || 0;
     const totalOverrideString = itemFormData.totalOverride;
 
-    let calculatedTotal: number; 
-    let finalItemTotal: number;  
-    let displayUnitPrice: number; 
+    let calculatedTotal: number;
+    let finalItemTotal: number;
+    let discountVal: number | undefined = undefined;
+    let discountPct: number | undefined = undefined;
 
     calculatedTotal = quantity * originalUnitPrice;
 
     if (totalOverrideString && totalOverrideString.trim() !== '') {
       const parsedTotalOverride = parseFloat(totalOverrideString);
       if (!isNaN(parsedTotalOverride) && parsedTotalOverride >= 0) {
-        finalItemTotal = parsedTotalOverride; 
+        finalItemTotal = parsedTotalOverride;
+        if (finalItemTotal < calculatedTotal && calculatedTotal > 0) {
+          discountVal = calculatedTotal - finalItemTotal;
+          discountPct = (discountVal / calculatedTotal) * 100;
+        }
       } else {
-        finalItemTotal = calculatedTotal; 
+        finalItemTotal = calculatedTotal;
       }
     } else {
-      finalItemTotal = calculatedTotal; 
-    }
-
-    if (quantity > 0) {
-      displayUnitPrice = finalItemTotal / quantity;
-    } else {
-      displayUnitPrice = (finalItemTotal === 0) ? 0 : originalUnitPrice;
+      finalItemTotal = calculatedTotal;
     }
 
     return {
       id: itemFormData.id || crypto.randomUUID(),
       description: itemFormData.description || "",
       quantity,
-      unitPrice: displayUnitPrice, 
+      unitPrice: originalUnitPrice, // unitPrice é sempre o original do formulário
       total: finalItemTotal,
+      discountValue: discountVal,
+      discountPercentage: discountPct,
     };
   });
 
@@ -187,7 +188,7 @@ export default function Home() {
     const opt = {
       margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, // Mantém scale: 2 para orçamento
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(element).set(opt).save();
@@ -240,7 +241,7 @@ export default function Home() {
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
-      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate, autorizado: { ...initialFreelancerMaterialAuthorizationData.autorizado, cpfCnpj: '' }, companyInfoCnpj: companyInfo.cnpj };
+      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate, autorizado: { ...initialFreelancerMaterialAuthorizationData.autorizado, cpfCnpj: '' } };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
       initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate };
     } else {
@@ -299,7 +300,7 @@ export default function Home() {
       margin: [0.75, 0.75, 0.75, 0.75],
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'png', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, // Reintroduzido scale: 2 para contratos
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
@@ -337,7 +338,7 @@ export default function Home() {
                 className={cn(
                   "hover:bg-primary hover:text-primary-foreground",
                   !budgetPreviewData && "w-full",
-                  "p-2"
+                  "p-2" 
                 )}
                 title="Gerar Contrato"
                 size="icon"
@@ -375,4 +376,3 @@ export default function Home() {
     </div>
   );
 }
-
