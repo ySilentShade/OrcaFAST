@@ -35,7 +35,7 @@ const generateBudgetNumber = () => {
 };
 
 const createPreviewObject = (
-  formData: Partial<BudgetFormState>, 
+  formData: Partial<BudgetFormState>,
   budgetNumber: string,
   budgetDate: string,
   currentCompanyInfo: CompanyInfo,
@@ -46,28 +46,38 @@ const createPreviewObject = (
   }
 
   const items: BudgetItem[] = (formData.items || []).map((itemFormData: Partial<BudgetItemForm>) => {
+    const originalUnitPrice = parseFloat(itemFormData.unitPrice || '0') || 0;
     const quantity = parseFloat(itemFormData.quantity || '0') || 0;
-    const unitPrice = parseFloat(itemFormData.unitPrice || '0') || 0;
     const totalOverrideString = itemFormData.totalOverride;
-    
-    let finalItemTotal: number;
+
+    let calculatedTotal: number; 
+    let finalItemTotal: number;  
+    let displayUnitPrice: number; 
+
+    calculatedTotal = quantity * originalUnitPrice;
 
     if (totalOverrideString && totalOverrideString.trim() !== '') {
-      const parsedOverride = parseFloat(totalOverrideString);
-      if (!isNaN(parsedOverride) && parsedOverride >=0) {
-        finalItemTotal = parsedOverride;
+      const parsedTotalOverride = parseFloat(totalOverrideString);
+      if (!isNaN(parsedTotalOverride) && parsedTotalOverride >= 0) {
+        finalItemTotal = parsedTotalOverride; 
       } else {
-        finalItemTotal = quantity * unitPrice; 
+        finalItemTotal = calculatedTotal; 
       }
     } else {
-      finalItemTotal = quantity * unitPrice;
+      finalItemTotal = calculatedTotal; 
+    }
+
+    if (quantity > 0) {
+      displayUnitPrice = finalItemTotal / quantity;
+    } else {
+      displayUnitPrice = (finalItemTotal === 0) ? 0 : originalUnitPrice;
     }
 
     return {
-      id: itemFormData.id || crypto.randomUUID(), 
+      id: itemFormData.id || crypto.randomUUID(),
       description: itemFormData.description || "",
       quantity,
-      unitPrice,
+      unitPrice: displayUnitPrice, 
       total: finalItemTotal,
     };
   });
@@ -92,7 +102,7 @@ export default function Home() {
   const [budgetPreviewData, setBudgetPreviewData] = useState<BudgetPreviewData | null>(null);
   const { toast } = useToast();
   const budgetPreviewRef = useRef<HTMLDivElement>(null);
-  
+
   const [lastSubmittedBudgetNumber, setLastSubmittedBudgetNumber] = useState("PREVIEW");
   const [lastSubmittedBudgetDate, setLastSubmittedBudgetDate] = useState(() => new Date().toLocaleDateString('pt-BR'));
   const [isDroneFeatureEnabled, setIsDroneFeatureEnabled] = useState(false);
@@ -112,7 +122,7 @@ export default function Home() {
   const handleBudgetFormSubmit = useCallback((data: BudgetFormState) => {
     const finalBudgetNumber = generateBudgetNumber();
     const finalBudgetDate = new Date().toLocaleDateString('pt-BR');
-    
+
     setLastSubmittedBudgetNumber(finalBudgetNumber);
     setLastSubmittedBudgetDate(finalBudgetDate);
 
@@ -122,19 +132,19 @@ export default function Home() {
     if (finalPreview) {
         toast({ title: "Orçamento Gerado!", description: "A pré-visualização foi atualizada.", variant: "default" });
     }
-  }, [toast, isDroneFeatureEnabled]); 
+  }, [toast, isDroneFeatureEnabled]);
 
   const handleBudgetPreviewUpdate = useCallback((data: Partial<BudgetFormState>) => {
     const currentPreviewNumber = lastSubmittedBudgetNumber;
     const currentPreviewDate = lastSubmittedBudgetDate;
-    
+
     const updatedPreview = createPreviewObject(data, currentPreviewNumber, currentPreviewDate, companyInfo, isDroneFeatureEnabled);
     setBudgetPreviewData(updatedPreview);
   }, [lastSubmittedBudgetNumber, lastSubmittedBudgetDate, isDroneFeatureEnabled]);
 
 
   const handleFillWithDemoData = async (): Promise<BudgetDemoData | null> => {
-    const demoApiData = await fetchDemoBudgetData(); 
+    const demoApiData = await fetchDemoBudgetData();
     if (demoApiData) {
         const demoFormStateForPreview: BudgetFormState = {
             clientName: demoApiData.clientName,
@@ -148,16 +158,16 @@ export default function Home() {
             }],
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
         };
-        
+
         const demoPreview = createPreviewObject(
-            demoFormStateForPreview, 
-            "PREVIEW", 
-            new Date().toLocaleDateString('pt-BR'), 
+            demoFormStateForPreview,
+            "PREVIEW",
+            new Date().toLocaleDateString('pt-BR'),
             companyInfo,
             isDroneFeatureEnabled
         );
-        setBudgetPreviewData(demoPreview); 
-        return demoApiData; 
+        setBudgetPreviewData(demoPreview);
+        return demoApiData;
     }
     return null;
   };
@@ -177,7 +187,7 @@ export default function Home() {
     const opt = {
       margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, 
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(element).set(opt).save();
@@ -202,7 +212,7 @@ export default function Home() {
         toast({ title: "Drone Ativado!", description: "Preço de 'Produção de Vídeo' ajustado para R$500,00." });
       } else {
         const videoPreset = initialPresetsData.find(p => p.description === "Produção de Vídeo");
-        const defaultPrice = videoPreset ? videoPreset.unitPrice.toString() : "250.00"; 
+        const defaultPrice = videoPreset ? videoPreset.unitPrice.toString() : "250.00";
         setFormValue(`items.${videoProductionItemIndex}.unitPrice`, defaultPrice, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
         toast({ title: "Drone Desativado!", description: `Preço de 'Produção de Vídeo' ajustado para R$${defaultPrice}.` });
       }
@@ -230,34 +240,34 @@ export default function Home() {
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
-      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate };
+      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate, autorizado: { ...initialFreelancerMaterialAuthorizationData.autorizado, cpfCnpj: '' }, companyInfoCnpj: companyInfo.cnpj };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
-      initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate }; 
+      initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate };
     } else {
-      initialData = { contractType } as AnyContractFormState; 
+      initialData = { contractType } as AnyContractFormState;
     }
 
     if (initialData) {
       setCurrentContractFormData(initialData);
-      setFinalContractDataForPdf(initialData); 
+      setFinalContractDataForPdf(initialData);
     }
-    setIsContractTypeDialogOpen(false); 
-    setIsContractFormDialogOpen(true); 
+    setIsContractTypeDialogOpen(false);
+    setIsContractFormDialogOpen(true);
   };
 
   const handleContractFormChange = useCallback((data: AnyContractFormState) => {
     setCurrentContractFormData(data);
-    setFinalContractDataForPdf(data); 
+    setFinalContractDataForPdf(data);
   }, []);
 
   const handleContractFormSubmit = useCallback((data: AnyContractFormState) => {
-    setFinalContractDataForPdf(data); 
-    setCurrentContractFormData(data); 
+    setFinalContractDataForPdf(data);
+    setCurrentContractFormData(data);
     toast({ title: "Dados do Contrato Salvos", description: "Pronto para gerar o PDF do contrato." });
   }, [toast]);
 
   const handleDownloadContractPdf = async () => {
-    const previewElement = document.getElementById('contract-preview-content'); 
+    const previewElement = document.getElementById('contract-preview-content');
     if (!previewElement || !finalContractDataForPdf) {
       toast({ title: "Erro ao gerar PDF do Contrato", description: "Não há dados de contrato para gerar o PDF.", variant: "destructive" });
       return;
@@ -272,7 +282,7 @@ export default function Home() {
     } else if (finalContractDataForPdf.contractType === 'SERVICE_VIDEO') {
         const serviceContractData = finalContractDataForPdf as ServiceVideoContractData;
         if (serviceContractData.contratantes && serviceContractData.contratantes.length > 0) {
-            partyName = serviceContractData.contratantes[0].name; 
+            partyName = serviceContractData.contratantes[0].name;
         }
     } else if (finalContractDataForPdf.contractType === 'FREELANCE_HIRE_FILMMAKER') {
         partyName = (finalContractDataForPdf as FreelanceFilmmakerContractData).contratado.name;
@@ -286,10 +296,10 @@ export default function Home() {
 
 
     const opt = {
-      margin: [0.75, 0.75, 0.75, 0.75], 
+      margin: [0.75, 0.75, 0.75, 0.75],
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'png', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
@@ -303,8 +313,8 @@ export default function Home() {
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <BudgetForm 
-              onSubmitForm={handleBudgetFormSubmit} 
+            <BudgetForm
+              onSubmitForm={handleBudgetFormSubmit}
               onFillWithDemoData={handleFillWithDemoData}
               onPreviewUpdate={handleBudgetPreviewUpdate}
               isDroneFeatureEnabled={isDroneFeatureEnabled}
@@ -314,20 +324,20 @@ export default function Home() {
           <div className="lg:col-span-1">
             <div className="flex gap-2 mb-4">
               {budgetPreviewData && (
-                <Button 
-                  onClick={handleDownloadBudgetPdf} 
+                <Button
+                  onClick={handleDownloadBudgetPdf}
                   className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   <Download className="mr-2 h-4 w-4" /> Baixar Orçamento
                 </Button>
               )}
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setIsContractTypeDialogOpen(true)}
                 className={cn(
                   "hover:bg-primary hover:text-primary-foreground",
                   !budgetPreviewData && "w-full",
-                  "p-2" 
+                  "p-2"
                 )}
                 title="Gerar Contrato"
                 size="icon"
@@ -341,7 +351,7 @@ export default function Home() {
           </div>
         </div>
       </main>
-      <ContractTypeDialog 
+      <ContractTypeDialog
         isOpen={isContractTypeDialogOpen}
         onOpenChange={setIsContractTypeDialogOpen}
         onContractTypeSelect={handleContractTypeSelect}
@@ -351,7 +361,7 @@ export default function Home() {
             isOpen={isContractFormDialogOpen}
             onOpenChange={(isOpen) => {
               setIsContractFormDialogOpen(isOpen);
-              if (!isOpen) setSelectedContractType(null); 
+              if (!isOpen) setSelectedContractType(null);
             }}
             contractType={selectedContractType}
             companyInfo={companyInfo}
