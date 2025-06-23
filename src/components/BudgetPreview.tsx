@@ -78,22 +78,21 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           <h3 className="text-lg font-semibold mb-2 sticky top-0 py-1 z-10" style={{ color: '#D0D0D0', backgroundColor: '#18191b'}}>Itens do Orçamento:</h3>
           <Table style={{ color: '#D0D0D0' }}>
             <TableHeader>
-              <TableRow className="border-b" style={{ borderColor: 'hsl(var(--border))', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
-                <TableHead style={{ color: 'hsl(var(--muted-foreground))' }}>Descrição</TableHead>
-                <TableHead className="text-right" style={{ color: 'hsl(var(--muted-foreground))' }}>Qtde.</TableHead>
-                <TableHead className="text-right" style={{ color: 'hsl(var(--muted-foreground))' }}>Preço Unit.</TableHead>
-                <TableHead className="text-right" style={{ color: 'hsl(var(--muted-foreground))' }}>Total Item</TableHead>
+              <TableRow>
+                <TableHead>Descrição</TableHead>
+                <TableHead className="text-right">Qtde.</TableHead>
+                <TableHead className="text-right">Preço Unit.</TableHead>
+                <TableHead className="text-right">Total Item</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((item: BudgetItem) => ( // Explicitly type item
-                <TableRow key={item.id} className="border-b" style={{ borderColor: 'hsl(var(--border))', hover: {backgroundColor: 'rgba(74, 74, 74, 0.3)'} }}>
+                <TableRow key={item.id}>
                   <TableCell className="align-middle leading-none">
                     {item.description}
-                    {item.discountPercentage !== undefined && item.discountPercentage > 0 && item.discountValue !== undefined && (
-                      <div className="text-xs text-green-400 mt-1"> {/* Cor alterada para teste */}
-                        <div>(Preço Unit. Original: {formatCurrency(item.unitPrice)})</div>
-                        <div>(Desconto: {item.discountPercentage.toFixed(2)}% = {formatCurrency(item.discountValue)})</div>
+                    {item.discountPercentage !== undefined && item.discountPercentage > 0 && (
+                      <div className="text-xs text-green-400 mt-1">
+                        (Desconto: {item.discountPercentage.toFixed(2)}%)
                       </div>
                     )}
                   </TableCell>
