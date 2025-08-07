@@ -11,7 +11,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Briefcase, Settings, User, MapPin, PlusCircle, Sparkles, Send } from 'lucide-react';
+import { Briefcase, Settings, User, MapPin, PlusCircle, Sparkles, Send, DollarSign } from 'lucide-react';
 import BudgetItemRow from './BudgetItemRow';
 import PresetManagerDialog from './PresetManagerDialog';
 import type { BudgetFormState, BudgetItemForm, PresetItem, BudgetDemoData } from '@/types/budget';
@@ -36,6 +36,9 @@ const budgetFormSchema = z.object({
   clientAddress: z.string().optional(),
   items: z.array(budgetItemSchema).min(1, "Adicione pelo menos um item ao orçamento"),
   terms: z.string().min(1, "Termos e condições são obrigatórios"),
+  totalAmountOverride: z.string().optional().refine(val => val === undefined || val.trim() === '' || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), {
+    message: "Total Geral (Opcional) deve ser um número não negativo se preenchido",
+  }),
 });
 
 interface BudgetFormProps {
@@ -79,6 +82,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
       clientAddress: '',
       items: [{ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' }],
       terms: defaultTerms,
+      totalAmountOverride: '',
     },
   });
 
@@ -144,6 +148,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
             totalOverride: '' 
           }],
           terms: defaultTerms,
+          totalAmountOverride: '',
         };
         reset(newFormState);
         toast({ title: "Dados de Teste Carregados!", description: "O formulário foi preenchido com dados de exemplo.", variant: "default" });
@@ -240,6 +245,24 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                 render={({ field }) => <Textarea {...field} rows={5} />}
               />
               {errors.terms && <p className="text-sm text-destructive mt-1">{errors.terms.message}</p>}
+            </section>
+
+            <section>
+                <h3 className="text-lg font-semibold mb-2 text-primary">Total Geral</h3>
+                <div>
+                  <Label htmlFor="totalAmountOverride" className="flex items-center mb-1">
+                    <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" /> Total Geral (Opcional)
+                  </Label>
+                  <Controller
+                    name="totalAmountOverride"
+                    control={control}
+                    render={({ field }) => <Input type="number" id="totalAmountOverride" {...field} placeholder="Deixe em branco para calcular automaticamente" step="0.01" min="0"/>}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Use este campo para definir um valor final fixo para o orçamento (ex: desconto de pacote).
+                  </p>
+                  {errors.totalAmountOverride && <p className="text-sm text-destructive mt-1">{errors.totalAmountOverride.message}</p>}
+                </div>
             </section>
             
             <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 p-0 pt-6">

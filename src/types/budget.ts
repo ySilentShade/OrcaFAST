@@ -12,6 +12,7 @@ export interface BudgetFormState {
   clientAddress: string;
   items: BudgetItemForm[];
   terms: string;
+  totalAmountOverride?: string; // Optional field to override the final total amount
 }
 
 export interface PresetItem {
@@ -25,10 +26,10 @@ export interface BudgetItem {
   id: string;
   description: string;
   quantity: number;
-  unitPrice: number; // Este é o PREÇO UNITÁRIO ORIGINAL (DE TABELA)
-  total: number;     // Este é o valor final do item (com override/desconto, se houver)
-  discountValue?: number; // Valor absoluto do desconto, se aplicável
-  discountPercentage?: number; // Percentual do desconto, se aplicável
+  unitPrice: number; // This is the ORIGINAL unit price from the form
+  total: number;     // This is the final value for the item (with override/discount, if any)
+  discountValue?: number; // Absolute value of the discount, if applicable
+  discountPercentage?: number; // Percentage of the discount, if applicable
 }
 
 export interface CompanyInfo {
@@ -48,7 +49,10 @@ export interface BudgetPreviewData {
   budgetNumber: string;
   budgetDate: string;
   companyInfo: CompanyInfo;
-  totalAmount: number;
+  subtotal: number; // The sum of all item totals
+  totalAmount: number; // The final total, can be the override value
+  totalDiscountValue?: number; // The discount on the whole budget
+  totalDiscountPercentage?: number; // The discount percentage on the whole budget
   isDroneFeatureEnabled?: boolean;
 }
 

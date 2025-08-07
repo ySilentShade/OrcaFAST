@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import type { BudgetPreviewData, BudgetItem } from '@/types/budget'; // Import BudgetItem
+import type { BudgetPreviewData, BudgetItem } from '@/types/budget';
 import { FileText } from 'lucide-react';
 
 interface BudgetPreviewProps {
@@ -30,7 +30,20 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
     );
   }
 
-  const { clientName, clientAddress, items, terms, budgetNumber, budgetDate, companyInfo, totalAmount, isDroneFeatureEnabled } = data;
+  const { 
+    clientName, 
+    clientAddress, 
+    items, 
+    terms, 
+    budgetNumber, 
+    budgetDate, 
+    companyInfo, 
+    subtotal,
+    totalAmount, 
+    totalDiscountValue,
+    totalDiscountPercentage,
+    isDroneFeatureEnabled 
+  } = data;
 
   return (
     <Card id="budget-preview-content" className="sticky top-8 shadow-lg flex flex-col" style={{ backgroundColor: '#18191b', color: '#e0e0e0' }}>
@@ -86,7 +99,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item: BudgetItem) => ( // Explicitly type item
+              {items.map((item: BudgetItem) => (
                 <TableRow key={item.id}>
                   <TableCell className="align-middle leading-none">
                     {item.description}
@@ -107,11 +120,23 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
         
         <div className="mt-auto flex-shrink-0"> 
           <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
-          <div className="flex justify-end mb-8 pr-4">
-            <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
-              <span className="mr-2">Total:</span>
-              {formatCurrency(totalAmount)}
-            </p>
+          <div className="flex justify-end mb-4 pr-4">
+            <div className="text-right space-y-2">
+              {totalDiscountValue !== undefined && totalDiscountValue > 0 && (
+                <>
+                  <p className="text-base text-muted-foreground">
+                    Subtotal: <span className="line-through">{formatCurrency(subtotal)}</span>
+                  </p>
+                  <p className="text-base text-green-400">
+                    Desconto ({totalDiscountPercentage?.toFixed(2)}%): -{formatCurrency(totalDiscountValue)}
+                  </p>
+                </>
+              )}
+              <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
+                <span className="mr-2">Total:</span>
+                {formatCurrency(totalAmount)}
+              </p>
+            </div>
           </div>
           <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <div className="text-center mb-6">

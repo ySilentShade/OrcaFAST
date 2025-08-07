@@ -76,14 +76,31 @@ const createPreviewObject = (
       id: itemFormData.id || crypto.randomUUID(),
       description: itemFormData.description || "",
       quantity,
-      unitPrice: originalUnitPrice, // unitPrice é sempre o original do formulário
+      unitPrice: originalUnitPrice, // unitPrice is always the original from the form
       total: finalItemTotal,
       discountValue: discountVal,
       discountPercentage: discountPct,
     };
   });
 
-  const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+
+  let totalAmount = subtotal;
+  let totalDiscountValue: number | undefined = undefined;
+  let totalDiscountPercentage: number | undefined = undefined;
+
+  const totalAmountOverrideString = formData.totalAmountOverride;
+  if (totalAmountOverrideString && totalAmountOverrideString.trim() !== '') {
+      const parsedTotalOverride = parseFloat(totalAmountOverrideString);
+      if (!isNaN(parsedTotalOverride) && parsedTotalOverride >= 0) {
+          totalAmount = parsedTotalOverride;
+          if (totalAmount < subtotal && subtotal > 0) {
+              totalDiscountValue = subtotal - totalAmount;
+              totalDiscountPercentage = (totalDiscountValue / subtotal) * 100;
+          }
+      }
+  }
+
 
   return {
     clientName: formData.clientName || "",
@@ -93,7 +110,10 @@ const createPreviewObject = (
     budgetNumber,
     budgetDate,
     companyInfo: currentCompanyInfo,
+    subtotal,
     totalAmount,
+    totalDiscountValue,
+    totalDiscountPercentage,
     isDroneFeatureEnabled,
   };
 };
@@ -157,7 +177,8 @@ export default function Home() {
                 unitPrice: demoApiData.item.unitPrice.toString(),
                 totalOverride: '',
             }],
-            terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão."
+            terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão.",
+            totalAmountOverride: ''
         };
 
         const demoPreview = createPreviewObject(
@@ -188,7 +209,7 @@ export default function Home() {
     const opt = {
       margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' }, // Mantém scale: 2 para orçamento
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(element).set(opt).save();
@@ -241,7 +262,7 @@ export default function Home() {
     } else if (contractType === 'FREELANCE_HIRE_FILMMAKER') {
       initialData = { ...initialFreelanceFilmmakerData, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
-      initialData = { ...initialFreelancerMaterialAuthorizationData, contractFullDate: currentDate, autorizado: { ...initialFreelancerMaterialAuthorizationData.autorizado, cpfCnpj: '' } };
+      initialData = { ...initialFreelancerMaterialAuthorizationData, autorizado: { ...initialFreelancerMaterialAuthorizationData.autorizado, cpfCnpj: companyInfo.cnpj }, contractFullDate: currentDate };
     } else if (contractType === 'FREELANCE_HIRE_EDITOR') {
       initialData = { ...initialFreelanceEditorData, contractFullDate: currentDate };
     } else {
@@ -300,7 +321,7 @@ export default function Home() {
       margin: [0.75, 0.75, 0.75, 0.75],
       filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
       image: { type: 'png', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, // Reintroduzido scale: 2 para contratos
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(previewElement).set(opt).save();
