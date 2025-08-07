@@ -333,8 +333,8 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <AppHeader />
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-3">
             <BudgetForm
               onSubmitForm={handleBudgetFormSubmit}
               onFillWithDemoData={handleFillWithDemoData}
@@ -343,7 +343,7 @@ export default function Home() {
               onToggleDroneFeature={handleToggleDroneFeature}
             />
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <div className="flex gap-2 mb-4">
               {budgetPreviewData && (
                 <Button
