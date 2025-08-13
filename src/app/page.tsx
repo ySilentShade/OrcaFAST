@@ -48,28 +48,28 @@ const createPreviewObject = (
   const items: BudgetItem[] = (formData.items || []).map((itemFormData: Partial<BudgetItemForm>) => {
     const originalUnitPrice = parseFloat(itemFormData.unitPrice || '0') || 0;
     const quantity = parseFloat(itemFormData.quantity || '0') || 0;
-    const totalOverrideString = itemFormData.totalOverride;
+    const itemSubtotal = quantity * originalUnitPrice;
 
-    let calculatedTotal: number;
-    let finalItemTotal: number;
+    let finalItemTotal = itemSubtotal;
     let discountVal: number | undefined = undefined;
     let discountPct: number | undefined = undefined;
 
-    calculatedTotal = quantity * originalUnitPrice;
-
-    if (totalOverrideString && totalOverrideString.trim() !== '') {
-      const parsedTotalOverride = parseFloat(totalOverrideString);
-      if (!isNaN(parsedTotalOverride) && parsedTotalOverride >= 0) {
-        finalItemTotal = parsedTotalOverride;
-        if (finalItemTotal < calculatedTotal && calculatedTotal > 0) {
-          discountVal = calculatedTotal - finalItemTotal;
-          discountPct = (discountVal / calculatedTotal) * 100;
+    const discountType = itemFormData.discountType || 'AMOUNT';
+    const discountValueStr = itemFormData.discountValue;
+    
+    if (discountValueStr && discountValueStr.trim() !== '' && itemSubtotal > 0) {
+      const parsedDiscountValue = parseFloat(discountValueStr);
+      if (!isNaN(parsedDiscountValue) && parsedDiscountValue > 0) {
+        if (discountType === 'PERCENTAGE' && parsedDiscountValue <= 100) {
+            discountPct = parsedDiscountValue;
+            discountVal = itemSubtotal * (discountPct / 100);
+            finalItemTotal = itemSubtotal - discountVal;
+        } else if (discountType === 'AMOUNT' && parsedDiscountValue <= itemSubtotal) {
+            discountVal = parsedDiscountValue;
+            finalItemTotal = itemSubtotal - discountVal;
+            discountPct = (discountVal / itemSubtotal) * 100;
         }
-      } else {
-        finalItemTotal = calculatedTotal;
       }
-    } else {
-      finalItemTotal = calculatedTotal;
     }
 
     return {
@@ -92,21 +92,17 @@ const createPreviewObject = (
   const discountType = formData.discountType || 'AMOUNT';
   const discountValueStr = formData.discountValue;
 
-  if (discountValueStr && discountValueStr.trim() !== '') {
+  if (discountValueStr && discountValueStr.trim() !== '' && subtotal > 0) {
     const parsedDiscountValue = parseFloat(discountValueStr);
-    if (!isNaN(parsedDiscountValue) && parsedDiscountValue > 0 && subtotal > 0) {
-      if (discountType === 'PERCENTAGE') {
-        if (parsedDiscountValue <= 100) {
-            totalDiscountPercentage = parsedDiscountValue;
-            totalDiscountValue = subtotal * (totalDiscountPercentage / 100);
-            totalAmount = subtotal - totalDiscountValue;
-        }
-      } else { // AMOUNT
-        if (parsedDiscountValue <= subtotal) {
-            totalDiscountValue = parsedDiscountValue;
-            totalAmount = subtotal - totalDiscountValue;
-            totalDiscountPercentage = (totalDiscountValue / subtotal) * 100;
-        }
+    if (!isNaN(parsedDiscountValue) && parsedDiscountValue > 0) {
+      if (discountType === 'PERCENTAGE' && parsedDiscountValue <= 100) {
+          totalDiscountPercentage = parsedDiscountValue;
+          totalDiscountValue = subtotal * (totalDiscountPercentage / 100);
+          totalAmount = subtotal - totalDiscountValue;
+      } else if (discountType === 'AMOUNT' && parsedDiscountValue <= subtotal) {
+          totalDiscountValue = parsedDiscountValue;
+          totalAmount = subtotal - totalDiscountValue;
+          totalDiscountPercentage = (totalDiscountValue / subtotal) * 100;
       }
     }
   }
@@ -185,7 +181,8 @@ export default function Home() {
                 description: demoApiData.item.description,
                 quantity: demoApiData.item.quantity.toString(),
                 unitPrice: demoApiData.item.unitPrice.toString(),
-                totalOverride: '',
+                discountType: 'AMOUNT',
+                discountValue: '',
             }],
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão.",
             discountType: 'AMOUNT',
@@ -238,7 +235,7 @@ export default function Home() {
     const videoProductionItemIndex = currentItems.findIndex(item => item.description === "Produção de Vídeo");
 
     if (videoProductionItemIndex !== -1) {
-      setFormValue(`items.${videoProductionItemIndex}.totalOverride`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setFormValue(`items.${videoProductionItemIndex}.discountValue`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
 
       if (newDroneState) {
         setFormValue(`items.${videoProductionItemIndex}.unitPrice`, "500.00", { shouldValidate: true, shouldDirty: true, shouldTouch: true });

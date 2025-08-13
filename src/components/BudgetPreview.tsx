@@ -13,7 +13,7 @@ interface BudgetPreviewProps {
   data: BudgetPreviewData | null;
 }
 
-const formatCurrency = (value: number) => {
+const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
 
@@ -44,6 +44,10 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
     totalDiscountPercentage,
     isDroneFeatureEnabled 
   } = data;
+
+  const grandTotalIsDiscounted = totalDiscountValue !== undefined && totalDiscountValue > 0;
+  const grandTotalBase = grandTotalIsDiscounted ? subtotal + totalDiscountValue : subtotal;
+
 
   return (
     <Card id="budget-preview-content" className="sticky top-8 shadow-lg flex flex-col" style={{ backgroundColor: '#18191b', color: '#e0e0e0' }}>
@@ -122,15 +126,13 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
           <Separator className="my-6" style={{ backgroundColor: 'hsl(var(--border))' }} />
           <div className="flex justify-end mb-4 pr-4">
             <div className="text-right space-y-2">
-              {totalDiscountValue !== undefined && totalDiscountValue > 0 && (
-                <>
-                  <p className="text-base text-muted-foreground">
-                    Subtotal: <span className="line-through">{formatCurrency(subtotal)}</span>
-                  </p>
-                  <p className="text-base text-green-400">
-                    Desconto ({totalDiscountPercentage?.toFixed(2)}%): -{formatCurrency(totalDiscountValue)}
-                  </p>
-                </>
+             <p className="text-base text-muted-foreground">
+                Subtotal: {grandTotalIsDiscounted ? <span className="line-through">{formatCurrency(grandTotalBase)}</span> : <span>{formatCurrency(subtotal)}</span>}
+              </p>
+              {grandTotalIsDiscounted && (
+                <p className="text-base text-green-400">
+                  Desconto ({totalDiscountPercentage?.toFixed(2)}%): -{formatCurrency(totalDiscountValue as number)}
+                </p>
               )}
               <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
                 <span className="mr-2">Total:</span>

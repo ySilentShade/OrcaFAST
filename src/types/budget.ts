@@ -1,4 +1,5 @@
 
+
 export type DiscountType = 'PERCENTAGE' | 'AMOUNT';
 
 export interface BudgetItemForm {
@@ -6,7 +7,8 @@ export interface BudgetItemForm {
   description: string;
   quantity: string; // Use string for form input, convert to number on submission
   unitPrice: string; // Use string for form input, convert to number on submission
-  totalOverride?: string; // Optional field to override the total calculation
+  discountType: DiscountType;
+  discountValue?: string;
 }
 
 export interface BudgetFormState {

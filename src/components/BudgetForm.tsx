@@ -26,8 +26,9 @@ const budgetItemSchema = z.object({
   description: z.string().min(1, "Descrição é obrigatória"),
   quantity: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) > 0, { message: "Quantidade deve ser um número positivo" }),
   unitPrice: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Preço deve ser um número não negativo" }),
-  totalOverride: z.string().optional().refine(val => val === undefined || val.trim() === '' || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), {
-    message: "Total Item (Opcional) deve ser um número não negativo se preenchido",
+  discountType: z.enum(['PERCENTAGE', 'AMOUNT']),
+  discountValue: z.string().optional().refine(val => val === undefined || val.trim() === '' || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), {
+    message: "Desconto do Item deve ser um número não negativo se preenchido",
   }),
 });
 
@@ -95,7 +96,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
     defaultValues: {
       clientName: '',
       clientAddress: '',
-      items: [{ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' }],
+      items: [{ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', discountType: 'AMOUNT', discountValue: '' }],
       terms: defaultTerms,
       discountType: 'AMOUNT',
       discountValue: '',
@@ -126,7 +127,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   };
 
   const handleAddItem = () => {
-    append({ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' });
+    append({ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', discountType: 'AMOUNT', discountValue: '' });
   };
   
   const handleToggleDiscountType = () => {
@@ -141,7 +142,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
       setValue(`items.${itemIndex}.description`, preset.description, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
       setValue(`items.${itemIndex}.unitPrice`, preset.unitPrice.toString(), { shouldValidate: true, shouldDirty: true, shouldTouch: true });
       setValue(`items.${itemIndex}.quantity`, '1', { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-      setValue(`items.${itemIndex}.totalOverride`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true }); // Clear override when preset is applied
+      setValue(`items.${itemIndex}.discountValue`, '', { shouldValidate: true, shouldDirty: true, shouldTouch: true }); // Clear discount when preset is applied
       
       toast({
         title: "Preset Aplicado!",
@@ -169,7 +170,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
             description: demoData.item.description, 
             quantity: demoData.item.quantity.toString(), 
             unitPrice: demoData.item.unitPrice.toString(),
-            totalOverride: '' 
+            discountType: 'AMOUNT', 
+            discountValue: '' 
           }],
           terms: defaultTerms,
           discountType: 'AMOUNT',
@@ -252,6 +254,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                   presets={presets}
                   onApplyPreset={handleApplyPreset}
                   errors={errors}
+                  getValues={getValues}
+                  setValue={setValue}
+                  watch={watch}
                 />
               ))}
                {errors.items && typeof errors.items === 'object' && !Array.isArray(errors.items) && ( // For root array errors like min(1)
