@@ -35,6 +35,7 @@ export interface BudgetItem {
   total: number;     // This is the final value for the item (with override/discount, if any)
   discountValue?: number; // Absolute value of the discount, if applicable
   discountPercentage?: number; // Percentage of the discount, if applicable
+  discountType?: DiscountType; // How the discount was applied
 }
 
 export interface CompanyInfo {

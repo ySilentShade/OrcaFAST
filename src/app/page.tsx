@@ -53,6 +53,7 @@ const createPreviewObject = (
     let finalItemTotal = itemSubtotal;
     let discountVal: number | undefined = undefined;
     let discountPct: number | undefined = undefined;
+    let itemDiscountType: DiscountType | undefined = undefined;
 
     const discountType = itemFormData.discountType || 'AMOUNT';
     const discountValueStr = itemFormData.discountValue;
@@ -60,6 +61,7 @@ const createPreviewObject = (
     if (discountValueStr && discountValueStr.trim() !== '' && itemSubtotal > 0) {
       const parsedDiscountValue = parseFloat(discountValueStr);
       if (!isNaN(parsedDiscountValue) && parsedDiscountValue > 0) {
+        itemDiscountType = discountType;
         if (discountType === 'PERCENTAGE' && parsedDiscountValue <= 100) {
             discountPct = parsedDiscountValue;
             discountVal = itemSubtotal * (discountPct / 100);
@@ -80,6 +82,7 @@ const createPreviewObject = (
       total: finalItemTotal,
       discountValue: discountVal,
       discountPercentage: discountPct,
+      discountType: itemDiscountType,
     };
   });
 

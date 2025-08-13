@@ -107,10 +107,15 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
                 <TableRow key={item.id}>
                   <TableCell className="align-middle leading-none">
                     {item.description}
-                    {item.discountPercentage !== undefined && item.discountPercentage > 0 && item.discountValue !== undefined && (
-                      <div className="text-xs text-green-400 mt-1">
-                        (Desconto: {item.discountPercentage.toFixed(2)}% = {formatCurrency(item.discountValue)})
-                      </div>
+                    {item.discountType === 'PERCENTAGE' && item.discountPercentage && (
+                        <div className="text-xs text-green-400 mt-1">
+                          (Desconto: {item.discountPercentage.toFixed(2)}%)
+                        </div>
+                    )}
+                    {item.discountType === 'AMOUNT' && item.discountValue && (
+                        <div className="text-xs text-green-400 mt-1">
+                          (Desconto: {formatCurrency(item.discountValue)})
+                        </div>
                     )}
                   </TableCell>
                   <TableCell className="text-right align-middle leading-none">{item.quantity}</TableCell>
