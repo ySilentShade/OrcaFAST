@@ -8,7 +8,7 @@ import BudgetForm from '@/components/BudgetForm';
 import BudgetPreview from '@/components/BudgetPreview';
 import { Button } from '@/components/ui/button';
 import { Download, FileSignature } from 'lucide-react';
-import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetItemForm, BudgetDemoData } from '@/types/budget';
+import type { BudgetFormState, BudgetPreviewData, CompanyInfo, BudgetItem, BudgetItemForm, BudgetDemoData, DiscountType } from '@/types/budget';
 import { fetchDemoBudgetData } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import ContractTypeDialog from '@/components/ContractTypeDialog';
@@ -76,7 +76,7 @@ const createPreviewObject = (
       id: itemFormData.id || crypto.randomUUID(),
       description: itemFormData.description || "",
       quantity,
-      unitPrice: originalUnitPrice, // unitPrice is always the original from the form
+      unitPrice: originalUnitPrice,
       total: finalItemTotal,
       discountValue: discountVal,
       discountPercentage: discountPct,
@@ -88,17 +88,27 @@ const createPreviewObject = (
   let totalAmount = subtotal;
   let totalDiscountValue: number | undefined = undefined;
   let totalDiscountPercentage: number | undefined = undefined;
+  
+  const discountType = formData.discountType || 'AMOUNT';
+  const discountValueStr = formData.discountValue;
 
-  const totalAmountOverrideString = formData.totalAmountOverride;
-  if (totalAmountOverrideString && totalAmountOverrideString.trim() !== '') {
-      const parsedTotalOverride = parseFloat(totalAmountOverrideString);
-      if (!isNaN(parsedTotalOverride) && parsedTotalOverride >= 0) {
-          totalAmount = parsedTotalOverride;
-          if (totalAmount < subtotal && subtotal > 0) {
-              totalDiscountValue = subtotal - totalAmount;
-              totalDiscountPercentage = (totalDiscountValue / subtotal) * 100;
-          }
+  if (discountValueStr && discountValueStr.trim() !== '') {
+    const parsedDiscountValue = parseFloat(discountValueStr);
+    if (!isNaN(parsedDiscountValue) && parsedDiscountValue > 0 && subtotal > 0) {
+      if (discountType === 'PERCENTAGE') {
+        if (parsedDiscountValue <= 100) {
+            totalDiscountPercentage = parsedDiscountValue;
+            totalDiscountValue = subtotal * (totalDiscountPercentage / 100);
+            totalAmount = subtotal - totalDiscountValue;
+        }
+      } else { // AMOUNT
+        if (parsedDiscountValue <= subtotal) {
+            totalDiscountValue = parsedDiscountValue;
+            totalAmount = subtotal - totalDiscountValue;
+            totalDiscountPercentage = (totalDiscountValue / subtotal) * 100;
+        }
       }
+    }
   }
 
 
@@ -167,7 +177,7 @@ export default function Home() {
   const handleFillWithDemoData = async (): Promise<BudgetDemoData | null> => {
     const demoApiData = await fetchDemoBudgetData();
     if (demoApiData) {
-        const demoFormStateForPreview: BudgetFormState = {
+        const demoFormStateForPreview: Partial<BudgetFormState> = {
             clientName: demoApiData.clientName,
             clientAddress: demoApiData.clientAddress,
             items: [{
@@ -178,7 +188,8 @@ export default function Home() {
                 totalOverride: '',
             }],
             terms: "Condições Comerciais: Forma de Pagamento: Transferência bancária, boleto ou PIX.\n\nCondições de Pagamento: 50% do valor será pago antes do início do serviço e o restante, após sua conclusão.",
-            totalAmountOverride: ''
+            discountType: 'AMOUNT',
+            discountValue: '',
         };
 
         const demoPreview = createPreviewObject(

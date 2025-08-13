@@ -1,4 +1,6 @@
 
+export type DiscountType = 'PERCENTAGE' | 'AMOUNT';
+
 export interface BudgetItemForm {
   id: string;
   description: string;
@@ -12,7 +14,8 @@ export interface BudgetFormState {
   clientAddress: string;
   items: BudgetItemForm[];
   terms: string;
-  totalAmountOverride?: string; // Optional field to override the final total amount
+  discountType: DiscountType; // 'PERCENTAGE' or 'AMOUNT'
+  discountValue: string; // The value for the discount
 }
 
 export interface PresetItem {

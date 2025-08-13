@@ -11,10 +11,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Briefcase, Settings, User, MapPin, PlusCircle, Sparkles, Send, DollarSign } from 'lucide-react';
+import { Briefcase, Settings, User, MapPin, PlusCircle, Sparkles, Send, DollarSign, Percent } from 'lucide-react';
 import BudgetItemRow from './BudgetItemRow';
 import PresetManagerDialog from './PresetManagerDialog';
-import type { BudgetFormState, BudgetItemForm, PresetItem, BudgetDemoData } from '@/types/budget';
+import type { BudgetFormState, BudgetItemForm, PresetItem, BudgetDemoData, DiscountType } from '@/types/budget';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useToast } from "@/hooks/use-toast";
 import initialPresetsData from '@/data/presets.json';
@@ -36,10 +36,25 @@ const budgetFormSchema = z.object({
   clientAddress: z.string().optional(),
   items: z.array(budgetItemSchema).min(1, "Adicione pelo menos um item ao orçamento"),
   terms: z.string().min(1, "Termos e condições são obrigatórios"),
-  totalAmountOverride: z.string().optional().refine(val => val === undefined || val.trim() === '' || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), {
-    message: "Total Geral (Opcional) deve ser um número não negativo se preenchido",
-  }),
+  discountType: z.enum(['PERCENTAGE', 'AMOUNT']),
+  discountValue: z.string().optional().refine(val => {
+    if (val === undefined || val.trim() === '') return true;
+    const num = parseFloat(val);
+    return !isNaN(num) && num >= 0;
+  }, {
+    message: "O desconto deve ser um número positivo."
+  })
+}).refine(data => {
+    if (data.discountType === 'PERCENTAGE' && data.discountValue) {
+      const num = parseFloat(data.discountValue);
+      return num <= 100;
+    }
+    return true;
+}, {
+    message: "O desconto percentual não pode ser maior que 100%.",
+    path: ["discountValue"],
 });
+
 
 interface BudgetFormProps {
   onSubmitForm: (data: BudgetFormState) => void;
@@ -82,7 +97,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
       clientAddress: '',
       items: [{ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' }],
       terms: defaultTerms,
-      totalAmountOverride: '',
+      discountType: 'AMOUNT',
+      discountValue: '',
     },
   });
 
@@ -90,6 +106,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
     control,
     name: 'items',
   });
+
+  const watchedDiscountType = watch('discountType');
 
   useEffect(() => {
     // Initial preview on mount
@@ -110,6 +128,12 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
   const handleAddItem = () => {
     append({ id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0', totalOverride: '' });
   };
+  
+  const handleToggleDiscountType = () => {
+    const currentType = getValues('discountType');
+    setValue('discountType', currentType === 'AMOUNT' ? 'PERCENTAGE' : 'AMOUNT');
+    setValue('discountValue', ''); // Clear value on toggle to avoid confusion
+  }
 
   const handleApplyPreset = (itemIndex: number, presetId: string) => {
     const preset = presets.find(p => p.id === presetId);
@@ -148,7 +172,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
             totalOverride: '' 
           }],
           terms: defaultTerms,
-          totalAmountOverride: '',
+          discountType: 'AMOUNT',
+          discountValue: '',
         };
         reset(newFormState);
         toast({ title: "Dados de Teste Carregados!", description: "O formulário foi preenchido com dados de exemplo.", variant: "default" });
@@ -248,20 +273,34 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
             </section>
 
             <section>
-                <h3 className="text-lg font-semibold mb-2 text-primary">Total Geral</h3>
+                <h3 className="text-lg font-semibold mb-2 text-primary">Desconto Geral (Opcional)</h3>
                 <div>
-                  <Label htmlFor="totalAmountOverride" className="flex items-center mb-1">
-                    <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" /> Total Geral (Opcional)
+                  <Label htmlFor="discountValue" className="flex items-center mb-1">
+                     Valor do Desconto
                   </Label>
-                  <Controller
-                    name="totalAmountOverride"
-                    control={control}
-                    render={({ field }) => <Input type="number" id="totalAmountOverride" {...field} placeholder="Deixe em branco para calcular automaticamente" step="0.01" min="0"/>}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Use este campo para definir um valor final fixo para o orçamento (ex: desconto de pacote).
+                  <div className="flex gap-2">
+                    <Controller
+                        name="discountValue"
+                        control={control}
+                        render={({ field }) => (
+                            <Input 
+                                type="number" 
+                                id="discountValue" 
+                                {...field} 
+                                placeholder={watchedDiscountType === 'PERCENTAGE' ? "Ex: 10 para 10%" : "Ex: 150 para R$150,00"} 
+                                step="0.01" 
+                                min="0"
+                            />
+                        )}
+                    />
+                    <Button type="button" variant="outline" onClick={handleToggleDiscountType} className="w-20">
+                        {watchedDiscountType === 'PERCENTAGE' ? <Percent className="h-4 w-4" /> : <DollarSign className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                   <p className="text-xs text-muted-foreground mt-1">
+                    Aplique um desconto sobre o valor total do orçamento. Alterne entre % e R$.
                   </p>
-                  {errors.totalAmountOverride && <p className="text-sm text-destructive mt-1">{errors.totalAmountOverride.message}</p>}
+                  {errors.discountValue && <p className="text-sm text-destructive mt-1">{errors.discountValue.message}</p>}
                 </div>
             </section>
             
