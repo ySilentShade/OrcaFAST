@@ -46,7 +46,7 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
   } = data;
 
   const grandTotalIsDiscounted = totalDiscountValue !== undefined && totalDiscountValue > 0;
-  const grandTotalBase = grandTotalIsDiscounted ? subtotal + totalDiscountValue : subtotal;
+  const grandTotalBase = subtotal;
 
 
   return (
@@ -107,9 +107,9 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
                 <TableRow key={item.id}>
                   <TableCell className="align-middle leading-none">
                     {item.description}
-                    {item.discountPercentage !== undefined && item.discountPercentage > 0 && (
+                    {item.discountPercentage !== undefined && item.discountPercentage > 0 && item.discountValue !== undefined && (
                       <div className="text-xs text-green-400 mt-1">
-                        (Desconto: {item.discountPercentage.toFixed(2)}%)
+                        (Desconto: {item.discountPercentage.toFixed(2)}% = {formatCurrency(item.discountValue)})
                       </div>
                     )}
                   </TableCell>
@@ -129,9 +129,9 @@ const BudgetPreview: React.FC<BudgetPreviewProps> = ({ data }) => {
              <p className="text-base text-muted-foreground">
                 Subtotal: {grandTotalIsDiscounted ? <span className="line-through">{formatCurrency(grandTotalBase)}</span> : <span>{formatCurrency(subtotal)}</span>}
               </p>
-              {grandTotalIsDiscounted && (
+              {grandTotalIsDiscounted && totalDiscountValue && totalDiscountPercentage && (
                 <p className="text-base text-green-400">
-                  Desconto ({totalDiscountPercentage?.toFixed(2)}%): -{formatCurrency(totalDiscountValue as number)}
+                  Desconto Geral ({totalDiscountPercentage?.toFixed(2)}%): -{formatCurrency(totalDiscountValue)}
                 </p>
               )}
               <p className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
