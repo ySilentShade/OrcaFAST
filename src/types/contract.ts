@@ -7,7 +7,7 @@ export type SupportedContractType =
   | 'SERVICE_VIDEO'
   | 'FREELANCE_HIRE_FILMMAKER'
   | 'FREELANCER_MATERIAL_AUTHORIZATION' // New type
-  | 'FREELANCE_HIRE_EDITOR'; // Remains disabled for now
+  | 'FREELANCE_HIRE_EDITOR';
 
 // Basic structure for contact information, reusable across contracts
 export interface ContractParty {
@@ -93,14 +93,16 @@ export interface FreelancerMaterialAuthorizationData {
   contractFullDate: string;
 }
 
+export type RemunerationType = 'MENSAL' | 'PROJETO' | 'SEMANAL' | 'PERCENTUAL';
 
 // --- Data for "Contratação Freelancer Editor" Contract ---
 export interface FreelanceEditorContractData {
   contractType: 'FREELANCE_HIRE_EDITOR';
   contractTitle: string;
   contratado: ContractParty;
+  remunerationType: RemunerationType;
   remunerationValue: string;
-  paymentDetails: string;
+  paymentDetails: string; // This can now be generated or be a static part of the contract. Let's keep it for supplementary details.
   lateDeliveryPenalty: string;
   softwareResponsibility: string;
   confidentialityPenalty: string;
@@ -208,8 +210,9 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractType: 'FREELANCE_HIRE_EDITOR',
   contractTitle: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO',
   contratado: { name: '', cpfCnpj: '', address: '', email: '' },
-  remunerationValue: '0.00',
-  paymentDetails: 'O CONTRATADO receberá um valor fixo mensal de R$ [valor a ser definido], podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual. A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.',
+  remunerationType: 'MENSAL',
+  remunerationValue: '3000.00',
+  paymentDetails: 'O dia de pagamento será escolhido pelo CONTRATADO, mediante comum acordo e livre escolha, devendo ser comunicado à CONTRATANTE no início da vigência contratual ou em qualquer ajuste posterior. A CONTRATANTE realizará o pagamento até o 5º dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.',
   lateDeliveryPenalty: '20',
   softwareResponsibility: 'Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.',
   confidentialityPenalty: '15000.00',
@@ -225,3 +228,5 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
+
+    

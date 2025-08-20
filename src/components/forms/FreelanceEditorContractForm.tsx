@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from '@/components/ui/switch';
-import type { FreelanceEditorContractData } from '@/types/contract';
+import type { FreelanceEditorContractData, RemunerationType } from '@/types/contract';
 import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent, FileWarning } from 'lucide-react';
 
 const contratadoSchema = z.object({
@@ -25,8 +26,9 @@ export const freelanceEditorContractFormSchema = z.object({
   contractType: z.literal('FREELANCE_HIRE_EDITOR'),
   contractTitle: z.string().min(1, "Título do contrato é obrigatório"),
   contratado: contratadoSchema,
+  remunerationType: z.enum(['MENSAL', 'PROJETO', 'SEMANAL', 'PERCENTUAL']),
   remunerationValue: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor deve ser um número não negativo" }),
-  paymentDetails: z.string().min(1, "Detalhes do pagamento são obrigatórios"),
+  paymentDetails: z.string().min(1, "Detalhes complementares de pagamento são obrigatórios"),
   lateDeliveryPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
   softwareResponsibility: z.string().min(1, "Cláusula de software é obrigatória"),
   confidentialityPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor da multa deve ser um número não negativo" }),
@@ -63,6 +65,7 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
   }, [watch, onPreviewUpdate]);
   
   const includeNonCompete = watch('includeNonCompeteClause');
+  const remunerationType = watch('remunerationType');
 
   return (
     <Card className="shadow-xl bg-card text-card-foreground w-full">
@@ -104,20 +107,46 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
           <section>
             <h3 className="text-lg font-semibold mb-3 text-primary border-b pb-2">Cláusulas Editáveis</h3>
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="remunerationValue" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Valor Fixo Mensal (R$)</Label>
-                <Controller name="remunerationValue" control={control} render={({ field }) => <Input id="remunerationValue" type="number" step="0.01" {...field} />} />
-                {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
-                 <p className="text-xs text-muted-foreground mt-1">Este valor substituirá o placeholder "[valor a ser definido]" na cláusula de pagamento.</p>
+              
+              <div className="p-3 border rounded-md space-y-3">
+                <Label className="flex items-center mb-1 font-semibold"><DollarSign className="mr-2 h-4 w-4" />Cláusula 3 - Remuneração</Label>
+                <Controller
+                    name="remunerationType"
+                    control={control}
+                    render={({ field }) => (
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-wrap gap-x-4 gap-y-2 mt-2"
+                      >
+                        {(['MENSAL', 'SEMANAL', 'PROJETO', 'PERCENTUAL'] as RemunerationType[]).map((type) => (
+                           <div className="flex items-center space-x-2" key={type}>
+                             <RadioGroupItem value={type} id={`remuneration-${type}`} />
+                             <Label htmlFor={`remuneration-${type}`} className="font-normal capitalize">{type.toLowerCase()}</Label>
+                           </div>
+                        ))}
+                      </RadioGroup>
+                    )}
+                  />
+                  {errors.remunerationType && <p className="text-sm text-destructive mt-1">{errors.remunerationType.message}</p>}
+                
+                <div>
+                  <Label htmlFor="remunerationValue" className="flex items-center mb-1">
+                    {remunerationType === 'PERCENTUAL' ? <Percent className="mr-2 h-4 w-4"/> : <DollarSign className="mr-2 h-4 w-4" />}
+                    Valor
+                  </Label>
+                  <Controller name="remunerationValue" control={control} render={({ field }) => <Input id="remunerationValue" type="number" step="0.01" {...field} placeholder={remunerationType === 'PERCENTUAL' ? 'Ex: 15 para 15%' : 'Ex: 3000.00'} />} />
+                  {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
+                </div>
+                
+                <div>
+                  <Label htmlFor="paymentDetails" className="flex items-center mb-1">Detalhes Complementares de Pagamento</Label>
+                  <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={3} {...field} />} />
+                  {errors.paymentDetails && <p className="text-sm text-destructive mt-1">{errors.paymentDetails.message}</p>}
+                </div>
               </div>
               
               <div>
-                <Label htmlFor="paymentDetails" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Cláusula 3 - Detalhes de Pagamento</Label>
-                <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={5} {...field} />} />
-                {errors.paymentDetails && <p className="text-sm text-destructive mt-1">{errors.paymentDetails.message}</p>}
-              </div>
-              
-               <div>
                 <Label htmlFor="lateDeliveryPenalty" className="flex items-center mb-1"><Percent className="mr-2 h-4 w-4" />Cláusula 4 - Multa por Atraso na Entrega (%)</Label>
                 <Controller name="lateDeliveryPenalty" control={control} render={({ field }) => <Input id="lateDeliveryPenalty" type="number" {...field} />} />
                 {errors.lateDeliveryPenalty && <p className="text-sm text-destructive mt-1">{errors.lateDeliveryPenalty.message}</p>}
@@ -224,3 +253,5 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
 };
 
 export default FreelanceEditorContractForm;
+
+    

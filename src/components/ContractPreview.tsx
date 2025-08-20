@@ -634,6 +634,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
   const {
     contractTitle,
     contratado,
+    remunerationType,
     remunerationValue,
     paymentDetails,
     lateDeliveryPenalty,
@@ -653,13 +654,29 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
   } = contractData;
 
   const editorTerms = ["CONTRATANTE", "CONTRATADO", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO"];
-  const remunerationFormatted = formatCurrency(remunerationValue);
-  const remunerationInWords = numberToWords(remunerationValue);
   const confidentialityPenaltyFormatted = formatCurrency(confidentialityPenalty);
   const confidentialityPenaltyInWords = numberToWords(confidentialityPenalty);
 
-  const finalPaymentDetails = paymentDetails.replace('[valor a ser definido]', `${remunerationFormatted}${remunerationInWords}`);
-  
+  const getRemunerationText = () => {
+    const valueNum = parseFloat(remunerationValue);
+    if (isNaN(valueNum)) return 'valor a ser definido';
+
+    switch(remunerationType) {
+        case 'MENSAL':
+            return `um valor fixo mensal de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)}`;
+        case 'SEMANAL':
+            return `um valor fixo semanal de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)}`;
+        case 'PROJETO':
+            return `um valor de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)} por projeto`;
+        case 'PERCENTUAL':
+            return `uma porcentagem de ${remunerationValue}% (${converterInteiroParaExtensoPTBR(valueNum)} por cento) do valor de cada orçamento fechado com o cliente`;
+        default:
+            return 'valor a ser definido';
+    }
+  };
+
+  const remunerationClause = `O CONTRATADO receberá ${getRemunerationText()}, podendo este valor ser ajustado conforme acordo entre as partes. ${paymentDetails}`;
+
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, editorTerms)}</h1>
@@ -672,7 +689,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
       <div className="space-y-3">
         <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/>1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.</p>
         <p><strong className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</strong><br/>2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.</p>
-        <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong><br/>{boldenContractTerms(finalPaymentDetails, editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong><br/>{boldenContractTerms(remunerationClause, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</strong><br/>4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.<br/>4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de {lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.</p>
         <p><strong className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</strong><br/>{boldenContractTerms(softwareResponsibility, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 6 - DOS DIREITOS AUTORAIS E DE IMAGEM</strong><br/>6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.<br/>6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.</p>
@@ -684,8 +701,9 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
         <p><strong className="font-bold">CLÁUSULA 12 - DAS DISPOSIÇÕES GERAIS</strong><br/>12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.<br/>12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.<br/>12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.</p>
         <p><strong className="font-bold">CLÁUSULA 13 - DA DISPONIBILIDADE E COMUNICAÇÃO</strong><br/>{boldenContractTerms(availabilityAndCommunication, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 14 - DA QUALIDADE DOS SERVIÇOS</strong><br/>{boldenContractTerms(serviceQuality, editorTerms)}</p>
-        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms(nonCompeteClause, editorTerms)}</p>}
-        <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '16' : '15'} - DA VIGÊNCIA</strong><br/>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
+        <p><strong className="font-bold">CLÁUSULA 15 - DA PROPRIEDADE INTELECTUAL</strong><br/>{boldenContractTerms(intellectualProperty, editorTerms)}</p>
+        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 16 - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms(nonCompeteClause, editorTerms)}</p>}
+        <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '17' : '16'} - DA VIGÊNCIA</strong><br/>17.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
       </div>
 
       <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
@@ -713,7 +731,7 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
   }
 
   return (
-    <div id="contract-preview-content" className="bg-white text-black print:shadow-none print:border-none">
+    <div id="contract-preview-content" className="bg-white text-black p-8 shadow-lg rounded-lg print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
         <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
       )}
@@ -742,3 +760,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
