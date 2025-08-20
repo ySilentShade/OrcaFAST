@@ -49,7 +49,7 @@ const contractTypesWithOptions = [
     type: 'FREELANCE_HIRE_EDITOR' as SupportedContractType, 
     label: 'Contratação Freelancer (Editor)', 
     icon: UserCheck,
-    disabled: true 
+    disabled: false 
   },
 ];
 
@@ -97,4 +97,3 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
 };
 
 export default ContractTypeDialog;
-
