@@ -660,25 +660,39 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
 
   const getRemunerationText = () => {
     const valueNum = parseFloat(remunerationValue);
-    if (isNaN(valueNum)) return 'valor a ser definido';
-
-    const paymentDayText = paymentDay ? `O dia de pagamento foi escolhido pelo CONTRATADO como todo dia ${paymentDay} e acordado com a CONTRATANTE. ` : '';
+    if (isNaN(valueNum)) return { main: '', subclauses: [] };
+    
+    let mainText = '';
+    const subclauses: string[] = [];
 
     switch(remunerationType) {
         case 'MENSAL':
-            return `um valor fixo mensal de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)}. ${paymentDayText}${paymentDetails}`;
+            mainText = `3.1. O CONTRATADO receberá um valor fixo mensal de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)}.`;
+            break;
         case 'SEMANAL':
-            return `um valor fixo semanal de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)}. ${paymentDayText}${paymentDetails}`;
+            mainText = `3.1. O CONTRATADO receberá um valor fixo semanal de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)}.`;
+            break;
         case 'PROJETO':
-            return `um valor de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)} por projeto. ${paymentDayText}${paymentDetails}`;
+            mainText = `3.1. O CONTRATADO receberá o valor de ${formatCurrency(remunerationValue)}${numberToWords(remunerationValue)} por projeto.`;
+            break;
         case 'PERCENTUAL':
-            return `uma porcentagem de ${remunerationValue}% (${converterInteiroParaExtensoPTBR(valueNum)} por cento) do valor de cada orçamento fechado com o cliente. ${paymentDayText}${paymentDetails}`;
-        default:
-            return `valor a ser definido. ${paymentDayText}${paymentDetails}`;
+            mainText = `3.1. O CONTRATADO receberá uma porcentagem de ${remunerationValue}% (${converterInteiroParaExtensoPTBR(valueNum)} por cento) do valor de cada orçamento fechado com o cliente.`;
+            break;
     }
+
+    if(paymentDay) {
+        subclauses.push(`3.2. O dia de pagamento foi escolhido pelo CONTRATADO como todo dia ${paymentDay} e acordado com a CONTRATANTE.`);
+    }
+
+    if(paymentDetails) {
+        const subclauseNumber = subclauses.length + 2;
+        subclauses.push(`3.${subclauseNumber}. ${paymentDetails}`);
+    }
+
+    return { main: mainText, subclauses };
   };
 
-  const remunerationClause = `O CONTRATADO receberá ${getRemunerationText()}`;
+  const remunerationClause = getRemunerationText();
 
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -690,22 +704,30 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
       </div>
 
       <div className="space-y-3">
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO OBJETO</strong><br/>1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA NATUREZA DO VÍNCULO</strong><br/>2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA REMUNERAÇÃO E PAGAMENTO</strong><br/>{boldenContractTerms(remunerationClause, editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DOS PRAZOS E ENTREGAS</strong><br/>4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.<br/>4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de {lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO OBJETO</strong><br/>{boldenContractTerms('1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.', editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA NATUREZA DO VÍNCULO</strong><br/>{boldenContractTerms('2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.', editorTerms)}</p>
+        
+        <div>
+          <p className="font-bold">CLÁUSULA {clauseCounter++} - DA REMUNERAÇÃO E PAGAMENTO</p>
+          <p>{boldenContractTerms(remunerationClause.main, editorTerms)}</p>
+          {remunerationClause.subclauses.map((sub, index) => (
+             <p key={index}>{boldenContractTerms(sub, editorTerms)}</p>
+          ))}
+        </div>
+
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DOS PRAZOS E ENTREGAS</strong><br/>{boldenContractTerms(`4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.`, editorTerms)}<br/>{boldenContractTerms(`4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de ${lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.`, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DOS SOFTWARES</strong><br/>{boldenContractTerms(softwareResponsibility, editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DOS DIREITOS AUTORAIS E DE IMAGEM</strong><br/>6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.<br/>6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA CONFIDENCIALIDADE</strong><br/>7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.<br/>7.2. Em caso de quebra de confidencialidade, será aplicada multa de {confidentialityPenaltyFormatted}{confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong><br/>8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades: Advertência formal; Multa de até 50% do valor do serviço específico não cumprido; Rescisão imediata do contrato; Responsabilização cível e criminal, conforme o caso.</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DOS DIREITOS AUTORAIS E DE IMAGEM</strong><br/>{boldenContractTerms('6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.', editorTerms)}<br/>{boldenContractTerms('6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.', editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA CONFIDENCIALIDADE</strong><br/>{boldenContractTerms('7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.', editorTerms)}<br/>{boldenContractTerms(`7.2. Em caso de quebra de confidencialidade, será aplicada multa de ${confidentialityPenaltyFormatted}${confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.`, editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong><br/>{boldenContractTerms('8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades: Advertência formal; Multa de até 50% do valor do serviço específico não cumprido; Rescisão imediata do contrato; Responsabilização cível e criminal, conforme o caso.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO TRABALHO REMOTO E HÍBRIDO</strong><br/>{boldenContractTerms(remoteWorkPolicy, editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA RESCISÃO</strong><br/>10.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de {rescissionNoticeDays} dias corridos.<br/>10.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a {unjustifiedRescissionPenalty}% do valor do serviço acordado.</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO FORO</strong><br/>11.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de {foro}, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS DISPOSIÇÕES GERAIS</strong><br/>12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.<br/>12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.<br/>12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA RESCISÃO</strong><br/>{boldenContractTerms(`10.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticeDays} dias corridos.`, editorTerms)}<br/>{boldenContractTerms(`10.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a ${unjustifiedRescissionPenalty}% do valor do serviço acordado.`, editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO FORO</strong><br/>{boldenContractTerms(`11.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS DISPOSIÇÕES GERAIS</strong><br/>{boldenContractTerms('12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.', editorTerms)}<br/>{boldenContractTerms('12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.', editorTerms)}<br/>{boldenContractTerms('12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA DISPONIBILIDADE E COMUNICAÇÃO</strong><br/>{boldenContractTerms(availabilityAndCommunication, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA QUALIDADE DOS SERVIÇOS</strong><br/>{boldenContractTerms(serviceQuality, editorTerms)}</p>
         {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms(nonCompeteClause, editorTerms)}</p>}
-        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA VIGÊNCIA</strong><br/>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
+        <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA VIGÊNCIA</strong><br/>{boldenContractTerms(`16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.`, editorTerms)}</p>
       </div>
 
       <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
@@ -762,3 +784,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
