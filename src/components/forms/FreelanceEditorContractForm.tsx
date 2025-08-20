@@ -28,6 +28,7 @@ export const freelanceEditorContractFormSchema = z.object({
   contratado: contratadoSchema,
   remunerationType: z.enum(['MENSAL', 'PROJETO', 'SEMANAL', 'PERCENTUAL']),
   remunerationValue: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor deve ser um número não negativo" }),
+  paymentDay: z.string().optional(),
   paymentDetails: z.string().min(1, "Detalhes complementares de pagamento são obrigatórios"),
   lateDeliveryPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
   softwareResponsibility: z.string().min(1, "Cláusula de software é obrigatória"),
@@ -129,18 +130,25 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                   />
                   {errors.remunerationType && <p className="text-sm text-destructive mt-1">{errors.remunerationType.message}</p>}
                 
-                <div>
-                  <Label htmlFor="remunerationValue" className="flex items-center mb-1">
-                    {remunerationType === 'PERCENTUAL' ? <Percent className="mr-2 h-4 w-4"/> : <DollarSign className="mr-2 h-4 w-4" />}
-                    Valor
-                  </Label>
-                  <Controller name="remunerationValue" control={control} render={({ field }) => <Input id="remunerationValue" type="number" step="0.01" {...field} placeholder={remunerationType === 'PERCENTUAL' ? 'Ex: 15 para 15%' : 'Ex: 3000.00'} />} />
-                  {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <div>
+                      <Label htmlFor="remunerationValue" className="flex items-center mb-1">
+                        {remunerationType === 'PERCENTUAL' ? <Percent className="mr-2 h-4 w-4"/> : <DollarSign className="mr-2 h-4 w-4" />}
+                        Valor
+                      </Label>
+                      <Controller name="remunerationValue" control={control} render={({ field }) => <Input id="remunerationValue" type="number" step="0.01" {...field} placeholder={remunerationType === 'PERCENTUAL' ? 'Ex: 15 para 15%' : 'Ex: 3000.00'} />} />
+                      {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
+                    </div>
+                     <div>
+                        <Label htmlFor="paymentDay" className="flex items-center mb-1"><CalendarDays className="mr-2 h-4 w-4" />Dia do Pagamento</Label>
+                        <Controller name="paymentDay" control={control} render={({ field }) => <Input id="paymentDay" {...field} placeholder="Ex: 5, 'último dia útil'" />} />
+                        {errors.paymentDay && <p className="text-sm text-destructive mt-1">{errors.paymentDay.message}</p>}
+                    </div>
                 </div>
                 
                 <div>
                   <Label htmlFor="paymentDetails" className="flex items-center mb-1"><CaseSensitive className="mr-2 h-4 w-4" />Detalhes Complementares de Pagamento</Label>
-                  <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={3} {...field} placeholder="Descreva os detalhes do pagamento, incluindo o dia..." />} />
+                  <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={3} {...field} placeholder="Descreva os detalhes complementares do pagamento..." />} />
                   {errors.paymentDetails && <p className="text-sm text-destructive mt-1">{errors.paymentDetails.message}</p>}
                 </div>
               </div>
@@ -198,7 +206,7 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeNonCompeteClause" className="flex items-center">
                         {includeNonCompete ? <Shield className="mr-2 h-4 w-4 text-green-500" /> : <ShieldOff className="mr-2 h-4 w-4 text-red-500" />}
-                        Cláusula 16 - Não Concorrência
+                        Cláusula de Não Concorrência
                     </Label>
                     <Controller
                         name="includeNonCompeteClause"
@@ -253,5 +261,3 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
 };
 
 export default FreelanceEditorContractForm;
-
-    

@@ -70,7 +70,7 @@ export interface FreelanceFilmmakerContractData {
   remunerationUnit: 'hora' | 'dia' | 'projeto'; // for "por [hora/dia/projeto]"
   paymentMethodDescription: string; // for "A forma de pagamento ao CONTRATADO (mensal, semanal ou por projeto) será de sua escolha..."
   deliveryDeadlineDetails: string; // for "Os prazos para execução e entrega dos arquivos serão definidos..."
-  equipmentDetails: string; // for "Os equipamentos utilizados poderão ser..."
+  equipmentDetails: string; // for "Os equipamentos utilizados poderão ser fornecidos pela CONTRATANTE ou do próprio CONTRATADO..."
   confidentialityBreachPenaltyValue: string; // e.g., "15000.00"
   rescissionNoticeDays: string; // e.g., "15"
   unjustifiedRescissionPenaltyPercentage: string; // e.g., "30"
@@ -103,6 +103,7 @@ export interface FreelanceEditorContractData {
   contratado: ContractParty;
   remunerationType: RemunerationType;
   remunerationValue: string;
+  paymentDay?: string;
   paymentDetails: string;
   lateDeliveryPenalty: string;
   softwareResponsibility: string;
@@ -212,7 +213,8 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contratado: { name: '', cpfCnpj: '', address: '', email: '' },
   remunerationType: 'MENSAL',
   remunerationValue: '3000.00',
-  paymentDetails: 'O dia de pagamento será acordado entre as partes. O pagamento será efetuado pela CONTRATANTE até o 5º dia útil após a emissão da NFE pelo CONTRATADO, referente aos serviços prestados e aprovados no período.',
+  paymentDay: '5',
+  paymentDetails: 'O pagamento será efetuado pela CONTRATANTE até o 5º dia útil após a emissão da NFE pelo CONTRATADO, referente aos serviços prestados e aprovados no período.',
   lateDeliveryPenalty: '20',
   softwareResponsibility: 'Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.',
   confidentialityPenalty: '15000.00',
@@ -227,5 +229,3 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
-
-    
