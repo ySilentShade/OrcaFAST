@@ -31,15 +31,10 @@ export const freelanceEditorContractFormSchema = z.object({
   paymentDay: z.string().optional(),
   paymentDetails: z.string().min(1, "Detalhes complementares de pagamento são obrigatórios"),
   lateDeliveryPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
-  softwareResponsibility: z.string().min(1, "Cláusula de software é obrigatória"),
   confidentialityPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor da multa deve ser um número não negativo" }),
-  remoteWorkPolicy: z.string().min(1, "Política de trabalho remoto/híbrido é obrigatória"),
   rescissionNoticeDays: z.string().refine(val => !isNaN(parseInt(val)) && parseInt(val) >= 0, { message: "Deve ser um número não negativo" }),
   unjustifiedRescissionPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
   foro: z.string().min(1, "Foro é obrigatório"),
-  availabilityAndCommunication: z.string().min(1, "Cláusula de disponibilidade é obrigatória"),
-  serviceQuality: z.string().min(1, "Cláusula de qualidade é obrigatória"),
-  nonCompeteClause: z.string().min(1, "Cláusula de não concorrência é obrigatória"),
   includeNonCompeteClause: z.boolean(),
   contractCity: z.string().min(1, "Cidade do contrato é obrigatória"),
   contractFullDate: z.string().min(1, "Data completa do contrato é obrigatória"),
@@ -140,7 +135,7 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                       {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
                     </div>
                      <div>
-                        <Label htmlFor="paymentDay" className="flex items-center mb-1"><CalendarDays className="mr-2 h-4 w-4" />Dia do Pagamento</Label>
+                        <Label htmlFor="paymentDay" className="flex items-center mb-1"><CalendarDays className="mr-2 h-4 w-4" />Dia do Pagamento (Opcional)</Label>
                         <Controller name="paymentDay" control={control} render={({ field }) => <Input id="paymentDay" {...field} placeholder="Ex: 5, 'último dia útil'" />} />
                         {errors.paymentDay && <p className="text-sm text-destructive mt-1">{errors.paymentDay.message}</p>}
                     </div>
@@ -158,23 +153,11 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                 <Controller name="lateDeliveryPenalty" control={control} render={({ field }) => <Input id="lateDeliveryPenalty" type="number" {...field} />} />
                 {errors.lateDeliveryPenalty && <p className="text-sm text-destructive mt-1">{errors.lateDeliveryPenalty.message}</p>}
               </div>
-              
-              <div>
-                <Label htmlFor="softwareResponsibility" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 5 - Softwares</Label>
-                <Controller name="softwareResponsibility" control={control} render={({ field }) => <Textarea id="softwareResponsibility" rows={5} {...field} />} />
-                {errors.softwareResponsibility && <p className="text-sm text-destructive mt-1">{errors.softwareResponsibility.message}</p>}
-              </div>
-              
+
                <div>
                 <Label htmlFor="confidentialityPenalty" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Cláusula 7 - Multa de Confidencialidade (R$)</Label>
                 <Controller name="confidentialityPenalty" control={control} render={({ field }) => <Input id="confidentialityPenalty" type="number" step="0.01" {...field} />} />
                 {errors.confidentialityPenalty && <p className="text-sm text-destructive mt-1">{errors.confidentialityPenalty.message}</p>}
-              </div>
-              
-               <div>
-                <Label htmlFor="remoteWorkPolicy" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 9 - Trabalho Remoto e Híbrido</Label>
-                <Controller name="remoteWorkPolicy" control={control} render={({ field }) => <Textarea id="remoteWorkPolicy" rows={5} {...field} />} />
-                {errors.remoteWorkPolicy && <p className="text-sm text-destructive mt-1">{errors.remoteWorkPolicy.message}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
@@ -190,18 +173,6 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                 </div>
               </div>
 
-               <div>
-                <Label htmlFor="availabilityAndCommunication" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 13 - Disponibilidade e Comunicação</Label>
-                <Controller name="availabilityAndCommunication" control={control} render={({ field }) => <Textarea id="availabilityAndCommunication" rows={3} {...field} />} />
-                {errors.availabilityAndCommunication && <p className="text-sm text-destructive mt-1">{errors.availabilityAndCommunication.message}</p>}
-              </div>
-              
-               <div>
-                <Label htmlFor="serviceQuality" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 14 - Qualidade dos Serviços</Label>
-                <Controller name="serviceQuality" control={control} render={({ field }) => <Textarea id="serviceQuality" rows={3} {...field} />} />
-                {errors.serviceQuality && <p className="text-sm text-destructive mt-1">{errors.serviceQuality.message}</p>}
-              </div>
-
               <div className="p-3 border rounded-md space-y-3">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeNonCompeteClause" className="flex items-center">
@@ -215,14 +186,6 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                     />
                   </div>
                    {errors.includeNonCompeteClause && <p className="text-sm text-destructive mt-1">{errors.includeNonCompeteClause.message}</p>}
-                  
-                   {includeNonCompete && (
-                     <div>
-                        <Label htmlFor="nonCompeteClause" className="flex items-center mb-1">Texto da Cláusula de Não Concorrência</Label>
-                        <Controller name="nonCompeteClause" control={control} render={({ field }) => <Textarea id="nonCompeteClause" rows={3} {...field} />} />
-                        {errors.nonCompeteClause && <p className="text-sm text-destructive mt-1">{errors.nonCompeteClause.message}</p>}
-                     </div>
-                   )}
               </div>
 
             </div>

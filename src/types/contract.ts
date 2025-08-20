@@ -106,15 +106,10 @@ export interface FreelanceEditorContractData {
   paymentDay?: string;
   paymentDetails: string;
   lateDeliveryPenalty: string;
-  softwareResponsibility: string;
   confidentialityPenalty: string;
-  remoteWorkPolicy: string;
   rescissionNoticeDays: string;
   unjustifiedRescissionPenalty: string;
   foro: string;
-  availabilityAndCommunication: string;
-  serviceQuality: string;
-  nonCompeteClause: string;
   includeNonCompeteClause: boolean; // To toggle the clause
   contractCity: string;
   contractFullDate: string;
@@ -216,15 +211,10 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   paymentDay: '5',
   paymentDetails: 'O pagamento será efetuado pela CONTRATANTE até o 5º dia útil após a emissão da NFE pelo CONTRATADO, referente aos serviços prestados e aprovados no período.',
   lateDeliveryPenalty: '20',
-  softwareResponsibility: 'Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.',
   confidentialityPenalty: '15000.00',
-  remoteWorkPolicy: 'O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado. Em casos excepcionais, como eventos que exijam edição em tempo real ou quando a CONTRATANTE estabelecer um escritório próprio, o CONTRATADO poderá ser solicitado a trabalhar presencialmente, em regime híbrido. As despesas de deslocamento e outras relacionadas à prestação presencial dos serviços serão discutidas e acordadas entre as partes. O CONTRATADO deve estar disponível para reuniões virtuais e presenciais conforme a necessidade da CONTRATANTE, garantindo a comunicação eficiente e a entrega dos serviços contratados.',
   rescissionNoticeDays: '30',
   unjustifiedRescissionPenalty: '30',
   foro: 'Lagoa Santa/MG',
-  availabilityAndCommunication: 'O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.',
-  serviceQuality: 'O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.',
-  nonCompeteClause: 'Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
   includeNonCompeteClause: true,
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
