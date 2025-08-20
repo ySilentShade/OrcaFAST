@@ -322,7 +322,7 @@ export default function Home() {
     } else if (finalContractDataForPdf.contractType === 'FREELANCER_MATERIAL_AUTHORIZATION') {
         partyName = (finalContractDataForPdf as FreelancerMaterialAuthorizationData).autorizado.name;
     } else if (finalContractDataForPdf.contractType === 'FREELANCE_HIRE_EDITOR') {
-        partyName = (finalContractDataForPdf as FreelanceEditorContractData).editorName || 'editor_freelancer';
+        partyName = (finalContractDataForPdf as FreelanceEditorContractData).contratado.name;
     }
 
     clientNameSanitized = partyName ? partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : finalContractDataForPdf.contractType.toLowerCase();
@@ -395,6 +395,10 @@ export default function Home() {
             onOpenChange={(isOpen) => {
               setIsContractFormDialogOpen(isOpen);
               if (!isOpen) setSelectedContractType(null);
+            }}
+            onBack={() => {
+                setIsContractFormDialogOpen(false);
+                setIsContractTypeDialogOpen(true);
             }}
             contractType={selectedContractType}
             companyInfo={companyInfo}

@@ -40,8 +40,15 @@ const contractTypesWithOptions = [
   },
   { 
     type: 'FREELANCE_HIRE_FILMMAKER' as SupportedContractType, 
-    label: 'Contratação Freelancer (Cinegrafista)', 
+    label: 'Contratação Freelancer (Filmmaker)', 
     icon: UserCheck, 
+    category: 'hiring' as Category,
+    disabled: false 
+  },
+  { 
+    type: 'FREELANCE_HIRE_EDITOR' as SupportedContractType, 
+    label: 'Contratação Freelancer (Editor)', 
+    icon: UserCheck,
     category: 'hiring' as Category,
     disabled: false 
   },
@@ -51,13 +58,6 @@ const contractTypesWithOptions = [
     icon: FileCheck2,
     category: 'hiring' as Category,
     disabled: false
-  },
-  { 
-    type: 'FREELANCE_HIRE_EDITOR' as SupportedContractType, 
-    label: 'Contratação Freelancer (Editor)', 
-    icon: UserCheck,
-    category: 'hiring' as Category,
-    disabled: false 
   },
 ];
 

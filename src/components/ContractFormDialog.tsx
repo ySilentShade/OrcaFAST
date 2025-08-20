@@ -4,7 +4,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, ChevronLeft } from 'lucide-react';
 import type { SupportedContractType, AnyContractFormState, PermutaEquipmentServiceContractData, ServiceVideoContractData, FreelanceFilmmakerContractData, FreelancerMaterialAuthorizationData, FreelanceEditorContractData } from '@/types/contract'; // Adjust path as needed
 import PermutaContractForm from './forms/PermutaContractForm';
 import ServiceVideoContractForm from './forms/ServiceVideoContractForm';
@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 interface ContractFormDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  onBack: () => void;
   contractType: SupportedContractType | null;
   companyInfo: CompanyInfo;
   initialFormData: AnyContractFormState | null;
@@ -31,6 +32,7 @@ interface ContractFormDialogProps {
 const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
   isOpen,
   onOpenChange,
+  onBack,
   contractType,
   companyInfo,
   initialFormData,
@@ -57,7 +59,7 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
       case 'SERVICE_VIDEO':
         return 'Prestação de Serviços de Vídeo';
       case 'FREELANCE_HIRE_FILMMAKER':
-        return 'Contratação Freelancer (Cinegrafista)';
+        return 'Contratação Freelancer (Filmmaker)';
       case 'FREELANCER_MATERIAL_AUTHORIZATION':
         return 'Autorização de Uso de Material (Freelancer)';
       case 'FREELANCE_HIRE_EDITOR':
@@ -71,11 +73,17 @@ const ContractFormDialog: React.FC<ContractFormDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl h-[90vh] flex flex-col bg-card text-card-foreground p-0">
-        <DialogHeader className="p-4 border-b">
-          <DialogTitle>Gerar Contrato: {getContractTypeDisplayName(contractType)}</DialogTitle>
-          <DialogDescription>
-            Preencha os campos abaixo para gerar o contrato. A pré-visualização será atualizada automaticamente.
-          </DialogDescription>
+        <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
+            <div>
+              <DialogTitle>Gerar Contrato: {getContractTypeDisplayName(contractType)}</DialogTitle>
+              <DialogDescription>
+                Preencha os campos abaixo para gerar o contrato. A pré-visualização será atualizada automaticamente.
+              </DialogDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={onBack}>
+                <ChevronLeft className="mr-2 h-4 w-4" />
+                Voltar para Seleção
+            </Button>
         </DialogHeader>
 
         <div className="flex-grow grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
