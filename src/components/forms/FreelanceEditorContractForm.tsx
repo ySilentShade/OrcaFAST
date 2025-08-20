@@ -38,7 +38,6 @@ export const freelanceEditorContractFormSchema = z.object({
   foro: z.string().min(1, "Foro é obrigatório"),
   availabilityAndCommunication: z.string().min(1, "Cláusula de disponibilidade é obrigatória"),
   serviceQuality: z.string().min(1, "Cláusula de qualidade é obrigatória"),
-  intellectualProperty: z.string().min(1, "Cláusula de propriedade intelectual é obrigatória"),
   nonCompeteClause: z.string().min(1, "Cláusula de não concorrência é obrigatória"),
   includeNonCompeteClause: z.boolean(),
   contractCity: z.string().min(1, "Cidade do contrato é obrigatória"),
@@ -254,3 +253,5 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
 };
 
 export default FreelanceEditorContractForm;
+
+    

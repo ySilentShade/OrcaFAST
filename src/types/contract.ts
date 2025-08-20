@@ -113,7 +113,6 @@ export interface FreelanceEditorContractData {
   foro: string;
   availabilityAndCommunication: string;
   serviceQuality: string;
-  intellectualProperty: string;
   nonCompeteClause: string;
   includeNonCompeteClause: boolean; // To toggle the clause
   contractCity: string;
@@ -223,9 +222,10 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   foro: 'Lagoa Santa/MG',
   availabilityAndCommunication: 'O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.',
   serviceQuality: 'O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.',
-  intellectualProperty: 'Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.',
   nonCompeteClause: 'Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
   includeNonCompeteClause: true,
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
+
+    

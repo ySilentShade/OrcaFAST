@@ -646,7 +646,6 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
     foro,
     availabilityAndCommunication,
     serviceQuality,
-    intellectualProperty,
     nonCompeteClause,
     includeNonCompeteClause,
     contractCity,
@@ -701,9 +700,8 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
         <p><strong className="font-bold">CLÁUSULA 12 - DAS DISPOSIÇÕES GERAIS</strong><br/>12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.<br/>12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.<br/>12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.</p>
         <p><strong className="font-bold">CLÁUSULA 13 - DA DISPONIBILIDADE E COMUNICAÇÃO</strong><br/>{boldenContractTerms(availabilityAndCommunication, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 14 - DA QUALIDADE DOS SERVIÇOS</strong><br/>{boldenContractTerms(serviceQuality, editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA 15 - DA PROPRIEDADE INTELECTUAL</strong><br/>{boldenContractTerms(intellectualProperty, editorTerms)}</p>
-        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 16 - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms(nonCompeteClause, editorTerms)}</p>}
-        <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '17' : '16'} - DA VIGÊNCIA</strong><br/>17.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
+        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms(nonCompeteClause, editorTerms)}</p>}
+        <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '16' : '15'} - DA VIGÊNCIA</strong><br/>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
       </div>
 
       <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
