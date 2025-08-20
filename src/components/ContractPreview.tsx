@@ -798,7 +798,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
 
         <div>
              <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA VIGÊNCIA</strong></p>
-             <p><strong className="font-bold">16.1.</strong> {boldenContractTerms(`Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.`, editorTerms)}</p>
+             <p><strong className="font-bold">{`${clauseCounter - 1}.1.`}</strong> {boldenContractTerms(`Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.`, editorTerms)}</p>
         </div>
       </div>
 
@@ -856,6 +856,8 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
 
     
 
