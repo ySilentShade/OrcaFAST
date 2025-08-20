@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from '@/components/ui/switch';
 import type { FreelanceEditorContractData, RemunerationType } from '@/types/contract';
-import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent, FileWarning } from 'lucide-react';
+import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent, FileWarning, CaseSensitive } from 'lucide-react';
 
 const contratadoSchema = z.object({
   name: z.string().min(1, "Nome do editor é obrigatório"),
@@ -140,8 +140,8 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                 </div>
                 
                 <div>
-                  <Label htmlFor="paymentDetails" className="flex items-center mb-1">Detalhes Complementares de Pagamento</Label>
-                  <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={3} {...field} />} />
+                  <Label htmlFor="paymentDetails" className="flex items-center mb-1"><CaseSensitive className="mr-2 h-4 w-4" />Detalhes Complementares de Pagamento</Label>
+                  <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={3} {...field} placeholder="Descreva os detalhes do pagamento, incluindo o dia..." />} />
                   {errors.paymentDetails && <p className="text-sm text-destructive mt-1">{errors.paymentDetails.message}</p>}
                 </div>
               </div>
@@ -199,7 +199,7 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeNonCompeteClause" className="flex items-center">
                         {includeNonCompete ? <Shield className="mr-2 h-4 w-4 text-green-500" /> : <ShieldOff className="mr-2 h-4 w-4 text-red-500" />}
-                        Cláusula 15 - Não Concorrência
+                        Cláusula 16 - Não Concorrência
                     </Label>
                     <Controller
                         name="includeNonCompeteClause"
@@ -211,6 +211,7 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                   
                    {includeNonCompete && (
                      <div>
+                        <Label htmlFor="nonCompeteClause" className="flex items-center mb-1">Texto da Cláusula de Não Concorrência</Label>
                         <Controller name="nonCompeteClause" control={control} render={({ field }) => <Textarea id="nonCompeteClause" rows={3} {...field} />} />
                         {errors.nonCompeteClause && <p className="text-sm text-destructive mt-1">{errors.nonCompeteClause.message}</p>}
                      </div>
@@ -253,5 +254,3 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
 };
 
 export default FreelanceEditorContractForm;
-
-    

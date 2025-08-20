@@ -1,4 +1,5 @@
 
+
 // Defines the types of contracts supported by the application.
 // This will be expanded as more contract functionalities are added.
 
@@ -102,7 +103,7 @@ export interface FreelanceEditorContractData {
   contratado: ContractParty;
   remunerationType: RemunerationType;
   remunerationValue: string;
-  paymentDetails: string; // This can now be generated or be a static part of the contract. Let's keep it for supplementary details.
+  paymentDetails: string;
   lateDeliveryPenalty: string;
   softwareResponsibility: string;
   confidentialityPenalty: string;
@@ -212,7 +213,7 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contratado: { name: '', cpfCnpj: '', address: '', email: '' },
   remunerationType: 'MENSAL',
   remunerationValue: '3000.00',
-  paymentDetails: 'O dia de pagamento será escolhido pelo CONTRATADO, mediante comum acordo e livre escolha, devendo ser comunicado à CONTRATANTE no início da vigência contratual ou em qualquer ajuste posterior. A CONTRATANTE realizará o pagamento até o 5º dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.',
+  paymentDetails: 'O dia de pagamento será acordado entre as partes. O pagamento será efetuado pela CONTRATANTE até o 5º dia útil após a emissão da NFE pelo CONTRATADO, referente aos serviços prestados e aprovados no período.',
   lateDeliveryPenalty: '20',
   softwareResponsibility: 'Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.',
   confidentialityPenalty: '15000.00',
@@ -228,5 +229,3 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
-
-    
