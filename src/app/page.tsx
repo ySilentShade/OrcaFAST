@@ -17,6 +17,7 @@ import { initialPermutaData, initialServiceVideoData, initialFreelanceFilmmakerD
 import ContractFormDialog from '@/components/ContractFormDialog';
 import { cn } from '@/lib/utils';
 import initialPresetsData from '@/data/presets.json';
+import jsPDF from 'jspdf';
 
 
 export const companyInfo: CompanyInfo = {
@@ -205,27 +206,58 @@ export default function Home() {
     return null;
   };
 
-  const handleDownloadBudgetPdf = async () => {
-    if (!budgetPreviewRef.current || !budgetPreviewData) {
-      toast({ title: "Erro ao gerar PDF do Orçamento", description: "Não há dados de orçamento para gerar o PDF.", variant: "destructive" });
-      return;
+  const handleDownloadPdf = async (
+    contentElementId: string, 
+    fileNamePrefix: string,
+    options?: { orientation?: 'p' | 'l', format?: string | number[] }
+  ) => {
+    const { orientation = 'p', format = 'a4' } = options || {};
+    const contentElement = document.getElementById(contentElementId);
+
+    if (!contentElement) {
+        toast({ title: "Erro ao gerar PDF", description: `Elemento com ID '${contentElementId}' não encontrado.`, variant: "destructive" });
+        return;
     }
-    const element = budgetPreviewRef.current.querySelector('#budget-preview-content');
-    if (!element) {
-         toast({ title: "Erro ao gerar PDF", description: "Conteúdo da pré-visualização do orçamento não encontrado.", variant: "destructive" });
-      return;
+    
+    try {
+        const doc = new jsPDF({
+            orientation,
+            unit: 'pt',
+            format,
+            putOnlyUsedFonts: true,
+            floatPrecision: 16
+        });
+        
+        doc.html(contentElement, {
+            callback: function (doc) {
+                doc.save(`${fileNamePrefix}.pdf`);
+                toast({ title: `PDF Gerado`, description: `O arquivo ${fileNamePrefix}.pdf está sendo baixado.` });
+            },
+            html2canvas: {
+                scale: 0.75, // Adjust scale to fit content better
+                useCORS: true,
+            },
+            margin: [40, 40, 40, 40],
+            autoPaging: 'text',
+            width: 595, // A4 width in points
+            windowWidth: contentElement.scrollWidth,
+        });
+
+    } catch (error) {
+        console.error("Erro ao gerar PDF com jsPDF:", error);
+        toast({ title: "Erro ao gerar PDF", description: "Ocorreu um erro inesperado.", variant: "destructive" });
     }
-    const html2pdf = (await import('html2pdf.js')).default;
-    const clientNameSanitized = budgetPreviewData.clientName ? budgetPreviewData.clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'cliente';
-    const opt = {
-      margin: 0.5, filename: `orcamento_${clientNameSanitized || 'orcafast'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191b' },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().from(element).set(opt).save();
-    toast({ title: "PDF do Orçamento Gerado", description: `O arquivo ${opt.filename} está sendo baixado.` });
   };
+
+  const handleDownloadBudgetPdf = async () => {
+    if (!budgetPreviewData) {
+        toast({ title: "Erro ao gerar PDF do Orçamento", description: "Não há dados de orçamento para gerar o PDF.", variant: "destructive" });
+        return;
+    }
+    const clientNameSanitized = budgetPreviewData.clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'orcafast';
+    handleDownloadPdf('budget-preview-content', `orcamento_${clientNameSanitized}`);
+  };
+
 
   const handleToggleDroneFeature = useCallback((
     getFormValues: UseFormGetValues<BudgetFormState>,
@@ -300,16 +332,12 @@ export default function Home() {
   }, [toast]);
 
   const handleDownloadContractPdf = async () => {
-    const previewElement = document.getElementById('contract-preview-content');
-    if (!previewElement || !finalContractDataForPdf) {
+    if (!finalContractDataForPdf) {
       toast({ title: "Erro ao gerar PDF do Contrato", description: "Não há dados de contrato para gerar o PDF.", variant: "destructive" });
       return;
     }
 
-    const html2pdf = (await import('html2pdf.js')).default;
-    let clientNameSanitized = 'contrato';
     let partyName = '';
-
     if (finalContractDataForPdf.contractType === 'PERMUTA_EQUIPMENT_SERVICE') {
         partyName = (finalContractDataForPdf as PermutaEquipmentServiceContractData).permutante.name;
     } else if (finalContractDataForPdf.contractType === 'SERVICE_VIDEO') {
@@ -325,18 +353,24 @@ export default function Home() {
         partyName = (finalContractDataForPdf as FreelanceEditorContractData).contratado.name;
     }
 
-    clientNameSanitized = partyName ? partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : finalContractDataForPdf.contractType.toLowerCase();
+    const clientNameSanitized = partyName ? partyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : finalContractDataForPdf.contractType.toLowerCase();
+    
+    // Set the contract text color to black before printing
+    const previewElement = document.getElementById('contract-preview-content');
+    if(previewElement) {
+        previewElement.style.color = 'black';
+    }
 
-
-    const opt = {
-      margin: [0.75, 0.75, 0.75, 0.75],
-      filename: `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}.pdf`,
-      image: { type: 'png', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().from(previewElement).set(opt).save();
-    toast({ title: "PDF do Contrato Gerado", description: `O arquivo ${opt.filename} está sendo baixado.` });
+    await handleDownloadPdf(
+        'contract-preview-content', 
+        `contrato_${finalContractDataForPdf.contractType.toLowerCase()}_${clientNameSanitized}`,
+        { orientation: 'p' }
+    );
+    
+    // Revert the color back after printing
+    if(previewElement) {
+        previewElement.style.color = ''; // Reverts to CSS default
+    }
   };
 
 
