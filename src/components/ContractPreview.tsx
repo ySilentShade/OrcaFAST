@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -207,7 +206,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, permutaTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, permutaTerms)}</h1>
 
       <div>
         <p className="mb-4">Pelo presente instrumento particular, as partes abaixo identificadas:</p>
@@ -254,14 +253,14 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
       </div>
       
       <div>
-        <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
+        <p className="mt-8 mb-8 text-center">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
         <div className="mt-12 space-y-10">
           <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
           <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
         </div>
 
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+        <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
       </div>
     </div>
   );
@@ -320,7 +319,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, serviceTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, serviceTerms)}</h1>
 
       <div>
         {contratantes.map((contratante, index) => (
@@ -386,7 +385,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       </div>
 
       <div>
-        <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
+        <p className="mt-8 mb-8 text-center">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
         <div className="mt-12 space-y-10">
           {contratantes.length === 1 && contratantes[0] && (
@@ -403,7 +402,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
           <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
         </div>
 
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+        <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
       </div>
     </div>
   );
@@ -435,7 +434,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
 
       <div>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
@@ -512,14 +511,14 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
       </div>
 
       <div>
-        <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
+        <p className="mt-8 mb-8 text-center">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
 
         <div className="mt-12 space-y-10">
           <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>(CONTRATANTE)</p>
           <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>(CONTRATADO)</p>
         </div>
         
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+        <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
       </div>
     </div>
   );
@@ -545,7 +544,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
   
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, authTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, authTerms)}</h1>
 
       <div>
         <CompanyAsPartyDetails 
@@ -611,14 +610,14 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
       </div>
       
       <div>
-        <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
+        <p className="mt-8 mb-8 text-center">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
         <div className="mt-12 space-y-10">
           <p className="text-center">__________________________________________<br/>{companyInfo.name || 'AUTORIZANTE'}<br/>(AUTORIZANTE)</p>
           <p className="text-center">__________________________________________<br/>{autorizado.name || 'AUTORIZADO(A)'}<br/>(AUTORIZADO(A))</p>
         </div>
         
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+        <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
       </div>
     </div>
   );
@@ -686,7 +685,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <div>
-        <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, editorTerms)}</h1>
+        <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, editorTerms)}</h1>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
         <PartyDetails party={contratado} title="CONTRATADO" />
         <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO OBJETO</strong></p>
@@ -799,9 +798,9 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
       </div>
 
       <div>
-        <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
+        <p className="mt-8 mb-8 text-center">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
         
-        <p className="my-4">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+        <p className="my-4 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
         
         <div className="mt-12 space-y-10">
             <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
