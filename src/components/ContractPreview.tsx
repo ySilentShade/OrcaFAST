@@ -746,19 +746,19 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
             <p><strong className="font-bold">7.2.</strong> {boldenContractTerms(` Em caso de quebra de confidencialidade, será aplicada multa de ${confidentialityPenaltyFormatted}${confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.`, editorTerms)}</p>
         </Clause>
         
-        <Clause>
-            <div>
-              <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong></p>
-              <p><strong className="font-bold">8.1.</strong> {boldenContractTerms('O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', editorTerms)}</p>
-              <ul className="list-disc list-inside ml-4">
-                  <li>{boldenContractTerms('Advertência formal;', editorTerms)}</li>
-                  <li>{boldenContractTerms('Multa de até 50% do valor do serviço específico não cumprido;', editorTerms)}</li>
-                  <li>{boldenContractTerms('Rescisão imediata do contrato;', editorTerms)}</li>
-                  <li>{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', editorTerms)}</li>
-              </ul>
-            </div>
-        </Clause>
+        <div>
+          <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong></p>
+          <p><strong className="font-bold">8.1.</strong> {boldenContractTerms('O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', editorTerms)}</p>
+          <ul className="list-disc list-inside ml-4">
+              <li>{boldenContractTerms('Advertência formal;', editorTerms)}</li>
+              <li>{boldenContractTerms('Multa de até 50% do valor do serviço específico não cumprido;', editorTerms)}</li>
+              <li>{boldenContractTerms('Rescisão imediata do contrato;', editorTerms)}</li>
+              <li>{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', editorTerms)}</li>
+          </ul>
+        </div>
         
+        <div style={{ pageBreakBefore: 'always' }} />
+
         <Clause>
             <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO TRABALHO REMOTO E HÍBRIDO</strong></p>
             <p><strong className="font-bold">9.1.</strong> {boldenContractTerms(' O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado.', editorTerms)}</p>
@@ -874,4 +874,5 @@ export default ContractPreview;
 
 
     
+
 
