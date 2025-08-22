@@ -714,9 +714,11 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
         </Clause>
         
         <Clause>
-          <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
-          <p><strong className="font-bold">3.1.</strong> {boldenContractTerms(remunerationClause.main, editorTerms)}</p>
-          <p><strong className="font-bold">3.2.</strong> {boldenContractTerms(remunerationClause.subclause, editorTerms)}</p>
+          <p>
+            <strong className="font-bold">CLÁUSULA {clauseCounter++} - DA REMUNERAÇÃO E PAGAMENTO</strong><br />
+            <strong className="font-bold">3.1.</strong> {boldenContractTerms(remunerationClause.main, editorTerms)}<br />
+            <strong className="font-bold">3.2.</strong> {boldenContractTerms(remunerationClause.subclause, editorTerms)}
+          </p>
         </Clause>
 
         <Clause>
@@ -745,14 +747,12 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
         </Clause>
         
         <Clause>
-            <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong></p>
-            <p><strong className="font-bold">8.1.</strong> {boldenContractTerms(' O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', editorTerms)}</p>
-            <ul className="list-disc list-inside ml-4">
-                <li>{boldenContractTerms('Advertência formal;', editorTerms)}</li>
-                <li>{boldenContractTerms('Multa de até 50% do valor do serviço específico não cumprido;', editorTerms)}</li>
-                <li>{boldenContractTerms('Rescisão imediata do contrato;', editorTerms)}</li>
-                <li>{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', editorTerms)}</li>
-            </ul>
+          <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong></p>
+          <p><strong className="font-bold">8.1.</strong> {boldenContractTerms('O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', editorTerms)}</p>
+          <p className="pl-4">{boldenContractTerms('Advertência formal;', editorTerms)}</p>
+          <p className="pl-4">{boldenContractTerms('Multa de até 50% do valor do serviço específico não cumprido;', editorTerms)}</p>
+          <p className="pl-4">{boldenContractTerms('Rescisão imediata do contrato;', editorTerms)}</p>
+          <p className="pl-4">{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', editorTerms)}</p>
         </Clause>
         
         <Clause>
@@ -865,5 +865,8 @@ export default ContractPreview;
     
 
     
+
+    
+
 
     
