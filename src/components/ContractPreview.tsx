@@ -746,14 +746,14 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
             <p><strong className="font-bold">7.2.</strong> {boldenContractTerms(` Em caso de quebra de confidencialidade, será aplicada multa de ${confidentialityPenaltyFormatted}${confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.`, editorTerms)}</p>
         </Clause>
         
-        <Clause>
+        <div>
           <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DAS PENALIDADES</strong></p>
           <p><strong className="font-bold">8.1.</strong> {boldenContractTerms('O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', editorTerms)}</p>
           <p className="pl-4">{boldenContractTerms('Advertência formal;', editorTerms)}</p>
           <p className="pl-4">{boldenContractTerms('Multa de até 50% do valor do serviço específico não cumprido;', editorTerms)}</p>
           <p className="pl-4">{boldenContractTerms('Rescisão imediata do contrato;', editorTerms)}</p>
           <p className="pl-4">{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', editorTerms)}</p>
-        </Clause>
+        </div>
         
         <Clause>
             <p><strong className="font-bold">CLÁUSULA {clauseCounter++} - DO TRABALHO REMOTO E HÍBRIDO</strong></p>
