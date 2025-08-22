@@ -232,13 +232,13 @@ export default function Home() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const contentWidth = pageWidth - (margin * 2);
 
-        doc.html(contentElement, {
+        await doc.html(contentElement, {
             callback: function (doc) {
                 doc.save(`${fileNamePrefix}.pdf`);
                 toast({ title: `PDF Gerado`, description: `O arquivo ${fileNamePrefix}.pdf está sendo baixado.` });
             },
             html2canvas: {
-                scale: 0.8, // Increased scale for better font rendering
+                scale: 0.7, // Ajustado para melhor renderização
                 useCORS: true,
                 logging: false,
             },
