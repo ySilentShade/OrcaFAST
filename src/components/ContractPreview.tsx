@@ -206,7 +206,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
   let clauseNumber = 1;
 
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, permutaTerms)}</h1>
 
       <div>
@@ -319,7 +319,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   };
 
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, serviceTerms)}</h1>
 
       <div>
@@ -434,7 +434,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   const rescissionNoticeDaysInWords = rescissionNoticeDays ? converterInteiroParaExtensoPTBR(parseInt(rescissionNoticeDays)) : '______';
   
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
 
       <div>
@@ -544,7 +544,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
   const penaltyValueInWords = numberToWords(penaltyValue);
   
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, authTerms)}</h1>
 
       <div>
@@ -684,7 +684,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
   const remunerationClause = getRemunerationText();
 
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
       <div>
         <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, editorTerms)}</h1>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />

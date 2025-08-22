@@ -207,7 +207,7 @@ export default function Home() {
   };
 
   const handleDownloadPdf = async (
-    contentElementId: string, 
+    contentElementId: string,
     fileNamePrefix: string,
     options?: { orientation?: 'p' | 'l', format?: string | number[] }
   ) => {
@@ -218,29 +218,34 @@ export default function Home() {
         toast({ title: "Erro ao gerar PDF", description: `Elemento com ID '${contentElementId}' não encontrado.`, variant: "destructive" });
         return;
     }
-    
+
     try {
         const doc = new jsPDF({
             orientation,
             unit: 'pt',
             format,
             putOnlyUsedFonts: true,
-            floatPrecision: 16
+            floatPrecision: 16,
         });
-        
+
+        const margin = 40;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const contentWidth = pageWidth - (margin * 2);
+
         doc.html(contentElement, {
             callback: function (doc) {
                 doc.save(`${fileNamePrefix}.pdf`);
                 toast({ title: `PDF Gerado`, description: `O arquivo ${fileNamePrefix}.pdf está sendo baixado.` });
             },
             html2canvas: {
-                scale: 0.75, // Adjust scale to fit content better
+                scale: 0.8, // Increased scale for better font rendering
                 useCORS: true,
+                logging: false,
             },
-            margin: [40, 40, 40, 40],
+            margin: [margin, margin, margin, margin],
             autoPaging: 'text',
-            width: 595, // A4 width in points
-            windowWidth: contentElement.scrollWidth,
+            width: contentWidth, // Use calculated width
+            windowWidth: 900, // Fixed window width for consistency
         });
 
     } catch (error) {
