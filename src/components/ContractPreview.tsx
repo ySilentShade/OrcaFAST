@@ -631,7 +631,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
 };
 
 
-const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
+const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData }) => {
     return (
         <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
             <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
@@ -756,10 +756,10 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
                <p>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
             </Clause>
     
-            <Clause>
+            <Clause style={{ textAlign: 'center' }}>
                 <p className="mt-8 mb-4">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
             </Clause>
-             <Clause>
+             <Clause style={{ textAlign: 'center' }}>
                 <p className="my-4">Local e Data: Lagoa Santa/MG, 16 de setembro de 2025</p>
                 <div className="mt-12 space-y-10">
                     <p>__________________________________________<br/>FastFilms</p>
@@ -818,4 +818,3 @@ export default ContractPreview;
     
 
     
-
