@@ -633,11 +633,12 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
 
 const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
     const { contratado, includeNonCompeteClause, contractFullDate, contractCity } = contractData;
-    const editorTerms = ["CONTRATANTE", "CONTRATADO", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO"];
-  
+
     return (
       <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-        <Clause><h1 className="text-center font-bold text-lg mb-6 uppercase break-words">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1></Clause>
+        <Clause>
+            <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
+        </Clause>
         
         <Clause>
             <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
@@ -810,3 +811,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
