@@ -141,7 +141,7 @@ const numberToWords = (numStr: string | number | undefined): string => {
 };
 // --- Fim da Lógica para Conversão de Número para Extenso em PT-BR ---
 
-const Clause: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
+const Clause: React.FC<React.PropsWithChildren<{ style?: React.CSSProperties }>> = ({ children, style }) => (
   <div style={{ pageBreakInside: 'avoid', ...style }}>
     {children}
   </div>
@@ -171,20 +171,20 @@ const boldenContractTerms = (text: string | undefined, termsToBold: string[]): R
 const PartyDetails: React.FC<{ party: ContractParty, title: string, index?: number }> = ({ party, title, index }) => (
     <div className="mb-4">
         <p className="font-semibold">{title}{typeof index === 'number' ? ` ${index + 1}` : ''}:</p>
-        <div className="flex"><strong className="font-bold w-28">NOME:</strong> <span>{party.name || '____________________________________________'}</span></div>
-        <div className="flex"><strong className="font-bold w-28">CPF/CNPJ:</strong> <span>{party.cpfCnpj || '____________________________________________'}</span></div>
-        <div className="flex"><strong className="font-bold w-28">ENDEREÇO:</strong> <span>{party.address || '____________________________________________'}</span></div>
-        <div className="flex"><strong className="font-bold w-28">E-MAIL:</strong> <span>{party.email || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">NOME:</strong> <span>{party.name || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">CPF/CNPJ:</strong> <span>{party.cpfCnpj || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">ENDEREÇO:</strong> <span>{party.address || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">E-MAIL:</strong> <span>{party.email || '____________________________________________'}</span></div>
     </div>
 );
 
 const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string, sede?: string }> = ({ companyInfo, title, cnpj, sede }) => (
     <div className="mb-6">
         <p className="font-semibold">{title}:</p>
-        <div className="flex"><strong className="font-bold w-36">NOME:</strong> <span>{companyInfo.name}</span></div>
-        <div className="flex"><strong className="font-bold w-36">CNPJ:</strong> <span>{cnpj || '53.525.841/0001-89'}</span></div>
-        <div className="flex"><strong className="font-bold w-36">ENDEREÇO / SEDE:</strong> <span>{sede || companyInfo.address}</span></div>
-        <div className="flex"><strong className="font-bold w-36">E-MAIL:</strong> <span>{companyInfo.email}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">NOME:</strong> <span>{companyInfo.name}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">CNPJ:</strong> <span>{cnpj || '53.525.841/0001-89'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">ENDEREÇO / SEDE:</strong> <span>{sede || companyInfo.address}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">E-MAIL:</strong> <span>{companyInfo.email}</span></div>
     </div>
 );
 
@@ -632,7 +632,6 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
 
 
 const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
-    const { contratado, includeNonCompeteClause, contractFullDate, contractCity } = contractData;
 
     return (
         <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
@@ -644,10 +643,10 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
                 <CompanyAsPartyDetails 
                     companyInfo={companyInfo} 
                     title="CONTRATANTE" 
-                    cnpj={companyInfo.cnpj} 
-                    sede={companyInfo.address}
+                    cnpj="53.525.841/0001-89" 
+                    sede="Rua Bartolomeu Bueno de Gusmão, 594 - Aeronautas, Lagoa Santa - MG, 33.236-454"
                 />
-                <PartyDetails party={contratado} title="CONTRATADO" />
+                <PartyDetails party={{name: '[Nome Completo do Editor de Vídeo]', cpfCnpj: '[CPF ou CNPJ do Editor]', address: '[Endereço Completo do Editor]', email: '[E-mail do Editor]'}} title="CONTRATADO" />
             </Clause>
     
             <Clause>
@@ -750,12 +749,10 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
                 <p><strong className="font-bold">Propriedade Intelectual:</strong> Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.</p>
             </Clause>
             
-            {includeNonCompeteClause && (
-                <Clause>
-                    <p className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</p>
-                    <p>15.1. Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.</p>
-                </Clause>
-            )}
+            <Clause>
+                <p className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</p>
+                <p>15.1. Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.</p>
+            </Clause>
     
             <Clause>
                <p className="font-bold">CLÁUSULA 16 - DA VIGÊNCIA</p>
@@ -764,10 +761,10 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
     
             <Clause style={{textAlign: 'center'}}>
                 <p className="mt-8 mb-4">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
-                <p className="my-4">Local e Data: {contractCity}, {contractFullDate}</p>
+                <p className="my-4">Local e Data: Lagoa Santa/MG, 16 de setembro de 2025</p>
                 <div className="mt-12 space-y-10 flex flex-col items-center">
-                    <p>__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
-                    <p>__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
+                    <p>__________________________________________<br/>FastFilms</p>
+                    <p>__________________________________________<br/>CONTRATADO</p>
                 </div>
             </Clause>
         </div>
