@@ -641,8 +641,20 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
             </Clause>
             
             <Clause>
-                <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
-                <PartyDetails party={contratado} title="CONTRATADO" />
+                <div className="mb-6">
+                    <p className="font-semibold">CONTRATANTE:</p>
+                    <div className="flex"><strong className="font-bold w-36">NOME:</strong> <span>{companyInfo.name}</span></div>
+                    <div className="flex"><strong className="font-bold w-36">CNPJ:</strong> <span>53.525.841/0001-89</span></div>
+                    <div className="flex"><strong className="font-bold w-36">ENDEREÇO / SEDE:</strong> <span>{companyInfo.address}</span></div>
+                    <div className="flex"><strong className="font-bold w-36">E-MAIL:</strong> <span>{companyInfo.email}</span></div>
+                </div>
+                <div className="mb-4">
+                    <p className="font-semibold">CONTRATADO:</p>
+                    <div className="flex"><strong className="font-bold w-28">NOME:</strong> <span>{contratado.name || '____________________________________________'}</span></div>
+                    <div className="flex"><strong className="font-bold w-28">CPF/CNPJ:</strong> <span>{contratado.cpfCnpj || '____________________________________________'}</span></div>
+                    <div className="flex"><strong className="font-bold w-28">ENDEREÇO:</strong> <span>{contratado.address || '____________________________________________'}</span></div>
+                    <div className="flex"><strong className="font-bold w-28">E-MAIL:</strong> <span>{contratado.email || '____________________________________________'}</span></div>
+                </div>
             </Clause>
     
             <Clause>
@@ -758,8 +770,10 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
             </Clause>
     
             <Clause>
-                <p className="mt-8 mb-4 text-center">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
-                <p className="my-4 text-center">Local e Data: {contractCity}, {contractFullDate}</p>
+                <div className="mt-8 mb-4 text-center">
+                    <p>E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
+                    <p className="my-4">Local e Data: {contractCity}, {contractFullDate}</p>
+                </div>
                 <div className="mt-12 space-y-10 flex flex-col items-center">
                     <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
                     <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
@@ -813,4 +827,6 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 export default ContractPreview;
 
     
+    
+
     
