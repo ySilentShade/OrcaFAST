@@ -169,23 +169,23 @@ const boldenContractTerms = (text: string | undefined, termsToBold: string[]): R
 
 
 const PartyDetails: React.FC<{ party: ContractParty, title: string, index?: number }> = ({ party, title, index }) => (
-  <div className="mb-4">
-    <p className="font-semibold">{title}{typeof index === 'number' ? ` ${index + 1}` : ''}:</p>
-    <p><strong className="font-bold">NOME:</strong> {party.name || '____________________________________________'}</p>
-    <p><strong className="font-bold">CPF/CNPJ:</strong> {party.cpfCnpj || '____________________________________________'}</p>
-    <p><strong className="font-bold">ENDEREÇO:</strong> {party.address || '____________________________________________'}</p>
-    <p><strong className="font-bold">E-MAIL:</strong> {party.email || '____________________________________________'}</p>
-  </div>
+    <div className="mb-4">
+        <p className="font-semibold">{title}{typeof index === 'number' ? ` ${index + 1}` : ''}:</p>
+        <div className="flex"><strong className="font-bold w-28">NOME:</strong> <span>{party.name || '____________________________________________'}</span></div>
+        <div className="flex"><strong className="font-bold w-28">CPF/CNPJ:</strong> <span>{party.cpfCnpj || '____________________________________________'}</span></div>
+        <div className="flex"><strong className="font-bold w-28">ENDEREÇO:</strong> <span>{party.address || '____________________________________________'}</span></div>
+        <div className="flex"><strong className="font-bold w-28">E-MAIL:</strong> <span>{party.email || '____________________________________________'}</span></div>
+    </div>
 );
 
 const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string, sede?: string }> = ({ companyInfo, title, cnpj, sede }) => (
- <div className="mb-6">
-    <p className="font-semibold">{title}:</p>
-    <p><strong className="font-bold">NOME:</strong> {companyInfo.name}</p>
-    <p><strong className="font-bold">CNPJ:</strong> {cnpj || '53.525.841/0001-89'}</p>
-    <p><strong className="font-bold">ENDEREÇO / SEDE:</strong> {sede || companyInfo.address}</p>
-    <p><strong className="font-bold">E-MAIL:</strong> {companyInfo.email}</p>
-  </div>
+    <div className="mb-6">
+        <p className="font-semibold">{title}:</p>
+        <div className="flex"><strong className="font-bold w-36">NOME:</strong> <span>{companyInfo.name}</span></div>
+        <div className="flex"><strong className="font-bold w-36">CNPJ:</strong> <span>{cnpj || '53.525.841/0001-89'}</span></div>
+        <div className="flex"><strong className="font-bold w-36">ENDEREÇO / SEDE:</strong> <span>{sede || companyInfo.address}</span></div>
+        <div className="flex"><strong className="font-bold w-36">E-MAIL:</strong> <span>{companyInfo.email}</span></div>
+    </div>
 );
 
 
@@ -262,9 +262,9 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
       <Clause>
         <p className="mt-8 mb-8 text-center">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
-        <div className="mt-12 space-y-10 text-center">
-          <p>__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
-          <p>__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+          <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
+          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
         </div>
 
         <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
@@ -394,19 +394,19 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
       <Clause>
         <p className="mt-8 mb-8 text-center">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
-        <div className="mt-12 space-y-10 text-center">
+        <div className="mt-12 space-y-10 flex flex-col items-center">
           {contratantes.length === 1 && contratantes[0] && (
-              <p>__________________________________________<br/>{contratantes[0].name || 'CONTRATANTE'}</p>
+              <p className="text-center">__________________________________________<br/>{contratantes[0].name || 'CONTRATANTE'}</p>
           )}
           {contratantes.length > 1 && (
               <>
-                  <p className="font-semibold">CONTRATANTES:</p>
+                  <p className="font-semibold text-center">CONTRATANTES:</p>
                   {contratantes.map((contratante, index) => (
-                      <p key={contratante.id || index} className="mt-2">__________________________________________<br/>{contratante.name || `CONTRATANTE ${index + 1}`}</p>
+                      <p key={contratante.id || index} className="mt-2 text-center">__________________________________________<br/>{contratante.name || `CONTRATANTE ${index + 1}`}</p>
                   ))}
               </>
           )}
-          <p>__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
+          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
         </div>
 
         <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
@@ -520,9 +520,9 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
       <Clause>
         <p className="mt-8 mb-8 text-center">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
 
-        <div className="mt-12 space-y-10 text-center">
-          <p>__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>(CONTRATANTE)</p>
-          <p>__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>(CONTRATADO)</p>
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>(CONTRATANTE)</p>
+          <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>(CONTRATADO)</p>
         </div>
         
         <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
@@ -590,7 +590,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
                 <li>{boldenContractTerms('Monetizar ou veicular o conteúdo em campanhas publicitárias;', authTerms)}</li>
                 <li>{boldenContractTerms('Utilizar imagens com pessoas identificáveis sem autorização expressa destas;', authTerms)}</li>
                 <li>{boldenContractTerms('Fazer edições que distorçam o trabalho, a identidade visual ou a marca do projeto;', authTerms)}</li>
-                <li>{boldenContractTerms('Sugerir que o projeto foi realizado exclusivamente pelo AUTORIZADO(A), sem citar a FastFilms.', authTerms)}</li>
+                <li>{boldenContractTerms('Sugerir que o projeto foi realizado exclusively pelo AUTORIZADO(A), sem citar a FastFilms.', authTerms)}</li>
             </ul>
             <p><strong className="font-bold">2.3.</strong> {boldenContractTerms('O material deve conter o crédito à FastFilms como produtora do projeto.', authTerms)}</p>
         </Clause>
@@ -619,9 +619,9 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
       <Clause>
         <p className="mt-8 mb-8 text-center">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
-        <div className="mt-12 space-y-10 text-center">
-          <p>__________________________________________<br/>{companyInfo.name || 'AUTORIZANTE'}<br/>(AUTORIZANTE)</p>
-          <p>__________________________________________<br/>{autorizado.name || 'AUTORIZADO(A)'}<br/>(AUTORIZADO(A))</p>
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'AUTORIZANTE'}<br/>(AUTORIZANTE)</p>
+          <p className="text-center">__________________________________________<br/>{autorizado.name || 'AUTORIZADO(A)'}<br/>(AUTORIZADO(A))</p>
         </div>
         
         <p className="mt-12 text-center">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
@@ -635,137 +635,137 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
     const { contratado, includeNonCompeteClause, contractFullDate, contractCity } = contractData;
 
     return (
-      <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-        <Clause>
-            <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
-        </Clause>
-        
-        <Clause>
-            <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
-            <PartyDetails party={contratado} title="CONTRATADO" />
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong></p>
-            <p>1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a:</p>
-            <ul className="list-disc list-inside ml-4">
-                <li>Edição de vídeos captados pela CONTRATANTE;</li>
-                <li>Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização;</li>
-                <li>Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.</li>
-            </ul>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</strong></p>
-            <p>2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
-            <p>3.1. O CONTRATADO receberá um valor fixo mensal de R$ [valor a ser definido], podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual.</p>
-            <p>3.2. A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.</p>
-            <p>3.3. O dia de pagamento será escolhido pelo CONTRATADO, mediante comum acordo e livre escolha, devendo ser comunicado à CONTRATANTE no início da vigência contratual ou em qualquer ajuste posterior.</p>
-            <p>3.4. A CONTRATANTE realizará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</strong></p>
-            <p>4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.</p>
-            <p>4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de 20% sobre o valor do serviço específico não entregue e possível rescisão contratual.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</strong></p>
-            <p>5.1. Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados.</p>
-            <p>5.2. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE.</p>
-            <p>5.3. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 6 - DOS DIREITOS AUTORAIS E DE IMAGEM</strong></p>
-            <p>6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.</p>
-            <p>6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 7 - DA CONFIDENCIALIDADE</strong></p>
-            <p>7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.</p>
-            <p>7.2. Em caso de quebra de confidencialidade, será aplicada multa de R$ 15.000,00, sem prejuízo de eventuais indenizações por perdas e danos.</p>
-        </Clause>
-        
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 8 - DAS PENALIDADES</strong></p>
-            <p>8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:</p>
-            <ul className="list-disc list-inside ml-4">
-                <li>Advertência formal;</li>
-                <li>Multa de até 50% do valor do serviço específico não cumprido;</li>
-                <li>Rescisão imediata do contrato;</li>
-                <li>Responsabilização cível e criminal, conforme o caso.</li>
-            </ul>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 9 - DO TRABALHO REMOTO E HÍBRIDO</strong></p>
-            <p>9.1. O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado.</p>
-            <p>9.2. Em casos excepcionais, como eventos que exijam edição em tempo real ou quando a CONTRATANTE estabelecer um escritório próprio, o CONTRATADO poderá ser solicitado a trabalhar presencialmente, em regime híbrido. As despesas de deslocamento e outras relacionadas à prestação presencial dos serviços serão discutidas e acordadas entre as partes.</p>
-            <p>9.3. O CONTRATADO deve estar disponível para reuniões virtuais e presenciais conforme a necessidade da CONTRATANTE, garantindo a comunicação eficiente e a entrega dos serviços contratados.</p>
-        </Clause>
-        
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 10 - DA RESCISÃO</strong></p>
-            <p>10.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 (trinta) dias corridos.</p>
-            <p>10.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a 30% do valor do serviço acordado.</p>
-        </Clause>
-        
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 11 - DO FORO</strong></p>
-            <p>11.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de Lagoa Santa/MG, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 12 - DAS DISPOSIÇÕES GERAIS</strong></p>
-            <p>12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.</p>
-            <p>12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.</p>
-            <p>12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 13 - DA DISPONIBILIDADE E COMUNICAÇÃO</strong></p>
-            <p>13.1. O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis.</p>
-            <p>13.2. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.</p>
-        </Clause>
-        
-        <Clause>
-            <p><strong className="font-bold">CLÁUSULA 14 - DA QUALIDADE DOS SERVIÇOS</strong></p>
-            <p>14.1. O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE.</p>
-            <p>14.2. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.</p>
-        </Clause>
-
-        <Clause>
-            <p><strong className="font-bold">Propriedade Intelectual:</strong> Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.</p>
-        </Clause>
-        
-        {includeNonCompeteClause && (
+        <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
             <Clause>
-                <p><strong className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</strong></p>
-                <p>15.1. Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.</p>
+                <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
             </Clause>
-        )}
-
-        <Clause>
-           <p><strong className="font-bold">CLÁUSULA 16 - DA VIGÊNCIA</strong></p>
-           <p>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
-        </Clause>
-
-        <Clause>
-            <p className="mt-8 mb-4 text-center">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
-            <p className="my-4 text-center">Local e Data: {contractCity}, {contractFullDate}</p>
-            <div className="mt-12 space-y-10 text-center">
-                <p>__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
-                <p>__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
-            </div>
-        </Clause>
-      </div>
+            
+            <Clause>
+                <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
+                <PartyDetails party={contratado} title="CONTRATADO" />
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 1 - DO OBJETO</p>
+                <p>1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a:</p>
+                <ul className="list-disc list-inside ml-4">
+                    <li>Edição de vídeos captados pela CONTRATANTE;</li>
+                    <li>Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização;</li>
+                    <li>Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.</li>
+                </ul>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</p>
+                <p>2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</p>
+                <p>3.1. O CONTRATADO receberá um valor fixo mensal de R$ [valor a ser definido], podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual.</p>
+                <p>3.2. A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.</p>
+                <p>3.3. O dia de pagamento será escolhido pelo CONTRATADO, mediante comum acordo e livre escolha, devendo ser comunicado à CONTRATANTE no início da vigência contratual ou em qualquer ajuste posterior.</p>
+                <p>3.4. A CONTRATANTE realizará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</p>
+                <p>4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.</p>
+                <p>4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de 20% sobre o valor do serviço específico não entregue e possível rescisão contratual.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</p>
+                <p>5.1. Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados.</p>
+                <p>5.2. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE.</p>
+                <p>5.3. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 6 - DOS DIREITOS AUTORAIS E DE IMAGEM</p>
+                <p>6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.</p>
+                <p>6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 7 - DA CONFIDENCIALIDADE</p>
+                <p>7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.</p>
+                <p>7.2. Em caso de quebra de confidencialidade, será aplicada multa de R$ 15.000,00, sem prejuízo de eventuais indenizações por perdas e danos.</p>
+            </Clause>
+            
+            <Clause>
+                <p className="font-bold">CLÁUSULA 8 - DAS PENALIDADES</p>
+                <p>8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:</p>
+                <ul className="list-disc list-inside ml-4">
+                    <li>Advertência formal;</li>
+                    <li>Multa de até 50% do valor do serviço específico não cumprido;</li>
+                    <li>Rescisão imediata do contrato;</li>
+                    <li>Responsabilização cível e criminal, conforme o caso.</li>
+                </ul>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 9 - DO TRABALHO REMOTO E HÍBRIDO</p>
+                <p>9.1. O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado.</p>
+                <p>9.2. Em casos excepcionais, como eventos que exijam edição em tempo real ou quando a CONTRATANTE estabelecer um escritório próprio, o CONTRATADO poderá ser solicitado a trabalhar presencialmente, em regime híbrido. As despesas de deslocamento e outras relacionadas à prestação presencial dos serviços serão discutidas e acordadas entre as partes.</p>
+                <p>9.3. O CONTRATADO deve estar disponível para reuniões virtuais e presenciais conforme a necessidade da CONTRATANTE, garantindo a comunicação eficiente e a entrega dos serviços contratados.</p>
+            </Clause>
+            
+            <Clause>
+                <p className="font-bold">CLÁUSULA 10 - DA RESCISÃO</p>
+                <p>10.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 (trinta) dias corridos.</p>
+                <p>10.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a 30% do valor do serviço acordado.</p>
+            </Clause>
+            
+            <Clause>
+                <p className="font-bold">CLÁUSULA 11 - DO FORO</p>
+                <p>11.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de Lagoa Santa/MG, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 12 - DAS DISPOSIÇÕES GERAIS</p>
+                <p>12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.</p>
+                <p>12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.</p>
+                <p>12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="font-bold">CLÁUSULA 13 - DA DISPONIBILIDADE E COMUNICAÇÃO</p>
+                <p>13.1. O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis.</p>
+                <p>13.2. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.</p>
+            </Clause>
+            
+            <Clause>
+                <p className="font-bold">CLÁUSULA 14 - DA QUALIDADE DOS SERVIÇOS</p>
+                <p>14.1. O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE.</p>
+                <p>14.2. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.</p>
+            </Clause>
+    
+            <Clause>
+                <p><strong className="font-bold">Propriedade Intelectual:</strong> Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.</p>
+            </Clause>
+            
+            {includeNonCompeteClause && (
+                <Clause>
+                    <p className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</p>
+                    <p>15.1. Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.</p>
+                </Clause>
+            )}
+    
+            <Clause>
+               <p className="font-bold">CLÁUSULA 16 - DA VIGÊNCIA</p>
+               <p>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
+            </Clause>
+    
+            <Clause>
+                <p className="mt-8 mb-4 text-center">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
+                <p className="my-4 text-center">Local e Data: {contractCity}, {contractFullDate}</p>
+                <div className="mt-12 space-y-10 flex flex-col items-center">
+                    <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
+                    <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
+                </div>
+            </Clause>
+        </div>
     );
 };
 
@@ -812,4 +812,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 
 export default ContractPreview;
 
+    
     
