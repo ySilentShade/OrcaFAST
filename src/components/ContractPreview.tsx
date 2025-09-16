@@ -141,8 +141,8 @@ const numberToWords = (numStr: string | number | undefined): string => {
 };
 // --- Fim da Lógica para Conversão de Número para Extenso em PT-BR ---
 
-const Clause: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <div style={{ pageBreakInside: 'avoid' }} className={className}>
+const Clause: React.FC<{ children: React.ReactNode; className?: string; style?: React.CSSProperties }> = ({ children, className, style }) => (
+  <div style={{ pageBreakInside: 'avoid', ...style }} className={className}>
     {children}
   </div>
 );
@@ -213,7 +213,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, permutaTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, permutaTerms)}</h1>
 
       <Clause>
         <p className="mb-4">Pelo presente instrumento particular, as partes abaixo identificadas:</p>
@@ -259,7 +259,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
         </Clause>
       </div>
       
-      <Clause className="text-center">
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
         <div className="mt-12 space-y-10 flex flex-col items-center">
@@ -326,7 +326,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, serviceTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, serviceTerms)}</h1>
 
       <Clause>
         {contratantes.map((contratante, index) => (
@@ -391,7 +391,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
         {boldenContractTerms(`As partes elegem o foro da comarca de ${foro} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.`, serviceTerms)}</p>
       </Clause>
 
-      <Clause className="text-center">
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
         <div className="mt-12 space-y-10 flex flex-col items-center">
@@ -441,7 +441,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
 
       <Clause>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
@@ -517,7 +517,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
         <p className="mb-4"><strong className="font-bold">10.1.</strong> {boldenContractTerms(`Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, freelanceTerms)}</p>
       </Clause>
 
-      <Clause className="text-center">
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
 
         <div className="mt-12 space-y-10 flex flex-col items-center">
@@ -551,7 +551,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
   
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words">{boldenContractTerms(contractTitle, authTerms)}</h1>
+      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, authTerms)}</h1>
 
       <Clause>
         <CompanyAsPartyDetails 
@@ -616,7 +616,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
         </Clause>
       </div>
       
-      <Clause className="text-center">
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
         <div className="mt-12 space-y-10 flex flex-col items-center">
@@ -636,7 +636,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
 
     return (
         <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-            <Clause className="text-center">
+            <Clause style={{textAlign: 'center'}}>
                 <h1 className="font-bold text-lg mb-6 uppercase break-words">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
             </Clause>
             
@@ -762,7 +762,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
                <p>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
             </Clause>
     
-            <Clause className="text-center">
+            <Clause style={{textAlign: 'center'}}>
                 <p className="mt-8 mb-4">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
                 <p className="my-4">Local e Data: {contractCity}, {contractFullDate}</p>
                 <div className="mt-12 space-y-10 flex flex-col items-center">
@@ -816,5 +816,3 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
-    
