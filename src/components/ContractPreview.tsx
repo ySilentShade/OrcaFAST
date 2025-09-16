@@ -631,7 +631,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
 };
 
 
-const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData }) => {
+const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
     return (
         <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
             <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
@@ -818,3 +818,4 @@ export default ContractPreview;
     
 
     
+
