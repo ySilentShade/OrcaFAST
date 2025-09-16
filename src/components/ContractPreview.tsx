@@ -632,160 +632,164 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
 
 
 const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
+    const {
+        contratado,
+        remunerationType,
+        remunerationValue,
+        paymentDay,
+        paymentDetails,
+        lateDeliveryPenalty,
+        confidentialityPenalty,
+        rescissionNoticeDays,
+        unjustifiedRescissionPenalty,
+        foro,
+        includeNonCompeteClause,
+        contractCity,
+        contractFullDate,
+    } = contractData;
+
+    const editorTerms = ["CONTRATANTE", "CONTRATADO"];
+
     return (
         <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-            <table width="100%" cellSpacing="0" cellPadding="0" style={{borderCollapse: 'collapse'}}>
-              <tbody>
-                <tr>
-                  <td align="center">
-                    <h1 className="font-bold text-lg mb-6 uppercase break-words">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO</h1>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>
+                {boldenContractTerms('CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO', editorTerms)}
+            </h1>
             
             <Clause>
                 <CompanyAsPartyDetails 
                     companyInfo={companyInfo} 
                     title="CONTRATANTE" 
-                    cnpj="53.525.841/0001-89" 
-                    sede="Rua Bartolomeu Bueno de Gusmão, 594 - Aeronautas, Lagoa Santa - MG, 33.236-454"
+                    cnpj={companyInfo.cnpj} 
+                    sede={companyInfo.address}
                 />
-                <PartyDetails party={{name: '[Nome Completo do Editor de Vídeo]', cpfCnpj: '[CPF ou CNPJ do Editor]', address: '[Endereço Completo do Editor]', email: '[E-mail do Editor]'}} title="CONTRATADO" />
+                <PartyDetails party={contratado} title="CONTRATADO" />
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 1 - DO OBJETO</p>
-                <p>1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a:</p>
+                <p>1.1. {boldenContractTerms('O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a:', editorTerms)}</p>
                 <ul className="list-disc list-inside ml-4">
-                    <li>Edição de vídeos captados pela CONTRATANTE;</li>
-                    <li>Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização;</li>
-                    <li>Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.</li>
+                    <li>{boldenContractTerms('Edição de vídeos captados pela CONTRATANTE;', editorTerms)}</li>
+                    <li>{boldenContractTerms('Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização;', editorTerms)}</li>
+                    <li>{boldenContractTerms('Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.', editorTerms)}</li>
                 </ul>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</p>
-                <p>2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.</p>
+                <p>2.1. {boldenContractTerms('Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.', editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</p>
-                <p>3.1. O CONTRATADO receberá um valor fixo mensal de R$ [valor a ser definido], podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual.</p>
-                <p>3.2. A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.</p>
-                <p>3.3. O dia de pagamento será escolhido pelo CONTRATADO, mediante comum acordo e livre escolha, devendo ser comunicado à CONTRATANTE no início da vigência contratual ou em qualquer ajuste posterior.</p>
-                <p>3.4. A CONTRATANTE realizará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.</p>
+                <p>3.1. {boldenContractTerms(`O CONTRATADO receberá um valor fixo ${remunerationType.toLowerCase()} de ${formatCurrency(remunerationValue)}, podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual.`, editorTerms)}</p>
+                <p>3.2. {boldenContractTerms('A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.', editorTerms)}</p>
+                {paymentDay && <p>3.3. {boldenContractTerms(`O dia de pagamento será todo dia ${paymentDay}, mediante comum acordo e livre escolha, devendo ser comunicado à CONTRATANTE no início da vigência contratual ou em qualquer ajuste posterior.`, editorTerms)}</p>}
+                <p>{boldenContractTerms(paymentDetails, editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</p>
-                <p>4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.</p>
-                <p>4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de 20% sobre o valor do serviço específico não entregue e possível rescisão contratual.</p>
+                <p>4.1. {boldenContractTerms('Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.', editorTerms)}</p>
+                <p>4.2. {boldenContractTerms(`A não entrega dentro do prazo sem justificativa plausível implicará multa de ${lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.`, editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</p>
-                <p>5.1. Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados.</p>
-                <p>5.2. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE.</p>
-                <p>5.3. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.</p>
+                <p>5.1. {boldenContractTerms('Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados.', editorTerms)}</p>
+                <p>5.2. {boldenContractTerms('Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE.', editorTerms)}</p>
+                <p>5.3. {boldenContractTerms('Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.', editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 6 - DOS DIREITOS AUTORAIS E DE IMAGEM</p>
-                <p>6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.</p>
-                <p>6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.</p>
+                <p>6.1. {boldenContractTerms('Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.', editorTerms)}</p>
+                <p>6.2. {boldenContractTerms('O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.', editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 7 - DA CONFIDENCIALIDADE</p>
-                <p>7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.</p>
-                <p>7.2. Em caso de quebra de confidencialidade, será aplicada multa de R$ 15.000,00, sem prejuízo de eventuais indenizações por perdas e danos.</p>
+                <p>7.1. {boldenContractTerms('O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.', editorTerms)}</p>
+                <p>7.2. {boldenContractTerms(`Em caso de quebra de confidencialidade, será aplicada multa de ${formatCurrency(confidentialityPenalty)}, sem prejuízo de eventuais indenizações por perdas e danos.`, editorTerms)}</p>
             </Clause>
             
             <Clause>
                 <p className="font-bold">CLÁUSULA 8 - DAS PENALIDADES</p>
-                <p>8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:</p>
+                <p>8.1. {boldenContractTerms('O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', editorTerms)}</p>
                 <ul className="list-disc list-inside ml-4">
-                    <li>Advertência formal;</li>
-                    <li>Multa de até 50% do valor do serviço específico não cumprido;</li>
-                    <li>Rescisão imediata do contrato;</li>
-                    <li>Responsabilização cível e criminal, conforme o caso.</li>
+                    <li>{boldenContractTerms('Advertência formal;', editorTerms)}</li>
+                    <li>{boldenContractTerms('Multa de até 50% do valor do serviço específico não cumprido;', editorTerms)}</li>
+                    <li>{boldenContractTerms('Rescisão imediata do contrato;', editorTerms)}</li>
+                    <li>{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', editorTerms)}</li>
                 </ul>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 9 - DO TRABALHO REMOTO E HÍBRIDO</p>
-                <p>9.1. O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado.</p>
-                <p>9.2. Em casos excepcionais, como eventos que exijam edição em tempo real ou quando a CONTRATANTE estabelecer um escritório próprio, o CONTRATADO poderá ser solicitado a trabalhar presencialmente, em regime híbrido. As despesas de deslocamento e outras relacionadas à prestação presencial dos serviços serão discutidas e acordadas entre as partes.</p>
-                <p>9.3. O CONTRATADO deve estar disponível para reuniões virtuais e presenciais conforme a necessidade da CONTRATANTE, garantindo a comunicação eficiente e a entrega dos serviços contratados.</p>
+                <p>9.1. {boldenContractTerms('O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado.', editorTerms)}</p>
+                <p>9.2. {boldenContractTerms('Em casos excepcionais, como eventos que exijam edição em tempo real ou quando a CONTRATANTE estabelecer um escritório próprio, o CONTRATADO poderá ser solicitado a trabalhar presencialmente, em regime híbrido. As despesas de deslocamento e outras relacionadas à prestação presencial dos serviços serão discutidas e acordadas entre as partes.', editorTerms)}</p>
+                <p>9.3. {boldenContractTerms('O CONTRATADO deve estar disponível para reuniões virtuais e presenciais conforme a necessidade da CONTRATANTE, garantindo a comunicação eficiente e a entrega dos serviços contratados.', editorTerms)}</p>
             </Clause>
             
             <Clause>
                 <p className="font-bold">CLÁUSULA 10 - DA RESCISÃO</p>
-                <p>10.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 (trinta) dias corridos.</p>
-                <p>10.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a 30% do valor do serviço acordado.</p>
+                <p>10.1. {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticeDays} dias corridos.`, editorTerms)}</p>
+                <p>10.2. {boldenContractTerms(`Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a ${unjustifiedRescissionPenalty}% do valor do serviço acordado.`, editorTerms)}</p>
             </Clause>
             
             <Clause>
                 <p className="font-bold">CLÁUSULA 11 - DO FORO</p>
-                <p>11.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de Lagoa Santa/MG, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
+                <p>11.1. {boldenContractTerms(`Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 12 - DAS DISPOSIÇÕES GERAIS</p>
-                <p>12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.</p>
-                <p>12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.</p>
-                <p>12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.</p>
+                <p>12.1. {boldenContractTerms('Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.', editorTerms)}</p>
+                <p>12.2. {boldenContractTerms('Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.', editorTerms)}</p>
+                <p>12.3. {boldenContractTerms('A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.', editorTerms)}</p>
             </Clause>
     
             <Clause>
                 <p className="font-bold">CLÁUSULA 13 - DA DISPONIBILIDADE E COMUNICAÇÃO</p>
-                <p>13.1. O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis.</p>
-                <p>13.2. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.</p>
+                <p>13.1. {boldenContractTerms('O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis.', editorTerms)}</p>
+                <p>13.2. {boldenContractTerms('As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.', editorTerms)}</p>
             </Clause>
             
             <Clause>
                 <p className="font-bold">CLÁUSULA 14 - DA QUALIDADE DOS SERVIÇOS</p>
-                <p>14.1. O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE.</p>
-                <p>14.2. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.</p>
+                <p>14.1. {boldenContractTerms('O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE.', editorTerms)}</p>
+                <p>14.2. {boldenContractTerms('A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.', editorTerms)}</p>
             </Clause>
     
             <Clause>
-                <p><strong className="font-bold">Propriedade Intelectual:</strong> Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.</p>
+                <p><strong className="font-bold">Propriedade Intelectual:</strong> {boldenContractTerms('Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.', editorTerms)}</p>
             </Clause>
             
-            <Clause>
-                <p className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</p>
-                <p>15.1. Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.</p>
-            </Clause>
+            {includeNonCompeteClause && (
+                <Clause>
+                    <p className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</p>
+                    <p>15.1. {boldenContractTerms('Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.', editorTerms)}</p>
+                </Clause>
+            )}
+
     
             <Clause>
                <p className="font-bold">CLÁUSULA 16 - DA VIGÊNCIA</p>
-               <p>16.1. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.</p>
+               <p>16.1. {boldenContractTerms('Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.', editorTerms)}</p>
             </Clause>
     
-            <table width="100%" cellSpacing="0" cellPadding="0" style={{borderCollapse: 'collapse', marginTop: '32px', marginBottom: '16px'}}>
-              <tbody>
-                <tr>
-                  <td align="center">
-                    <p>E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table width="100%" cellSpacing="0" cellPadding="0" style={{borderCollapse: 'collapse', marginTop: '48px'}}>
-              <tbody>
-                <tr>
-                  <td align="center">
-                    <p>Local e Data: Lagoa Santa/MG, 16 de setembro de 2025</p>
-                    <div style={{marginTop: '48px', display: 'inline-block', textAlign: 'center'}}>
-                        <p>__________________________________________<br/>FastFilms</p>
-                        <p style={{marginTop: '40px'}}>__________________________________________<br/>CONTRATADO</p>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <Clause style={{textAlign: 'center'}}>
+                <p className="mt-8 mb-8">{boldenContractTerms('E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.', editorTerms)}</p>
+            </Clause>
+
+            <Clause style={{textAlign: 'center'}}>
+                <p className="mt-12">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+                <div className="mt-12 space-y-10 flex flex-col items-center">
+                    <p>__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>({boldenContractTerms('CONTRATANTE', editorTerms)})</p>
+                    <p>__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>({boldenContractTerms('CONTRATADO', editorTerms)})</p>
+                </div>
+            </Clause>
         </div>
     );
 };
@@ -840,3 +844,6 @@ export default ContractPreview;
     
 
 
+
+
+    
