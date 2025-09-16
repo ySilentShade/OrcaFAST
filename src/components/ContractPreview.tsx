@@ -141,8 +141,8 @@ const numberToWords = (numStr: string | number | undefined): string => {
 };
 // --- Fim da Lógica para Conversão de Número para Extenso em PT-BR ---
 
-const Clause: React.FC<{ children: React.ReactNode; className?: string; style?: React.CSSProperties }> = ({ children, className, style }) => (
-  <div style={{ pageBreakInside: 'avoid', ...style }} className={className}>
+const Clause: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
+  <div style={{ pageBreakInside: 'avoid', ...style }}>
     {children}
   </div>
 );
@@ -213,7 +213,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, permutaTerms)}</h1>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, permutaTerms)}</h1>
 
       <Clause>
         <p className="mb-4">Pelo presente instrumento particular, as partes abaixo identificadas:</p>
@@ -326,7 +326,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, serviceTerms)}</h1>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, serviceTerms)}</h1>
 
       <Clause>
         {contratantes.map((contratante, index) => (
@@ -441,7 +441,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
 
       <Clause>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
@@ -551,7 +551,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
   
   return (
     <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, authTerms)}</h1>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, authTerms)}</h1>
 
       <Clause>
         <CompanyAsPartyDetails 
@@ -816,3 +816,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
