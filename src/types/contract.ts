@@ -1,4 +1,5 @@
 
+
 // Defines the types of contracts supported by the application.
 // This will be expanded as more contract functionalities are added.
 
@@ -107,15 +108,10 @@ export interface FreelanceEditorContractData {
   rescissionNoticeDays: string;
   unjustifiedRescissionPenalty: string;
   foro: string;
-  intellectualProperty: string;
-  nonCompeteClause: string;
+  nonCompeteClause?: string;
   includeNonCompeteClause: boolean; // To toggle the clause
   contractCity: string;
   contractFullDate: string;
-  softwareResponsibility: string; // Keep for the preview
-  remoteWorkPolicy: string; // Keep for the preview
-  availabilityAndCommunication: string; // Keep for the preview
-  serviceQuality: string; // Keep for the preview
 }
 
 
@@ -212,15 +208,10 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   remunerationValue: '0.00',
   paymentDetails: 'O CONTRATADO receberá um valor fixo mensal de R$ [valor a ser definido], podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual. A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.',
   lateDeliveryPenalty: '20',
-  softwareResponsibility: 'Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.',
   confidentialityPenalty: '15000.00',
-  remoteWorkPolicy: 'O CONTRATADO prestará os serviços de forma remota (home office), sendo responsável por todas as despesas relacionadas, incluindo, mas não se limitando a, internet, energia elétrica e espaço de trabalho adequado. Em casos excepcionais, como eventos que exijam edição em tempo real ou quando a CONTRATANTE estabelecer um escritório próprio, o CONTRATADO poderá ser solicitado a trabalhar presencialmente, em regime híbrido. As despesas de deslocamento e outras relacionadas à prestação presencial dos serviços serão discutidas e acordadas entre as partes. O CONTRATADO deve estar disponível para reuniões virtuais e presenciais conforme a necessidade da CONTRATANTE, garantindo a comunicação eficiente e a entrega dos serviços contratados.',
   rescissionNoticeDays: '30',
   unjustifiedRescissionPenalty: '30',
   foro: 'Lagoa Santa/MG',
-  availabilityAndCommunication: 'O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.',
-  serviceQuality: 'O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.',
-  intellectualProperty: 'Embora já mencionado, é importante reforçar que o CONTRATADO não poderá reivindicar a propriedade intelectual dos trabalhos realizados e que a utilização de músicas ou efeitos sonoros de terceiros deve respeitar direitos autorais.',
   nonCompeteClause: 'Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
   includeNonCompeteClause: true,
   contractCity: 'Lagoa Santa/MG',

@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import type { FreelanceEditorContractData } from '@/types/contract';
-import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent, FileWarning } from 'lucide-react';
+import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent } from 'lucide-react';
 
 const contratadoSchema = z.object({
   name: z.string().min(1, "Nome do editor é obrigatório"),
@@ -32,8 +32,7 @@ export const freelanceEditorContractFormSchema = z.object({
   rescissionNoticeDays: z.string().refine(val => !isNaN(parseInt(val)) && parseInt(val) >= 0, { message: "Deve ser um número não negativo" }),
   unjustifiedRescissionPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
   foro: z.string().min(1, "Foro é obrigatório"),
-  intellectualProperty: z.string().min(1, "Cláusula de propriedade intelectual é obrigatória"),
-  nonCompeteClause: z.string().min(1, "Cláusula de não concorrência é obrigatória"),
+  nonCompeteClause: z.string().optional(),
   includeNonCompeteClause: z.boolean(),
   contractCity: z.string().min(1, "Cidade do contrato é obrigatória"),
   contractFullDate: z.string().min(1, "Data completa do contrato é obrigatória"),
@@ -137,18 +136,12 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                     {errors.unjustifiedRescissionPenalty && <p className="text-sm text-destructive mt-1">{errors.unjustifiedRescissionPenalty.message}</p>}
                 </div>
               </div>
-
-               <div>
-                <Label htmlFor="intellectualProperty" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula de Propriedade Intelectual</Label>
-                <Controller name="intellectualProperty" control={control} render={({ field }) => <Textarea id="intellectualProperty" rows={3} {...field} />} />
-                {errors.intellectualProperty && <p className="text-sm text-destructive mt-1">{errors.intellectualProperty.message}</p>}
-              </div>
-
+              
               <div className="p-3 border rounded-md space-y-3">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeNonCompeteClause" className="flex items-center">
                         {includeNonCompete ? <Shield className="mr-2 h-4 w-4 text-green-500" /> : <ShieldOff className="mr-2 h-4 w-4 text-red-500" />}
-                        Cláusula 15 - Não Concorrência
+                        Incluir Cláusula 15 (Não Concorrência)
                     </Label>
                     <Controller
                         name="includeNonCompeteClause"
@@ -157,13 +150,6 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                     />
                   </div>
                    {errors.includeNonCompeteClause && <p className="text-sm text-destructive mt-1">{errors.includeNonCompeteClause.message}</p>}
-                  
-                   {includeNonCompete && (
-                     <div>
-                        <Controller name="nonCompeteClause" control={control} render={({ field }) => <Textarea id="nonCompeteClause" rows={3} {...field} />} />
-                        {errors.nonCompeteClause && <p className="text-sm text-destructive mt-1">{errors.nonCompeteClause.message}</p>}
-                     </div>
-                   )}
               </div>
 
             </div>
