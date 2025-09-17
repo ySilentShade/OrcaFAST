@@ -98,6 +98,7 @@ export interface FreelancerMaterialAuthorizationData {
 export interface FreelanceEditorContractData {
   contractType: 'FREELANCE_HIRE_EDITOR';
   contractTitle: string;
+  editorName?: string; // to sanitize filename
   contratado: ContractParty;
   remunerationValue: string;
   paymentDetails: string;
@@ -224,4 +225,7 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   includeNonCompeteClause: true,
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+  editorName: '',
 };
+
+    

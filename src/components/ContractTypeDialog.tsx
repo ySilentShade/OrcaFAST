@@ -77,9 +77,9 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
               className="w-full h-auto p-4 rounded-lg flex items-center justify-start text-left transition-colors
                          border border-border bg-card text-card-foreground
                          hover:bg-primary/90 hover:text-primary-foreground focus:ring-2 focus:ring-primary
-                         [&_svg]:text-primary-foreground" // Icon color set by text-primary-foreground on hover
+                         disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Icon className="mr-3 h-5 w-5" /> 
+              <Icon className="mr-3 h-5 w-5 text-primary group-hover:text-primary-foreground" /> 
               <span className="flex-1">{label}{disabled ? " (Em breve)" : ""}</span>
             </Button>
           ))}
@@ -97,3 +97,5 @@ const ContractTypeDialog: React.FC<ContractTypeDialogProps> = ({ isOpen, onOpenC
 };
 
 export default ContractTypeDialog;
+
+    

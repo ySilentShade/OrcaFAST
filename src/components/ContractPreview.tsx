@@ -5,6 +5,7 @@ import React from 'react';
 import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty, FreelanceFilmmakerContractData, FreelancerMaterialAuthorizationData, FreelanceEditorContractData } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
 import { FileText } from 'lucide-react';
+import numberToWords from 'number-to-words';
 
 const formatCurrency = (value: string | number | undefined): string => {
   if (value === undefined || value === null) return 'R$ 0,00';
@@ -13,133 +14,36 @@ const formatCurrency = (value: string | number | undefined): string => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
 };
 
-// --- Início da Lógica para Conversão de Número para Extenso em PT-BR ---
-const unidades: string[] = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
-const especiais: string[] = ["dez", "onze", "doze", "treze", "catorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-const dezenas: string[] = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-const centenas: string[] = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+const toWordsInPortuguese = (num: number): string => {
+    // This is a simplified implementation. For production, a robust library is recommended.
+    const integerPart = Math.floor(num);
+    const decimalPart = Math.round((num - integerPart) * 100);
 
-function converterInteiroParaExtensoPTBR(n: number): string {
-    if (n === 0) return "zero";
-    if (n < 0) return "menos " + converterInteiroParaExtensoPTBR(Math.abs(n));
+    let words = numberToWords.toWords(integerPart);
+    words = words.replace(/-/g, ' '); // a library pode usar hífens
 
-    let extenso = "";
-    
-    if (n >= 1000000000000) { // Trilhão
-        const trilhao = Math.floor(n / 1000000000000);
-        extenso += (trilhao === 1 ? "um trilhão" : converterInteiroParaExtensoPTBR(trilhao) + " trilhões");
-        n %= 1000000000000;
-        if (n > 0) extenso += (n < 100 || n % 100 === 0 ? " e " : ", ");
+    let finalWords = `${words} reais`;
+
+    if (decimalPart > 0) {
+        let decimalWords = numberToWords.toWords(decimalPart);
+        decimalWords = decimalWords.replace(/-/g, ' ');
+        finalWords += ` e ${decimalWords} centavos`;
     }
 
-    if (n >= 1000000000) { 
-        const bilhao = Math.floor(n / 1000000000);
-        extenso += (bilhao === 1 ? "um bilhão" : converterInteiroParaExtensoPTBR(bilhao) + " bilhões");
-        n %= 1000000000;
-        if (n > 0) extenso += (n < 100 || n % 100 === 0 ? " e " : ", ");
-    }
-    
-    if (n >= 1000000) { 
-        const milhao = Math.floor(n / 1000000);
-        extenso += (milhao === 1 ? "um milhão" : converterInteiroParaExtensoPTBR(milhao) + " milhões");
-        n %= 1000000;
-        if (n > 0) extenso += (n < 100 || n % 100 === 0 ? " e " : ", ");
-    }
+    // Capitalize first letter
+    return finalWords.charAt(0).toUpperCase() + finalWords.slice(1);
+};
 
-    if (n >= 1000) {
-        const milhar = Math.floor(n / 1000);
-        extenso += (milhar === 1 ? "mil" : converterInteiroParaExtensoPTBR(milhar) + " mil");
-        n %= 1000;
-         if (n > 0) {
-            if (n % 100 === 0 ) { 
-                 extenso += " e ";
-            } else if (n < 100) {
-                 extenso += " e ";
-            } else if (n > 0) { 
-                extenso += ", ";
-            }
-        }
-    }
-    
-    if (n === 100) { 
-        extenso += "cem";
-        n = 0; 
-    } else if (n > 100) { 
-        extenso += centenas[Math.floor(n / 100)];
-        n %= 100;
-        if (n > 0) extenso += " e ";
-    }
 
-    if (n >= 20) {
-        extenso += dezenas[Math.floor(n / 10)];
-        n %= 10;
-        if (n > 0) extenso += " e ";
-    } else if (n >= 10) {
-        extenso += especiais[n - 10];
-        n = 0; 
-    }
-
-    if (n > 0) {
-        extenso += unidades[n];
-    }
-    
-    let cleanedExtenso = extenso.trim();
-    if (cleanedExtenso.endsWith(" e")) {
-        cleanedExtenso = cleanedExtenso.substring(0, cleanedExtenso.length - 2);
-    }
-    if (cleanedExtenso.endsWith(",")) {
-        cleanedExtenso = cleanedExtenso.substring(0, cleanedExtenso.length - 1);
-    }
-    
-    return cleanedExtenso.trim();
-}
-
-const numberToWords = (numStr: string | number | undefined): string => {
+const numberToWordsPt = (numStr: string | number | undefined): string => {
     if (numStr === undefined || numStr === null) return '';
     const numValue = typeof numStr === 'string' ? parseFloat(numStr.replace(',', '.')) : numStr;
     if (isNaN(numValue)) return '';
-
-    const integerPart = Math.floor(numValue);
-    const decimalPart = Math.round((numValue - integerPart) * 100);
-
-    let extensoInteiro = "";
-    if (integerPart === 0 && decimalPart === 0) { 
-        extensoInteiro = "zero";
-    } else if (integerPart > 0) { 
-        extensoInteiro = converterInteiroParaExtensoPTBR(integerPart);
-    }
     
-    let extensoFinal = "";
-
-    if (extensoInteiro) {
-      const unidadeMoeda = (integerPart === 1 && !extensoInteiro.includes("mil") && !extensoInteiro.includes("milhão") && !extensoInteiro.includes("bilhão") && !extensoInteiro.includes("trilhão") ) ? "real" : "reais";
-      extensoFinal = `${extensoInteiro} ${unidadeMoeda}`;
-    }
-
-    if (decimalPart > 0) {
-        const extensoDecimal = converterInteiroParaExtensoPTBR(decimalPart);
-        const unidadeCentavos = decimalPart === 1 ? "centavo" : "centavos";
-        if (extensoFinal && extensoFinal !== "zero reais") { 
-             extensoFinal += ` e ${extensoDecimal} ${unidadeCentavos}`;
-        } else if (extensoFinal === "zero reais" && decimalPart > 0) {
-            extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
-        }
-         else { 
-            extensoFinal = `${extensoDecimal} ${unidadeCentavos}`;
-        }
-    }
-
-    if (!extensoFinal && integerPart === 0 && decimalPart === 0) { 
-        extensoFinal = "Zero reais";
-    }
-
-    if (extensoFinal) {
-      extensoFinal = extensoFinal.charAt(0).toUpperCase() + extensoFinal.slice(1);
-      return ` (${extensoFinal})`;
-    }
-    return "";
+    const inWords = toWordsInPortuguese(numValue);
+    return ` (${inWords})`;
 };
-// --- Fim da Lógica para Conversão de Número para Extenso em PT-BR ---
+
 
 // Helper function to bolden specific terms in a text
 const boldenContractTerms = (text: string | undefined, termsToBold: string[]): React.ReactNode[] => {
@@ -201,7 +105,7 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
 
   const permutaTerms = ["PERMUTANTE", "PERMUTADO", "CONTRATO DE PERMUTA DE EQUIPAMENTO POR PRESTAÇÃO DE SERVIÇOS"];
   const equipmentValueFormatted = formatCurrency(equipmentValue);
-  const equipmentValueInWords = numberToWords(equipmentValue);
+  const equipmentValueInWords = numberToWordsPt(equipmentValue);
   
   let clauseNumber = 1;
 
@@ -292,16 +196,16 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
   const serviceTerms = ["CONTRATANTE", "CONTRATADA", "CONTRATANTES", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE GRAVAÇÃO E EDIÇÃO DE VÍDEOS"]; 
   const totalValueFormatted = formatCurrency(totalValue);
-  const totalValueInWords = numberToWords(totalValue);
+  const totalValueInWords = numberToWordsPt(totalValue);
   
   let rescissionNoticePeriodInWords = "";
   if (rescissionNoticePeriodDays && !isNaN(parseInt(rescissionNoticePeriodDays))) {
-      rescissionNoticePeriodInWords = converterInteiroParaExtensoPTBR(parseInt(rescissionNoticePeriodDays));
+      rescissionNoticePeriodInWords = toWordsInPortuguese(parseInt(rescissionNoticePeriodDays));
   }
 
   let rescissionPenaltyInWords = "";
   if (rescissionPenaltyPercentage && !isNaN(parseFloat(rescissionPenaltyPercentage))) {
-     rescissionPenaltyInWords = converterInteiroParaExtensoPTBR(parseFloat(rescissionPenaltyPercentage));
+     rescissionPenaltyInWords = toWordsInPortuguese(parseFloat(rescissionPenaltyPercentage));
   }
 
   let paymentDescription = '';
@@ -430,10 +334,10 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
 
   const freelanceTerms = ["CONTRATANTE", "CONTRATADO", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS FREELANCER PARA CAPTAÇÃO DE VÍDEO"];
   const remunerationValueFormatted = formatCurrency(remunerationValue);
-  const remunerationValueInWords = numberToWords(remunerationValue);
+  const remunerationValueInWords = numberToWordsPt(remunerationValue);
   const confidentialityPenaltyFormatted = formatCurrency(confidentialityBreachPenaltyValue);
-  const confidentialityPenaltyInWords = numberToWords(confidentialityBreachPenaltyValue);
-  const rescissionNoticeDaysInWords = rescissionNoticeDays ? converterInteiroParaExtensoPTBR(parseInt(rescissionNoticeDays)) : '______';
+  const confidentialityPenaltyInWords = numberToWordsPt(confidentialityBreachPenaltyValue);
+  const rescissionNoticeDaysInWords = rescissionNoticeDays ? toWordsInPortuguese(parseInt(rescissionNoticeDays)) : '______';
   
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -545,7 +449,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
 
   const authTerms = ["AUTORIZANTE", "AUTORIZADO(A)", "AUTORIZADO", "TERMO DE AUTORIZAÇÃO ESPECÍFICA DE USO DE MATERIAL – FREELANCER"];
   const penaltyValueFormatted = formatCurrency(penaltyValue);
-  const penaltyValueInWords = numberToWords(penaltyValue);
+  const penaltyValueInWords = numberToWordsPt(penaltyValue);
   
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -654,9 +558,9 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
 
   const editorTerms = ["CONTRATANTE", "CONTRATADO", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO"];
   const remunerationFormatted = formatCurrency(remunerationValue);
-  const remunerationInWords = numberToWords(remunerationValue);
+  const remunerationInWords = numberToWordsPt(remunerationValue);
   const confidentialityPenaltyFormatted = formatCurrency(confidentialityPenalty);
-  const confidentialityPenaltyInWords = numberToWords(confidentialityPenalty);
+  const confidentialityPenaltyInWords = numberToWordsPt(confidentialityPenalty);
 
   const finalPaymentDetails = paymentDetails.replace('[valor a ser definido]', `${remunerationFormatted}${remunerationInWords}`);
   
@@ -713,7 +617,7 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
   }
 
   return (
-    <div id="contract-preview-content" className="bg-white text-black print:shadow-none print:border-none">
+    <div id="contract-preview-content" className="bg-white text-black p-4 rounded-lg shadow-md print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
         <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
       )}
@@ -742,3 +646,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    

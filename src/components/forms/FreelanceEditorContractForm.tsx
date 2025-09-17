@@ -65,7 +65,7 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
   const includeNonCompete = watch('includeNonCompeteClause');
 
   return (
-    <Card className="shadow-xl bg-card text-card-foreground w-full">
+    <Card className="shadow-xl bg-card text-card-foreground w-full border-none">
       <CardHeader>
         <CardTitle className="flex items-center">
           <FileText className="h-6 w-6 mr-2 text-primary" />
@@ -224,3 +224,5 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
 };
 
 export default FreelanceEditorContractForm;
+
+    
