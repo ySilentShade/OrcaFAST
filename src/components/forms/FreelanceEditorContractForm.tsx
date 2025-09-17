@@ -28,14 +28,10 @@ export const freelanceEditorContractFormSchema = z.object({
   remunerationValue: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor deve ser um número não negativo" }),
   paymentDetails: z.string().min(1, "Detalhes do pagamento são obrigatórios"),
   lateDeliveryPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
-  softwareResponsibility: z.string().min(1, "Cláusula de software é obrigatória"),
   confidentialityPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor da multa deve ser um número não negativo" }),
-  remoteWorkPolicy: z.string().min(1, "Política de trabalho remoto/híbrido é obrigatória"),
   rescissionNoticeDays: z.string().refine(val => !isNaN(parseInt(val)) && parseInt(val) >= 0, { message: "Deve ser um número não negativo" }),
   unjustifiedRescissionPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
   foro: z.string().min(1, "Foro é obrigatório"),
-  availabilityAndCommunication: z.string().min(1, "Cláusula de disponibilidade é obrigatória"),
-  serviceQuality: z.string().min(1, "Cláusula de qualidade é obrigatória"),
   intellectualProperty: z.string().min(1, "Cláusula de propriedade intelectual é obrigatória"),
   nonCompeteClause: z.string().min(1, "Cláusula de não concorrência é obrigatória"),
   includeNonCompeteClause: z.boolean(),
@@ -122,25 +118,13 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                 <Controller name="lateDeliveryPenalty" control={control} render={({ field }) => <Input id="lateDeliveryPenalty" type="number" {...field} />} />
                 {errors.lateDeliveryPenalty && <p className="text-sm text-destructive mt-1">{errors.lateDeliveryPenalty.message}</p>}
               </div>
-              
-              <div>
-                <Label htmlFor="softwareResponsibility" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 5 - Softwares</Label>
-                <Controller name="softwareResponsibility" control={control} render={({ field }) => <Textarea id="softwareResponsibility" rows={5} {...field} />} />
-                {errors.softwareResponsibility && <p className="text-sm text-destructive mt-1">{errors.softwareResponsibility.message}</p>}
-              </div>
-              
+                            
                <div>
                 <Label htmlFor="confidentialityPenalty" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Cláusula 7 - Multa de Confidencialidade (R$)</Label>
                 <Controller name="confidentialityPenalty" control={control} render={({ field }) => <Input id="confidentialityPenalty" type="number" step="0.01" {...field} />} />
                 {errors.confidentialityPenalty && <p className="text-sm text-destructive mt-1">{errors.confidentialityPenalty.message}</p>}
               </div>
               
-               <div>
-                <Label htmlFor="remoteWorkPolicy" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 9 - Trabalho Remoto e Híbrido</Label>
-                <Controller name="remoteWorkPolicy" control={control} render={({ field }) => <Textarea id="remoteWorkPolicy" rows={5} {...field} />} />
-                {errors.remoteWorkPolicy && <p className="text-sm text-destructive mt-1">{errors.remoteWorkPolicy.message}</p>}
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                  <div>
                     <Label htmlFor="rescissionNoticeDays" className="flex items-center mb-1"><CalendarDays className="mr-2 h-4 w-4" />Cláusula 10 - Aviso Prévio de Rescisão (dias)</Label>
@@ -155,15 +139,9 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
               </div>
 
                <div>
-                <Label htmlFor="availabilityAndCommunication" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 13 - Disponibilidade e Comunicação</Label>
-                <Controller name="availabilityAndCommunication" control={control} render={({ field }) => <Textarea id="availabilityAndCommunication" rows={3} {...field} />} />
-                {errors.availabilityAndCommunication && <p className="text-sm text-destructive mt-1">{errors.availabilityAndCommunication.message}</p>}
-              </div>
-              
-               <div>
-                <Label htmlFor="serviceQuality" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula 14 - Qualidade dos Serviços</Label>
-                <Controller name="serviceQuality" control={control} render={({ field }) => <Textarea id="serviceQuality" rows={3} {...field} />} />
-                {errors.serviceQuality && <p className="text-sm text-destructive mt-1">{errors.serviceQuality.message}</p>}
+                <Label htmlFor="intellectualProperty" className="flex items-center mb-1"><FileWarning className="mr-2 h-4 w-4" />Cláusula de Propriedade Intelectual</Label>
+                <Controller name="intellectualProperty" control={control} render={({ field }) => <Textarea id="intellectualProperty" rows={3} {...field} />} />
+                {errors.intellectualProperty && <p className="text-sm text-destructive mt-1">{errors.intellectualProperty.message}</p>}
               </div>
 
               <div className="p-3 border rounded-md space-y-3">
@@ -224,5 +202,3 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
 };
 
 export default FreelanceEditorContractForm;
-
-    

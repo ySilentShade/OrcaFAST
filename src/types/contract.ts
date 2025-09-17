@@ -103,19 +103,19 @@ export interface FreelanceEditorContractData {
   remunerationValue: string;
   paymentDetails: string;
   lateDeliveryPenalty: string;
-  softwareResponsibility: string;
   confidentialityPenalty: string;
-  remoteWorkPolicy: string;
   rescissionNoticeDays: string;
   unjustifiedRescissionPenalty: string;
   foro: string;
-  availabilityAndCommunication: string;
-  serviceQuality: string;
   intellectualProperty: string;
   nonCompeteClause: string;
   includeNonCompeteClause: boolean; // To toggle the clause
   contractCity: string;
   contractFullDate: string;
+  softwareResponsibility: string; // Keep for the preview
+  remoteWorkPolicy: string; // Keep for the preview
+  availabilityAndCommunication: string; // Keep for the preview
+  serviceQuality: string; // Keep for the preview
 }
 
 
@@ -227,5 +227,3 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
   editorName: '',
 };
-
-    
