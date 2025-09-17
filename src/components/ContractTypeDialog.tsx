@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { SupportedContractType } from '@/types/contract';
-import { FileText, Video, Repeat, UserCheck, FileCheck2, UserCog, Briefcase } from 'lucide-react'; 
+import { FileText, Video, Repeat, UserCheck, FileCheck2, UserCog, Briefcase, ArrowLeft } from 'lucide-react'; 
 
 interface ContractTypeDialogProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ const contractGroups = [
         ]
     },
     {
-        groupTitle: "Contratos com Freelancers",
+        groupTitle: "Contratos com Prestadores de Serviço",
         icon: UserCog,
         contracts: [
             { 
