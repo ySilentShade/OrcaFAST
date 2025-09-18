@@ -571,8 +571,8 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
       </div>
 
       <div className="space-y-3">
-        <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/>{boldenContractTerms('1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.', editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</strong><br/>{boldenContractTerms('2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.', editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/><strong className="font-bold">1.1. </strong>{boldenContractTerms('O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.', editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</strong><br/><strong className="font-bold">2.1. </strong>{boldenContractTerms('Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.', editorTerms)}</p>
         <div>
           <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
           <p><strong className="font-bold">3.1. </strong>{boldenContractTerms(clause3_1, editorTerms)}</p>
@@ -649,3 +649,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 
 export default ContractPreview;
 
+
+    
