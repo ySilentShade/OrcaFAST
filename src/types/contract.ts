@@ -8,7 +8,7 @@ export type SupportedContractType =
   | 'SERVICE_VIDEO'
   | 'FREELANCE_HIRE_FILMMAKER'
   | 'FREELANCER_MATERIAL_AUTHORIZATION' // New type
-  | 'FREELANCE_HIRE_EDITOR'; // Remains disabled for now
+  | 'FREELANCE_HIRE_EDITOR';
 
 // Basic structure for contact information, reusable across contracts
 export interface ContractParty {
@@ -97,6 +97,7 @@ export interface FreelancerMaterialAuthorizationData {
   contractFullDate: string;
 }
 
+export type RemunerationType = 'MENSAL' | 'PROJETO' | 'SEMANAL' | 'PERCENTUAL';
 
 // --- Data for "Contratação Freelancer Editor" Contract ---
 export interface FreelanceEditorContractData {
@@ -223,3 +224,5 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
   editorName: '',
 };
+
+    

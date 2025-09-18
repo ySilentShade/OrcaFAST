@@ -29,6 +29,12 @@ const numberToWordsPt = (numStr: string | number | undefined): string => {
 };
 
 
+const Clause: React.FC<React.PropsWithChildren<{ style?: React.CSSProperties }>> = ({ children, style }) => (
+  <div style={{ pageBreakInside: 'avoid', ...style }}>
+    {children}
+  </div>
+);
+
 // Helper function to bolden specific terms in a text
 const boldenContractTerms = (text: string | undefined, termsToBold: string[]): React.ReactNode[] => {
   if (!text) return [<React.Fragment key="empty"></React.Fragment>];
@@ -51,23 +57,23 @@ const boldenContractTerms = (text: string | undefined, termsToBold: string[]): R
 
 
 const PartyDetails: React.FC<{ party: ContractParty, title: string, index?: number }> = ({ party, title, index }) => (
-  <div className="mb-4">
-    <p className="font-semibold">{title}{typeof index === 'number' ? ` ${index + 1}` : ''}:</p>
-    <p><strong className="font-bold">NOME:</strong> {party.name || '____________________________________________'}</p>
-    <p><strong className="font-bold">CPF/CNPJ:</strong> {party.cpfCnpj || '____________________________________________'}</p>
-    <p><strong className="font-bold">ENDEREÇO:</strong> {party.address || '____________________________________________'}</p>
-    <p><strong className="font-bold">E-MAIL:</strong> {party.email || '____________________________________________'}</p>
-  </div>
+    <div className="mb-4">
+        <p className="font-semibold">{title}{typeof index === 'number' ? ` ${index + 1}` : ''}:</p>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">NOME:</strong> <span>{party.name || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">CPF/CNPJ:</strong> <span>{party.cpfCnpj || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">ENDEREÇO:</strong> <span>{party.address || '____________________________________________'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-28">E-MAIL:</strong> <span>{party.email || '____________________________________________'}</span></div>
+    </div>
 );
 
 const CompanyAsPartyDetails: React.FC<{ companyInfo: CompanyInfo, title: string, cnpj?: string, sede?: string }> = ({ companyInfo, title, cnpj, sede }) => (
- <div className="mb-6">
-    <p className="font-semibold">{title}:</p>
-    <p><strong className="font-bold">NOME:</strong> {companyInfo.name}</p>
-    <p><strong className="font-bold">CNPJ:</strong> {cnpj || '53.525.841/0001-89'}</p>
-    <p><strong className="font-bold">ENDEREÇO / SEDE:</strong> {sede || companyInfo.address}</p>
-    <p><strong className="font-bold">E-MAIL:</strong> {companyInfo.email}</p>
-  </div>
+    <div className="mb-6">
+        <p className="font-semibold">{title}:</p>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">NOME:</strong> <span>{companyInfo.name}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">CNPJ:</strong> <span>{cnpj || '53.525.841/0001-89'}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">ENDEREÇO / SEDE:</strong> <span>{sede || companyInfo.address}</span></div>
+        <div style={{display: 'flex'}}><strong className="font-bold w-36">E-MAIL:</strong> <span>{companyInfo.email}</span></div>
+    </div>
 );
 
 
@@ -94,65 +100,63 @@ const PermutaEquipmentServicePreview: React.FC<{ contractData: PermutaEquipmentS
   let clauseNumber = 1;
 
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, permutaTerms)}</h1>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, permutaTerms)}</h1>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4">Pelo presente instrumento particular, as partes abaixo identificadas:</p>
         <PartyDetails party={permutante} title="PERMUTANTE (Cede o equipamento e recebe os serviços)" />
         <CompanyAsPartyDetails companyInfo={companyInfo} title="PERMUTADO (Recebe o equipamento e presta os serviços)" />
         <p className="mb-6">têm, entre si, justo e contratado o presente {boldenContractTerms(contractTitle?.toUpperCase(), permutaTerms)}, que se regerá pelas cláusulas e condições seguintes:</p>
-      </div>
+      </Clause>
       
 
       <div className="space-y-3">
-        <div style={{ pageBreakInside: 'avoid' }}>
-            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DO OBJETO</strong><br/>
-            {boldenContractTerms(`O presente contrato tem como objeto a permuta de ${equipmentDescription}, de propriedade do PERMUTANTE, avaliada em ${equipmentValueFormatted}${equipmentValueInWords}, pelo serviço de ${serviceDescription} a ser prestado pelo PERMUTADO.`, permutaTerms)}
-            </p>
-        </div>
+        <Clause>
+            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DO OBJETO</strong></p>
+            <p><strong className="font-bold">1.1.</strong> {boldenContractTerms(`O presente contrato tem como objeto a permuta de ${equipmentDescription}, de propriedade do PERMUTANTE, avaliada em ${equipmentValueFormatted}${equipmentValueInWords}, pelo serviço de ${serviceDescription} a ser prestado pelo PERMUTADO.`, permutaTerms)}</p>
+        </Clause>
 
         {paymentClause && paymentClause.trim() !== '' && (
-            <div style={{ pageBreakInside: 'avoid' }}>
-                <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DA FORMA DE PAGAMENTO</strong><br/>
-                {boldenContractTerms(paymentClause, permutaTerms)}</p>
-            </div>
+            <Clause>
+                <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DA FORMA DE PAGAMENTO</strong></p>
+                <p><strong className="font-bold">2.1.</strong> {boldenContractTerms(paymentClause, permutaTerms)}</p>
+            </Clause>
         )}
 
-        <div style={{ pageBreakInside: 'avoid' }}>
-            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DAS CONDIÇÕES</strong><br/>
-            {boldenContractTerms(conditions, permutaTerms)}</p>
-        </div>
+        <Clause>
+            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DAS CONDIÇÕES</strong></p>
+            <p><strong className="font-bold">3.1.</strong> {boldenContractTerms(conditions, permutaTerms)}</p>
+        </Clause>
         
-        <div style={{ pageBreakInside: 'avoid' }}>
-            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DA TRANSFERÊNCIA DE PROPRIEDADE</strong><br/>
-            {boldenContractTerms(transferClause, permutaTerms)}</p>
-        </div>
+        <Clause>
+            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DA TRANSFERÊNCIA DE PROPRIEDADE</strong></p>
+            <p><strong className="font-bold">4.1.</strong> {boldenContractTerms(transferClause, permutaTerms)}</p>
+        </Clause>
 
         {generalDispositions && generalDispositions.trim() !== '' && (
-            <div style={{ pageBreakInside: 'avoid' }}>
-                <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DAS DISPOSIÇÕES GERAIS</strong><br/>
-                {boldenContractTerms(generalDispositions, permutaTerms)}</p>
-            </div>
+            <Clause>
+                <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DAS DISPOSIÇÕES GERAIS</strong></p>
+                <p><strong className="font-bold">5.1.</strong> {boldenContractTerms(generalDispositions, permutaTerms)}</p>
+            </Clause>
         )}
         
-        <div style={{ pageBreakInside: 'avoid' }}>
-            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DO FORO</strong><br/>
-            {boldenContractTerms(`Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de ${foro}.`, permutaTerms)}
-            </p>
-        </div>
+        <Clause>
+            <p><strong className="font-bold">CLÁUSULA {clauseNumber++} - DO FORO</strong></p>
+            <p><strong className="font-bold">6.1.</strong> {boldenContractTerms(`Para dirimir eventuais dúvidas ou conflitos oriundos deste contrato, as partes elegem o foro da comarca de ${foro}.`, permutaTerms)}</p>
+        </Clause>
       </div>
       
-      <div>
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
-        <div className="mt-12 space-y-10">
-          <p className="text-center">__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
-          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+          <p>__________________________________________<br/>{permutante.name || 'PERMUTANTE'}</p>
+          <p>__________________________________________<br/>{companyInfo.name || 'PERMUTADO'}</p>
         </div>
 
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-      </div>
+        <p className="mt-12">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+      </Clause>
     </div>
   );
 };
@@ -209,92 +213,92 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   };
 
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, serviceTerms)}</h1>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, serviceTerms)}</h1>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         {contratantes.map((contratante, index) => (
           <PartyDetails key={contratante.id || index} party={contratante} title="CONTRATANTE" index={contratantes.length > 1 ? index : undefined} />
         ))}
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATADA" />
-      </div>
+      </Clause>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4"><strong className="font-bold">OBJETO DO CONTRATO:</strong><br/>
         {boldenContractTerms(objectDescription, serviceTerms)}
         </p>
-      </div>
+      </Clause>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4"><strong className="font-bold">VALOR E FORMA DE PAGAMENTO:</strong><br/>
         {boldenContractTerms(`O valor total pelos serviços é de ${totalValueFormatted}${totalValueInWords}, a ser pago da seguinte forma: ${paymentDescription}`, serviceTerms)}
         </p>
-      </div>
+      </Clause>
       
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4"><strong className="font-bold">PRAZO DE ENTREGA:</strong><br/>
         {boldenContractTerms(deliveryDeadline, serviceTerms)}</p>
-      </div>
+      </Clause>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-2 font-bold">RESPONSABILIDADES DA CONTRATADA:</p>
         <ul className="list-disc list-inside ml-4 mb-4">
             {renderList(responsibilitiesContratada, serviceTerms)}
             {!responsibilitiesContratada?.trim() && <li>___________________</li>}
         </ul>
-      </div>
+      </Clause>
       
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-2 font-bold">RESPONSABILIDADES DO(S) CONTRATANTE(S):</p>
         <ul className="list-disc list-inside mb-4 ml-4">
             {renderList(responsibilitiesContratante, serviceTerms)}
             {!responsibilitiesContratante?.trim() && <li>___________________</li>}
         </ul>
-      </div>
+      </Clause>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4"><strong className="font-bold">DIREITOS AUTORAIS:</strong><br/>
         {boldenContractTerms(copyrightClause, serviceTerms)}</p>
-      </div>
+      </Clause>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4"><strong className="font-bold">RESCISÃO:</strong><br/>
         {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticePeriodDays || '__'} ${numberToWordsPt(rescissionNoticePeriodDays)} dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de ${rescissionPenaltyPercentage || '__'}% ${numberToWordsPt(rescissionPenaltyPercentage)} sobre o valor do contrato.`, serviceTerms)}
         </p>
-      </div>
+      </Clause>
 
       {generalDispositions && generalDispositions.trim() !== '' && (
-        <div style={{ pageBreakInside: 'avoid' }}>
+        <Clause>
             <p className="mb-4"><strong className="font-bold">DISPOSIÇÕES GERAIS:</strong><br/>
             {boldenContractTerms(generalDispositions, serviceTerms)}</p>
-        </div>
+        </Clause>
       )}
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <p className="mb-4"><strong className="font-bold">FORO:</strong><br/>
         {boldenContractTerms(`As partes elegem o foro da comarca de ${foro} para dirimir eventuais dúvidas ou conflitos oriundos deste contrato.`, serviceTerms)}</p>
-      </div>
+      </Clause>
 
-      <div>
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
-        <div className="mt-12 space-y-10">
+        <div className="mt-12 space-y-10 flex flex-col items-center">
           {contratantes.length === 1 && contratantes[0] && (
-              <p className="text-center">__________________________________________<br/>{contratantes[0].name || 'CONTRATANTE'}</p>
+              <p>__________________________________________<br/>{contratantes[0].name || 'CONTRATANTE'}</p>
           )}
           {contratantes.length > 1 && (
               <>
-                  <p className="text-center font-semibold">CONTRATANTES:</p>
+                  <p className="font-semibold">CONTRATANTES:</p>
                   {contratantes.map((contratante, index) => (
-                      <p key={contratante.id || index} className="text-center mt-2">__________________________________________<br/>{contratante.name || `CONTRATANTE ${index + 1}`}</p>
+                      <p key={contratante.id || index} className="mt-2">__________________________________________<br/>{contratante.name || `CONTRATANTE ${index + 1}`}</p>
                   ))}
               </>
           )}
-          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
+          <p>__________________________________________<br/>{companyInfo.name || 'CONTRATADA'}</p>
         </div>
 
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-      </div>
+        <p className="mt-12">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+      </Clause>
     </div>
   );
 };
@@ -329,13 +333,13 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   const clause3_2 = `O pagamento ao CONTRATADO será efetuado pela CONTRATANTE após a entrega e aceitação final do serviço, ficando sujeito à validação da CONTRATANTE. O pagamento do CONTRATADO poderá ser afetado pela não quitação do pagamento do CLIENTE à CONTRATANTE, mas o CONTRATADO será pago integralmente pelo serviço prestado.`;
   
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, freelanceTerms)}</h1>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
         <PartyDetails party={contratado} title="CONTRATADO" />
-      </div>
+      </Clause>
       
       <div className="space-y-3">
         <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/><strong className="font-bold">1.1. </strong>{boldenContractTerms('O presente contrato tem como objeto a prestação de serviços de captação de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Gravação de eventos, cenas externas ou internas; Operação de câmeras e equipamentos fornecidos; Cumprimento do roteiro e direção pré-estabelecida.', freelanceTerms)}</p>
@@ -361,17 +365,16 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
         <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '12' : '11'} - DA VIGÊNCIA</strong><br/><strong className="font-bold">{includeNonCompeteClause ? '12.1' : '11.1'}. </strong>{boldenContractTerms(`Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 9.`, freelanceTerms)}</p>
 
       </div>
-
-      <div>
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
-
-        <p className="my-4">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-
-        <div className="mt-12 space-y-10">
-          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
-          <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
+        
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+          <p>__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>(CONTRATANTE)</p>
+          <p>__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>(CONTRATADO)</p>
         </div>
-      </div>
+        
+        <p className="mt-12">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+      </Clause>
     </div>
   );
 };
@@ -396,10 +399,10 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
   const penaltyValueInWords = numberToWordsPt(penaltyValue);
   
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, authTerms)}</h1>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, authTerms)}</h1>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <CompanyAsPartyDetails 
             companyInfo={companyInfo} 
             title="AUTORIZANTE" 
@@ -408,71 +411,70 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
         />
         <PartyDetails party={autorizado} title="AUTORIZADO(A)" />
         <p className="mb-6">firmam o presente {boldenContractTerms(contractTitle?.toUpperCase(), authTerms)}, mediante as cláusulas seguintes:</p>
-      </div>
+      </Clause>
       
       <div className="space-y-3">
-        <div style={{ pageBreakInside: 'avoid' }}>
+        <Clause>
             <p className="mb-1"><strong className="font-bold">CLÁUSULA 1 – DO OBJETO</strong></p>
-            <p className="mb-1">{boldenContractTerms('1.1. Este termo trata da autorização exclusiva e pontual para o uso de material audiovisual captado pelo AUTORIZADO(A) no projeto abaixo identificado:', authTerms)}</p>
+            <p className="mb-1"><strong className="font-bold">1.1.</strong> {boldenContractTerms('Este termo trata da autorização exclusiva e pontual para o uso de material audiovisual captado pelo AUTORIZADO(A) no projeto abaixo identificado:', authTerms)}</p>
             <ul className="list-none ml-4 mb-2">
                 <li><strong className="font-bold">Projeto:</strong> {projectName || '____________________________________________'}</li>
                 <li><strong className="font-bold">Cliente final:</strong> {finalClientName || '____________________________________________'}</li>
                 <li><strong className="font-bold">Data de execução:</strong> {executionDate || '____________________________________________'}</li>
                 <li><strong className="font-bold">Link(s) autorizado(s):</strong> {authorizedLinks || '____________________________________________'}</li>
             </ul>
-            <p>{boldenContractTerms('1.2. A presente autorização é limitada a este único projeto, e não se estende automaticamente a outros trabalhos executados para a AUTORIZante.', authTerms)}</p>
-        </div>
+            <p><strong className="font-bold">1.2.</strong> {boldenContractTerms('A presente autorização é limitada a este único projeto, e não se estende automaticamente a outros trabalhos executados para a AUTORIZANTE.', authTerms)}</p>
+        </Clause>
 
-        <div style={{ pageBreakInside: 'avoid' }}>
+        <Clause>
             <p className="mb-1"><strong className="font-bold">CLÁUSULA 2 – FINALIDADE E LIMITAÇÕES DE USO</strong></p>
-            <p className="mb-1">{boldenContractTerms('2.1. O material descrito na Cláusula 1 poderá ser utilizado exclusivamente para fins de portfólio pessoal ou currículo profissional, em:', authTerms)}</p>
+            <p className="mb-1"><strong className="font-bold">2.1.</strong> {boldenContractTerms('O material descrito na Cláusula 1 poderá ser utilizado exclusivamente para fins de portfólio pessoal ou currículo profissional, em:', authTerms)}</p>
             <ul className="list-disc list-inside ml-8 mb-2">
                 <li>{boldenContractTerms('Sites pessoais, plataformas de portfólio;', authTerms)}</li>
                 <li>{boldenContractTerms('Redes sociais de uso profissional (LinkedIn, Instagram, Vimeo etc.);', authTerms)}</li>
                 <li>{boldenContractTerms('Apresentações a clientes ou contratantes.', authTerms)}</li>
             </ul>
-            <p className="mb-1">{boldenContractTerms('2.2. É vedado:', authTerms)}</p>
+            <p className="mb-1"><strong className="font-bold">2.2.</strong> {boldenContractTerms('É vedado:', authTerms)}</p>
             <ul className="list-disc list-inside ml-8 mb-2">
                 <li>{boldenContractTerms('Monetizar ou veicular o conteúdo em campanhas publicitárias;', authTerms)}</li>
                 <li>{boldenContractTerms('Utilizar imagens com pessoas identificáveis sem autorização expressa destas;', authTerms)}</li>
                 <li>{boldenContractTerms('Fazer edições que distorçam o trabalho, a identidade visual ou a marca do projeto;', authTerms)}</li>
-                <li>{boldenContractTerms('Sugerir que o projeto foi realizado exclusivamente pelo AUTORIZADO(A), sem citar a FastFilms.', authTerms)}</li>
+                <li>{boldenContractTerms('Sugerir que o projeto foi realizado exclusively pelo AUTORIZADO(A), sem citar a FastFilms.', authTerms)}</li>
             </ul>
-            <p>{boldenContractTerms('2.3. O material deve conter o crédito à FastFilms como produtora do projeto.', authTerms)}</p>
-        </div>
+            <p><strong className="font-bold">2.3.</strong> {boldenContractTerms('O material deve conter o crédito à FastFilms como produtora do projeto.', authTerms)}</p>
+        </Clause>
 
-        <div style={{ pageBreakInside: 'avoid' }}>
+        <Clause>
             <p className="mb-1"><strong className="font-bold">CLÁUSULA 3 – VIGÊNCIA E REVOGAÇÃO</strong></p>
-            <p>{boldenContractTerms('3.1. Esta autorização entra em vigor na data da assinatura e é válida por tempo indeterminado, podendo ser revogada a qualquer tempo pela AUTORIZANTE, mediante aviso prévio de 5 (cinco) dias.', authTerms)}</p>
-        </div>
+            <p><strong className="font-bold">3.1.</strong> {boldenContractTerms('Esta autorização entra em vigor na data da assinatura e é válida por tempo indeterminado, podendo ser revogada a qualquer tempo pela AUTORIZANTE, mediante aviso prévio de 5 (cinco) dias.', authTerms)}</p>
+        </Clause>
         
-        <div style={{ pageBreakInside: 'avoid' }}>
+        <Clause>
             <p className="mb-1"><strong className="font-bold">CLÁUSULA 4 – DAS PENALIDADES</strong></p>
-            <p className="mb-1">{boldenContractTerms(`4.1. O uso indevido ou o descumprimento deste termo sujeitará o AUTORIZADO(A) às seguintes penalidades:`, authTerms)}</p>
+            <p className="mb-1"><strong className="font-bold">4.1.</strong> {boldenContractTerms(`O uso indevido ou o descumprimento deste termo sujeitará o AUTORIZADO(A) às seguintes penalidades:`, authTerms)}</p>
             <ul className="list-disc list-inside ml-8 mb-2">
                 <li>{boldenContractTerms('Cancelamento imediato da autorização;', authTerms)}</li>
                 <li>{boldenContractTerms(`Multa de ${penaltyValueFormatted}${penaltyValueInWords};`, authTerms)}</li>
                 <li>{boldenContractTerms('Eventual responsabilização cível e criminal.', authTerms)}</li>
             </ul>
-        </div>
+        </Clause>
         
-        <div style={{ pageBreakInside: 'avoid' }}>
-            <p><strong className="font-bold">CLÁUSULA 5 – DO FORO</strong><br/>
-            {boldenContractTerms(`5.1. Para dirimir quaisquer controvérsias oriundas deste termo, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, authTerms)}
-            </p>
-        </div>
+        <Clause>
+            <p><strong className="font-bold">CLÁUSULA 5 – DO FORO</strong></p>
+            <p><strong className="font-bold">5.1.</strong> {boldenContractTerms(`Para dirimir quaisquer controvérsias oriundas deste termo, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, authTerms)}</p>
+        </Clause>
       </div>
       
-      <div>
+      <Clause style={{textAlign: 'center'}}>
         <p className="mt-8 mb-8">E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
         
-        <div className="mt-12 space-y-10">
-          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'AUTORIZANTE'}<br/>(AUTORIZANTE)</p>
-          <p className="text-center">__________________________________________<br/>{autorizado.name || 'AUTORIZADO(A)'}<br/>(AUTORIZADO(A))</p>
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+          <p>__________________________________________<br/>{companyInfo.name || 'AUTORIZANTE'}<br/>(AUTORIZANTE)</p>
+          <p>__________________________________________<br/>{autorizado.name || 'AUTORIZADO(A)'}<br/>(AUTORIZADO(A))</p>
         </div>
         
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-      </div>
+        <p className="mt-12">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+      </Clause>
     </div>
   );
 };
@@ -507,13 +509,13 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
   const clause3_2 = `O pagamento ao CONTRATADO será efetuado pela CONTRATANTE após a entrega e aceitação final do serviço, ficando sujeito à validação da CONTRATANTE. O pagamento do CONTRATADO poderá ser afetado pela não quitação do pagamento do CLIENTE à CONTRATANTE, mas o CONTRATADO será pago integralmente pelo serviço prestado.`;
   
   return (
-    <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
-      <h1 className="text-center font-bold text-lg mb-6 uppercase">{boldenContractTerms(contractTitle, editorTerms)}</h1>
+    <div className="text-sm leading-relaxed text-justify" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      <h1 className="font-bold text-lg mb-6 uppercase break-words" style={{textAlign: 'center'}}>{boldenContractTerms(contractTitle, editorTerms)}</h1>
       
-      <div style={{ pageBreakInside: 'avoid' }}>
+      <Clause>
         <CompanyAsPartyDetails companyInfo={companyInfo} title="CONTRATANTE" />
         <PartyDetails party={contratado} title="CONTRATADO" />
-      </div>
+      </Clause>
 
       <div className="space-y-3">
         <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/><strong className="font-bold">1.1. </strong>{boldenContractTerms('O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.', editorTerms)}</p>
@@ -539,14 +541,14 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
         <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '16' : '15'} - DA VIGÊNCIA</strong><br/><strong className="font-bold">{includeNonCompeteClause ? '16.1' : '15.1'}. </strong>{boldenContractTerms(`Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.`, editorTerms)}</p>
       </div>
 
-      <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
-      
-      <p className="my-4">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
-      
-      <div className="mt-12 space-y-10">
-        <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
-        <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
-      </div>
+      <Clause style={{textAlign: 'center'}}>
+        <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
+        <p className="mt-12">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+        <div className="mt-12 space-y-10 flex flex-col items-center">
+            <p>__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>({boldenContractTerms('CONTRATANTE', editorTerms)})</p>
+            <p>__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>({boldenContractTerms('CONTRATADO', editorTerms)})</p>
+        </div>
+      </Clause>
     </div>
   );
 };
@@ -555,7 +557,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
 const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: CompanyInfo }> = ({ data, companyInfo }) => {
   if (!data) {
     return (
-      <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px] bg-white">
+      <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px] bg-white text-black">
         <FileText className="h-16 w-16 mb-4 text-gray-400" />
         <p className="text-lg">Nenhum contrato selecionado ou dados preenchidos.</p>
         <p className="text-sm">Escolha um tipo de contrato e preencha o formulário.</p>
@@ -564,7 +566,7 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
   }
 
   return (
-    <div id="contract-preview-content" className="bg-white text-black p-4 rounded-lg shadow-md print:shadow-none print:border-none">
+    <div id="contract-preview-content" className="bg-white text-black p-8 shadow-lg rounded-lg print:shadow-none print:border-none">
       {data.contractType === 'PERMUTA_EQUIPMENT_SERVICE' && (
         <PermutaEquipmentServicePreview contractData={data as PermutaEquipmentServiceContractData} companyInfo={companyInfo} />
       )}
@@ -593,3 +595,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
+
+    
