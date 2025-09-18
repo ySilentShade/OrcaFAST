@@ -20,7 +20,7 @@ const numberToWordsPt = (numStr: string | number | undefined): string => {
     if (isNaN(numValue)) return '';
     
     try {
-        const inWords = porExtenso(numValue, { modo: 'monetario' });
+        const inWords = porExtenso(numValue, 'monetario');
         return ` (${inWords})`;
     } catch (e) {
         console.error("Erro ao converter número para extenso:", e);
@@ -634,6 +634,5 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
 
     
