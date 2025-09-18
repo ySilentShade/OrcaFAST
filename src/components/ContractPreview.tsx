@@ -545,7 +545,6 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
 
   const clause3_1 = `O CONTRATADO receberá o valor de ${remunerationFormatted}${remunerationInWords}, conforme acordado entre as partes.`;
   const clause3_2 = `O pagamento ao CONTRATADO será efetuado pela CONTRATANTE após a entrega e aceitação final do serviço, ficando sujeito à validação da CONTRATANTE. O pagamento do CONTRATADO poderá ser afetado pela não quitação do pagamento do CLIENTE à CONTRATANTE, mas o CONTRATADO será pago integralmente pelo serviço prestado.`;
-  const clause3_3 = `A forma de pagamento ao CONTRATADO será ${paymentFrequencyText}, conforme a opção escolhida pelo CONTRATADO, sendo expressamente definida antes do início dos trabalhos.`;
   
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -563,7 +562,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
           <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
           <p><strong className="font-bold">3.1. </strong>{boldenContractTerms(clause3_1, editorTerms)}</p>
           <p><strong className="font-bold">3.2. </strong>{boldenContractTerms(clause3_2, editorTerms)}</p>
-          <p><strong className="font-bold">3.3. </strong>{boldenContractTerms(clause3_3, editorTerms)}</p>
+          <p><strong className="font-bold">3.3. </strong>A forma de pagamento ao CONTRATADO será <strong>{paymentFrequencyText}</strong>, conforme a opção escolhida pelo CONTRATADO, sendo expressamente definida antes do início dos trabalhos.</p>
         </div>
         <p><strong className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</strong><br/><strong className="font-bold">4.1. </strong>{boldenContractTerms(`Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.`, editorTerms)}<br/><strong className="font-bold">4.2. </strong>{boldenContractTerms(`A não entrega dentro do prazo sem justificativa plausível implicará multa de ${lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.`, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</strong><br/><strong className="font-bold">5.1. </strong>{boldenContractTerms('Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATante, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.', editorTerms)}</p>
