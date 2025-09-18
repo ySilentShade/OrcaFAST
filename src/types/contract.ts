@@ -65,19 +65,22 @@ export interface ServiceVideoContractData {
 export interface FreelanceFilmmakerContractData {
   contractType: 'FREELANCE_HIRE_FILMMAKER';
   contractTitle: string;
-  contratado: ContractParty; // The freelancer being hired
-  remunerationValue: string; // e.g., "150.00"
-  remunerationUnit: 'hora' | 'dia' | 'projeto'; // for "por [hora/dia/projeto]"
-  paymentMethodDescription: string; // for "A forma de pagamento ao CONTRATADO (mensal, semanal ou por projeto) será de sua escolha..."
-  deliveryDeadlineDetails: string; // for "Os prazos para execução e entrega dos arquivos serão definidos..."
-  equipmentDetails: string; // for "Os equipamentos utilizados poderão ser..."
-  confidentialityBreachPenaltyValue: string; // e.g., "15000.00"
-  rescissionNoticeDays: string; // e.g., "15"
-  unjustifiedRescissionPenaltyPercentage: string; // e.g., "30"
+  contratado: ContractParty;
+  remunerationValue: string;
+  paymentFrequency: 'mensal' | 'semanal' | 'por_projeto';
+  lateDeliveryPenalty: string;
+  deliveryDeadlineDetails: string;
+  equipmentDetails: string;
+  confidentialityPenalty: string;
+  rescissionNoticeDays: string;
+  unjustifiedRescissionPenalty: string;
   foro: string;
+  includeNonCompeteClause: boolean;
+  nonCompeteClause?: string;
   contractCity: string;
   contractFullDate: string;
 }
+
 
 // --- Data for "Termo de Autorização Específica de Uso de Material – Freelancer" Contract ---
 export interface FreelancerMaterialAuthorizationData {
@@ -174,15 +177,17 @@ export const initialFreelanceFilmmakerData: FreelanceFilmmakerContractData = {
   contractType: 'FREELANCE_HIRE_FILMMAKER',
   contractTitle: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS FREELANCER PARA CAPTAÇÃO DE VÍDEO',
   contratado: { name: '', cpfCnpj: '', address: '', email: '' },
-  remunerationValue: '150.00',
-  remunerationUnit: 'dia',
-  paymentMethodDescription: 'A forma de pagamento ao CONTRATADO (mensal, semanal ou por projeto) será de sua escolha, desde que acordada com a CONTRATANTE antes do início dos trabalhos, podendo esse acordo ser feito verbalmente, por e-mail ou qualquer outro meio eletrônico de comunicação aceito por ambas as partes.',
-  deliveryDeadlineDetails: 'Os prazos para execução e entrega dos arquivos serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.',
-  equipmentDetails: 'Os equipamentos utilizados poderão ser fornecidos pela CONTRATANTE ou do próprio CONTRATADO, desde que previamente aprovados.',
-  confidentialityBreachPenaltyValue: '15000.00',
+  remunerationValue: '1500.00',
+  paymentFrequency: 'por_projeto',
+  lateDeliveryPenalty: '20',
+  deliveryDeadlineDetails: 'Os prazos para execução e entrega dos arquivos brutos serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.',
+  equipmentDetails: 'Os equipamentos utilizados para a captação serão de responsabilidade do CONTRATADO, devendo ser de qualidade profissional e adequados para a realização dos serviços. Em caso de uso de equipamentos específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência, responsabilizando-se por qualquer dano causado por mau uso.',
+  confidentialityPenalty: '15000.00',
   rescissionNoticeDays: '15',
-  unjustifiedRescissionPenaltyPercentage: '30',
+  unjustifiedRescissionPenalty: '30',
   foro: 'Lagoa Santa/MG',
+  includeNonCompeteClause: false,
+  nonCompeteClause: 'Durante a vigência deste contrato e por um período de 12 (doze) meses após o seu término, o CONTRATADO compromete-se a não prestar serviços, direta ou indiretamente, para clientes apresentados ou para os quais prestou serviço por intermédio da CONTRATANTE.',
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
 };
@@ -212,7 +217,7 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   rescissionNoticeDays: '30',
   unjustifiedRescissionPenalty: '30',
   foro: 'Lagoa Santa/MG',
-  nonCompeteClause: '15.1. O CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
+  nonCompeteClause: 'O CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
   includeNonCompeteClause: true,
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),

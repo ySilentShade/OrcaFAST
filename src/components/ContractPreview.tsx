@@ -304,14 +304,16 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
     contractTitle,
     contratado,
     remunerationValue,
-    remunerationUnit,
-    paymentMethodDescription,
+    paymentFrequency,
+    lateDeliveryPenalty,
     deliveryDeadlineDetails,
     equipmentDetails,
-    confidentialityBreachPenaltyValue,
+    confidentialityPenalty,
     rescissionNoticeDays,
-    unjustifiedRescissionPenaltyPercentage,
+    unjustifiedRescissionPenalty,
     foro,
+    includeNonCompeteClause,
+    nonCompeteClause,
     contractCity,
     contractFullDate,
   } = contractData;
@@ -319,9 +321,12 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   const freelanceTerms = ["CONTRATANTE", "CONTRATADO", "CONTRATO DE PRESTAÇÃO DE SERVIÇOS FREELANCER PARA CAPTAÇÃO DE VÍDEO"];
   const remunerationValueFormatted = formatCurrency(remunerationValue);
   const remunerationValueInWords = numberToWordsPt(remunerationValue);
-  const confidentialityPenaltyFormatted = formatCurrency(confidentialityBreachPenaltyValue);
-  const confidentialityPenaltyInWords = numberToWordsPt(confidentialityBreachPenaltyValue);
-  const rescissionNoticeDaysInWords = numberToWordsPt(rescissionNoticeDays) || '______';
+  const confidentialityPenaltyFormatted = formatCurrency(confidentialityPenalty);
+  const confidentialityPenaltyInWords = numberToWordsPt(confidentialityPenalty);
+  const paymentFrequencyText = paymentFrequency.replace('_', ' ');
+
+  const clause3_1 = `O CONTRATADO receberá o valor de ${remunerationValueFormatted}${remunerationValueInWords}, conforme acordado entre as partes.`;
+  const clause3_2 = `O pagamento ao CONTRATADO será efetuado pela CONTRATANTE após a entrega e aceitação final do serviço, ficando sujeito à validação da CONTRATANTE. O pagamento do CONTRATADO poderá ser afetado pela não quitação do pagamento do CLIENTE à CONTRATANTE, mas o CONTRATADO será pago integralmente pelo serviço prestado.`;
   
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -332,90 +337,45 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
         <PartyDetails party={contratado} title="CONTRATADO" />
       </div>
       
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 1 – DO OBJETO</strong></p>
-        <p className="mb-1">{boldenContractTerms('1.1. O presente contrato tem como objeto a prestação de serviços de captação de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a:', freelanceTerms)}</p>
-        <ul className="list-disc list-inside ml-4 mb-4">
-            <li>{boldenContractTerms('Gravação de eventos, cenas externas ou internas;', freelanceTerms)}</li>
-            <li>{boldenContractTerms('Operação de câmeras e equipamentos fornecidos;', freelanceTerms)}</li>
-            <li>{boldenContractTerms('Cumprimento do roteiro e direção pré-estabelecida.', freelanceTerms)}</li>
-        </ul>
-      </div>
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 2 – DA NATUREZA DO VÍNCULO</strong></p>
-        <p className="mb-4">{boldenContractTerms('2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis.', freelanceTerms)}</p>
-      </div>
-      
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 3 – DA REMUNERAÇÃO</strong></p>
-        <p className="mb-1">{boldenContractTerms(`3.1. O CONTRATADO receberá o valor de ${remunerationValueFormatted}${remunerationValueInWords} por ${remunerationUnit}, conforme acordado previamente entre as partes.`, freelanceTerms)}</p>
-        <p className="mb-1">{boldenContractTerms('3.2. A CONTRATANTE realiza seus pagamentos mediante sinal de 50% do valor contratado junto ao cliente e os 50% restantes na entrega final. O CONTRATADO somente fará jus ao pagamento após a entrega e aceitação do projeto pelo cliente da CONTRATANTE, no qual o CONTRATADO tenha efetivamente prestado os serviços.', freelanceTerms)}</p>
-        <div style={{ pageBreakBefore: 'always' }}>
-          <p className="mb-4">{boldenContractTerms(`3.3. ${paymentMethodDescription}`, freelanceTerms)}</p>
+      <div className="space-y-3">
+        <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/><strong className="font-bold">1.1. </strong>{boldenContractTerms('O presente contrato tem como objeto a prestação de serviços de captação de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Gravação de eventos, cenas externas ou internas; Operação de câmeras e equipamentos fornecidos; Cumprimento do roteiro e direção pré-estabelecida.', freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</strong><br/><strong className="font-bold">2.1. </strong>{boldenContractTerms('Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis.', freelanceTerms)}</p>
+        
+        <div>
+          <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
+          <p><strong className="font-bold">3.1. </strong>{boldenContractTerms(clause3_1, freelanceTerms)}</p>
+          <p><strong className="font-bold">3.2. </strong>{boldenContractTerms(clause3_2, freelanceTerms)}</p>
+          <p><strong className="font-bold">3.3. </strong>A forma de pagamento ao CONTRATADO será <strong>{paymentFrequencyText}</strong>, conforme a opção escolhida pelo CONTRATADO, sendo expressamente definida antes do início dos trabalhos.</p>
         </div>
-      </div>
+        
+        <p><strong className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</strong><br/><strong className="font-bold">4.1. </strong>{boldenContractTerms(deliveryDeadlineDetails, freelanceTerms)}<br/><strong className="font-bold">4.2. </strong>{boldenContractTerms(`A não entrega dentro do prazo sem justificativa plausível implicará multa de ${lateDeliveryPenalty}% sobre o valor do serviço e possível rescisão contratual.`, freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 5 - DOS EQUIPAMENTOS</strong><br/><strong className="font-bold">5.1. </strong>{boldenContractTerms(equipmentDetails, freelanceTerms)}<br/><strong className="font-bold">5.2. </strong>{boldenContractTerms('Em caso de dano, extravio ou mau uso de equipamento fornecido pela CONTRATANTE, o CONTRATADO se compromete a ressarcir integralmente o valor de mercado do item afetado.', freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 6 - DOS DIREITOS AUTORAIS E DE IMAGEM</strong><br/><strong className="font-bold">6.1. </strong>{boldenContractTerms('Todo o material captado durante os serviços prestados será de propriedade integral e irrevogável da CONTRATANTE.', freelanceTerms)}<br/><strong className="font-bold">6.2. </strong>{boldenContractTerms('O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material captado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.', freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 7 - DA CONFIDENCIALIDADE</strong><br/><strong className="font-bold">7.1. </strong>{boldenContractTerms('O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.', freelanceTerms)}<br/><strong className="font-bold">7.2. </strong>{boldenContractTerms(`Em caso de quebra de confidencialidade, será aplicada multa de ${confidentialityPenaltyFormatted}${confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.`, freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 8 - DAS PENALIDADES</strong><br/><strong className="font-bold">8.1. </strong>{boldenContractTerms('O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades: Advertência formal; Multa de até 50% do valor acordado; Rescisão imediata do contrato; Responsabilização cível e criminal, conforme o caso.', freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 9 - DA RESCISÃO</strong><br/><strong className="font-bold">9.1. </strong>{boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticeDays} dias corridos.`, freelanceTerms)}<br/><strong className="font-bold">9.2. </strong>{boldenContractTerms(`Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a ${unjustifiedRescissionPenalty}% do valor do serviço acordado.`, freelanceTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 10 - DO FORO</strong><br/><strong className="font-bold">10.1. </strong>{boldenContractTerms(`Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, freelanceTerms)}</p>
+        
+        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 11 - DA NÃO CONCORRÊNCIA</strong><br/><strong className="font-bold">11.1. </strong>{boldenContractTerms(nonCompeteClause || '', freelanceTerms)}</p>}
 
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 4 – DOS PRAZOS E ENTREGAS</strong></p>
-        <p className="mb-1">{boldenContractTerms(`4.1. ${deliveryDeadlineDetails}`, freelanceTerms)}</p>
-        <p className="mb-4">{boldenContractTerms('4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de 20% sobre o valor do serviço e possível rescisão contratual.', freelanceTerms)}</p>
-      </div>
+        <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '12' : '11'} - DA VIGÊNCIA</strong><br/><strong className="font-bold">{includeNonCompeteClause ? '12.1' : '11.1'}. </strong>{boldenContractTerms(`Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 9.`, freelanceTerms)}</p>
 
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 5 – DOS EQUIPAMENTOS</strong></p>
-        <p className="mb-1">{boldenContractTerms(`5.1. ${equipmentDetails}`, freelanceTerms)}</p>
-        <p className="mb-4">{boldenContractTerms('5.2. Em caso de dano, extravio ou mau uso de equipamento fornecido pela CONTRATANTE, o CONTRATADO se compromete a ressarcir integralmente o valor de mercado do item afetado.', freelanceTerms)}</p>
-      </div>
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 6 – DOS DIREITOS AUTORAIS E DE IMAGEM</strong></p>
-        <p className="mb-1">{boldenContractTerms('6.1. Todo o material captado durante os serviços prestados será de propriedade integral e irrevogável da CONTRATANTE.', freelanceTerms)}</p>
-        <p className="mb-4">{boldenContractTerms('6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material captado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.', freelanceTerms)}</p>
-      </div>
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 7 – DA CONFIDENCIALIDADE</strong></p>
-        <p className="mb-1">{boldenContractTerms('7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.', freelanceTerms)}</p>
-        <p className="mb-4">{boldenContractTerms(`7.2. Em caso de quebra de confidencialidade, será aplicada multa de ${confidentialityPenaltyFormatted}${confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.`, freelanceTerms)}</p>
-      </div>
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 8 – DAS PENALIDADES</strong></p>
-        <p className="mb-1">{boldenContractTerms('8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades:', freelanceTerms)}</p>
-        <ul className="list-disc list-inside ml-4 mb-4">
-            <li>{boldenContractTerms('Advertência formal;', freelanceTerms)}</li>
-            <li>{boldenContractTerms('Multa de até 50% do valor acordado;', freelanceTerms)}</li>
-            <li>{boldenContractTerms('Rescisão imediata do contrato;', freelanceTerms)}</li>
-            <li>{boldenContractTerms('Responsabilização cível e criminal, conforme o caso.', freelanceTerms)}</li>
-        </ul>
-      </div>
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 9 – DA RESCISÃO</strong></p>
-        <p className="mb-1">{boldenContractTerms(`9.1. O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticeDays} (${rescissionNoticeDaysInWords}) dias corridos.`, freelanceTerms)}</p>
-        <p className="mb-4">{boldenContractTerms(`9.2. Em caso de rescisão sem justificativa após aceite formal de um serviço, o CONTRATADO deverá arcar com multa equivalente a ${unjustifiedRescissionPenaltyPercentage}% do valor do serviço acordado.`, freelanceTerms)}</p>
-      </div>
-
-      <div style={{ pageBreakInside: 'avoid' }}>
-        <p className="mb-4"><strong className="font-bold">CLÁUSULA 10 – DO FORO</strong></p>
-        <p className="mb-4">{boldenContractTerms(`10.1. Para dirimir quaisquer dúvidas oriundas deste contrato, as partes elegem o foro da comarca de ${foro}, com renúncia a qualquer outro, por mais privilegiado que seja.`, freelanceTerms)}</p>
       </div>
 
       <div>
         <p className="mt-8 mb-8">E por estarem assim justas e contratadas, firmam o presente instrumento em duas vias de igual teor.</p>
 
+        <p className="my-4">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
+
         <div className="mt-12 space-y-10">
-          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}<br/>(CONTRATANTE)</p>
-          <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}<br/>(CONTRATADO)</p>
+          <p className="text-center">__________________________________________<br/>{companyInfo.name || 'CONTRATANTE'}</p>
+          <p className="text-center">__________________________________________<br/>{contratado.name || 'CONTRATADO'}</p>
         </div>
-        
-        <p className="mt-12 text-right">{contractCity || '___________________'}, {contractFullDate || '___________________'}.</p>
       </div>
     </div>
   );
 };
+
 
 const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: FreelancerMaterialAuthorizationData, companyInfo: CompanyInfo }> = ({ contractData, companyInfo }) => {
   const {
@@ -460,7 +420,7 @@ const FreelancerMaterialAuthorizationPreview: React.FC<{ contractData: Freelance
                 <li><strong className="font-bold">Data de execução:</strong> {executionDate || '____________________________________________'}</li>
                 <li><strong className="font-bold">Link(s) autorizado(s):</strong> {authorizedLinks || '____________________________________________'}</li>
             </ul>
-            <p>{boldenContractTerms('1.2. A presente autorização é limitada a este único projeto, e não se estende automaticamente a outros trabalhos executados para a AUTORIZANTE.', authTerms)}</p>
+            <p>{boldenContractTerms('1.2. A presente autorização é limitada a este único projeto, e não se estende automaticamente a outros trabalhos executados para a AUTORIZante.', authTerms)}</p>
         </div>
 
         <div style={{ pageBreakInside: 'avoid' }}>
@@ -562,7 +522,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
           <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
           <p><strong className="font-bold">3.1. </strong>{boldenContractTerms(clause3_1, editorTerms)}</p>
           <p><strong className="font-bold">3.2. </strong>{boldenContractTerms(clause3_2, editorTerms)}</p>
-          <p><strong className="font-bold">3.3. </strong>A forma de pagamento ao CONTRATADO será <strong>{paymentFrequencyText}</strong>, conforme a opção escolhida pelo CONTRATADO, sendo expressamente definida antes do início dos trabalhos.</p>
+          <p><strong className="font-bold">3.3. </strong>A forma de pagamento ao CONTRATADO será <strong className="font-bold">{paymentFrequencyText}</strong>, conforme a opção escolhida pelo CONTRATADO, sendo expressamente definida antes do início dos trabalhos.</p>
         </div>
         <p><strong className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</strong><br/><strong className="font-bold">4.1. </strong>{boldenContractTerms(`Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.`, editorTerms)}<br/><strong className="font-bold">4.2. </strong>{boldenContractTerms(`A não entrega dentro do prazo sem justificativa plausível implicará multa de ${lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.`, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</strong><br/><strong className="font-bold">5.1. </strong>{boldenContractTerms('Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATante, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.', editorTerms)}</p>
@@ -633,5 +593,3 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
-    
