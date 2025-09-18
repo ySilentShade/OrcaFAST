@@ -11,8 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import type { FreelanceEditorContractData } from '@/types/contract';
-import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent } from 'lucide-react';
+import { FileText, Send, User, Briefcase, MapPin, Mail, DollarSign, CalendarDays, Shield, ShieldOff, Percent, Clock } from 'lucide-react';
 
 const contratadoSchema = z.object({
   name: z.string().min(1, "Nome do editor é obrigatório"),
@@ -26,7 +27,7 @@ export const freelanceEditorContractFormSchema = z.object({
   contractTitle: z.string().min(1, "Título do contrato é obrigatório"),
   contratado: contratadoSchema,
   remunerationValue: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor deve ser um número não negativo" }),
-  paymentDetails: z.string().min(1, "Detalhes do pagamento são obrigatórios"),
+  paymentFrequency: z.enum(['mensal', 'semanal', 'por_projeto'], { required_error: "Frequência de pagamento é obrigatória" }),
   lateDeliveryPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, { message: "Deve ser uma porcentagem entre 0 e 100" }),
   confidentialityPenalty: z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { message: "Valor da multa deve ser um número não negativo" }),
   rescissionNoticeDays: z.string().refine(val => !isNaN(parseInt(val)) && parseInt(val) >= 0, { message: "Deve ser um número não negativo" }),
@@ -99,17 +100,39 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
           <section>
             <h3 className="text-lg font-semibold mb-3 text-primary border-b pb-2">Cláusulas Editáveis</h3>
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="remunerationValue" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Valor Fixo Mensal (R$)</Label>
-                <Controller name="remunerationValue" control={control} render={({ field }) => <Input id="remunerationValue" type="number" step="0.01" {...field} />} />
-                {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
-                 <p className="text-xs text-muted-foreground mt-1">Este valor substituirá o placeholder "[valor a ser definido]" na cláusula de pagamento.</p>
+               <div>
+                  <Label htmlFor="remunerationValue" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Remuneração (R$)</Label>
+                  <Controller name="remunerationValue" control={control} render={({ field }) => <Input id="remunerationValue" type="number" step="0.01" {...field} />} />
+                  {errors.remunerationValue && <p className="text-sm text-destructive mt-1">{errors.remunerationValue.message}</p>}
               </div>
-              
-              <div>
-                <Label htmlFor="paymentDetails" className="flex items-center mb-1"><DollarSign className="mr-2 h-4 w-4" />Cláusula 3 - Detalhes de Pagamento</Label>
-                <Controller name="paymentDetails" control={control} render={({ field }) => <Textarea id="paymentDetails" rows={5} {...field} />} />
-                {errors.paymentDetails && <p className="text-sm text-destructive mt-1">{errors.paymentDetails.message}</p>}
+
+               <div>
+                <Label className="flex items-center mb-1"><Clock className="mr-2 h-4 w-4" />Frequência do Pagamento</Label>
+                <Controller
+                  name="paymentFrequency"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex space-x-4 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="mensal" id="mensal" />
+                        <Label htmlFor="mensal" className="font-normal">Mensal</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="semanal" id="semanal" />
+                        <Label htmlFor="semanal" className="font-normal">Semanal</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="por_projeto" id="por_projeto" />
+                        <Label htmlFor="por_projeto" className="font-normal">Por Projeto</Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
+                {errors.paymentFrequency && <p className="text-sm text-destructive mt-1">{errors.paymentFrequency.message}</p>}
               </div>
               
                <div>
@@ -150,6 +173,16 @@ const FreelanceEditorContractForm: React.FC<FreelanceEditorContractFormProps> = 
                     />
                   </div>
                    {errors.includeNonCompeteClause && <p className="text-sm text-destructive mt-1">{errors.includeNonCompeteClause.message}</p>}
+                   {includeNonCompete && (
+                    <div>
+                      <Label htmlFor="nonCompeteClause">Texto da Cláusula de Não Concorrência</Label>
+                      <Controller
+                        name="nonCompeteClause"
+                        control={control}
+                        render={({ field }) => <Textarea id="nonCompeteClause" {...field} className="mt-1" rows={4} />}
+                      />
+                    </div>
+                   )}
               </div>
 
             </div>

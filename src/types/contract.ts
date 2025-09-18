@@ -102,7 +102,7 @@ export interface FreelanceEditorContractData {
   editorName?: string; // to sanitize filename
   contratado: ContractParty;
   remunerationValue: string;
-  paymentDetails: string;
+  paymentFrequency: 'mensal' | 'semanal' | 'por_projeto';
   lateDeliveryPenalty: string;
   confidentialityPenalty: string;
   rescissionNoticeDays: string;
@@ -205,14 +205,14 @@ export const initialFreelanceEditorData: FreelanceEditorContractData = {
   contractType: 'FREELANCE_HIRE_EDITOR',
   contractTitle: 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE EDIÇÃO DE VÍDEO',
   contratado: { name: '', cpfCnpj: '', address: '', email: '' },
-  remunerationValue: '0.00',
-  paymentDetails: 'O CONTRATADO receberá um valor fixo mensal de R$ [valor a ser definido], podendo este valor ser ajustado conforme acordo entre as partes. O dia de pagamento foi escolhido pelo CONTRATADO e acordado com a CONTRATANTE, devendo ser registrado no início da vigência contratual. A remuneração será paga após a emissão da Nota Fiscal Eletrônica (NFE) pelo CONTRATADO e a finalização de todas as demandas mensais acordadas. A CONTRATANTE efetuará o pagamento até o 5o dia útil após a emissão da NFE, desde que os serviços tenham sido entregues e aprovados conforme estipulado.',
+  remunerationValue: '2500.00',
+  paymentFrequency: 'mensal',
   lateDeliveryPenalty: '20',
   confidentialityPenalty: '15000.00',
   rescissionNoticeDays: '30',
   unjustifiedRescissionPenalty: '30',
   foro: 'Lagoa Santa/MG',
-  nonCompeteClause: 'Durante a vigência deste contrato, o CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
+  nonCompeteClause: '15.1. O CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.',
   includeNonCompeteClause: true,
   contractCity: 'Lagoa Santa/MG',
   contractFullDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),

@@ -539,13 +539,14 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
     contractTitle,
     contratado,
     remunerationValue,
-    paymentDetails,
+    paymentFrequency,
     lateDeliveryPenalty,
     confidentialityPenalty,
     rescissionNoticeDays,
     unjustifiedRescissionPenalty,
     foro,
     includeNonCompeteClause,
+    nonCompeteClause,
     contractCity,
     contractFullDate,
   } = contractData;
@@ -556,7 +557,11 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
   const confidentialityPenaltyFormatted = formatCurrency(confidentialityPenalty);
   const confidentialityPenaltyInWords = numberToWordsPt(confidentialityPenalty);
 
-  const finalPaymentDetails = paymentDetails.replace('[valor a ser definido]', `${remunerationFormatted}${remunerationInWords}`);
+  const paymentFrequencyText = paymentFrequency.replace('_', ' ');
+
+  const clause3_1 = `3.1. O CONTRATADO receberá o valor de ${remunerationFormatted}${remunerationInWords}, conforme acordado entre as partes.`;
+  const clause3_2 = `3.2. O pagamento ao CONTRATADO será efetuado pela CONTRATANTE após a entrega e aceitação final do serviço, ficando sujeito à validação da CONTRATANTE. O pagamento do CONTRATADO poderá ser afetado pela não quitação do pagamento do CLIENTE à CONTRATANTE, mas o CONTRATADO será pago integralmente pelo serviço prestado.`;
+  const clause3_3 = `3.3. A forma de pagamento ao CONTRATADO será ${paymentFrequencyText}, conforme a opção escolhida pelo CONTRATADO, sendo expressamente definida antes do início dos trabalhos.`;
   
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
@@ -570,9 +575,14 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
       <div className="space-y-3">
         <p><strong className="font-bold">CLÁUSULA 1 - DO OBJETO</strong><br/>{boldenContractTerms('1.1. O presente contrato tem como objeto a prestação de serviços de edição de vídeo, conforme demandas da CONTRATANTE, incluindo, mas não se limitando a: Edição de vídeos captados pela CONTRATANTE; Pós-produção, incluindo correção de cor, efeitos visuais, montagem e finalização; Cumprimento das diretrizes e roteiro de edição pré-estabelecidos.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 2 - DA NATUREZA DO VÍNCULO</strong><br/>{boldenContractTerms('2.1. Este contrato não estabelece vínculo empregatício entre as partes, sendo o CONTRATADO responsável por seus encargos tributários, previdenciários, trabalhistas e civis. O CONTRATADO atuará como prestador de serviços autônomo.', editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong><br/>{boldenContractTerms(finalPaymentDetails, editorTerms)}</p>
+        <div>
+          <p><strong className="font-bold">CLÁUSULA 3 - DA REMUNERAÇÃO E PAGAMENTO</strong></p>
+          <p>{boldenContractTerms(clause3_1, editorTerms)}</p>
+          <p>{boldenContractTerms(clause3_2, editorTerms)}</p>
+          <p>{boldenContractTerms(clause3_3, editorTerms)}</p>
+        </div>
         <p><strong className="font-bold">CLÁUSULA 4 - DOS PRAZOS E ENTREGAS</strong><br/>{boldenContractTerms(`4.1. Os prazos para execução e entrega dos arquivos de vídeo editados serão definidos por e-mail ou outro meio digital, sendo obrigatória sua confirmação pelo CONTRATADO.`, editorTerms)}<br/>{boldenContractTerms(`4.2. A não entrega dentro do prazo sem justificativa plausível implicará multa de ${lateDeliveryPenalty}% sobre o valor do serviço específico não entregue e possível rescisão contratual.`, editorTerms)}</p>
-        <p><strong className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</strong><br/>{boldenContractTerms('5.1. Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATANTE, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.', editorTerms)}</p>
+        <p><strong className="font-bold">CLÁUSULA 5 - DOS SOFTWARES</strong><br/>{boldenContractTerms('5.1. Os softwares utilizados para a edição de vídeo serão de responsabilidade do CONTRATADO, devendo ser de qualidade e versões adequadas para a realização dos serviços. O CONTRATADO deve garantir que possui licenças válidas para todos os softwares utilizados. Em caso de uso de softwares específicos fornecidos pela CONTRATANTE, o CONTRATADO deverá utilizá-los conforme as instruções e com diligência. O CONTRATADO se compromete a manter a confidencialidade e a segurança de quaisquer softwares ou ferramentas proprietárias fornecidas pela CONTRATANTE. Se houver dano ou uso indevido de softwares ou ferramentas proprietárias da CONTRATante, o CONTRATADO se compromete a arcar com os custos de reparação ou substituição, além de eventuais perdas e danos.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 6 - DOS DIREITOS AUTORAIS E DE IMAGEM</strong><br/>{boldenContractTerms('6.1. Todo o material editado durante a prestação dos serviços será de propriedade integral e irrevogável da CONTRATANTE.', editorTerms)}<br/>{boldenContractTerms('6.2. O CONTRATADO cede, de forma gratuita, definitiva e irretratável, todos os direitos autorais patrimoniais sobre o material editado, não podendo utilizá-lo em portfólios, redes sociais ou fins pessoais sem autorização por escrito da CONTRATANTE.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 7 - DA CONFIDENCIALIDADE</strong><br/>{boldenContractTerms(`7.1. O CONTRATADO compromete-se a manter sigilo absoluto sobre informações, roteiros, imagens e quaisquer dados da CONTRATANTE ou de seus clientes, sendo vedada a divulgação ou compartilhamento sob qualquer forma.`, editorTerms)}<br/>{boldenContractTerms(`7.2. Em caso de quebra de confidencialidade, será aplicada multa de ${confidentialityPenaltyFormatted}${confidentialityPenaltyInWords}, sem prejuízo de eventuais indenizações por perdas e danos.`, editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 8 - DAS PENALIDADES</strong><br/>{boldenContractTerms(`8.1. O não cumprimento das obrigações previstas neste contrato sujeitará o CONTRATADO às seguintes penalidades: Advertência formal; Multa de até 50% do valor do serviço específico não cumprido; Rescisão imediata do contrato; Responsabilização cível e criminal, conforme o caso.`, editorTerms)}</p>
@@ -582,7 +592,7 @@ const FreelanceEditorPreview: React.FC<{ contractData: FreelanceEditorContractDa
         <p><strong className="font-bold">CLÁUSULA 12 - DAS DISPOSIÇÕES GERAIS</strong><br/>{boldenContractTerms('12.1. Este contrato é celebrado em caráter irretratável e irrevogável, obrigando as partes por si e seus sucessores.', editorTerms)}<br/>{boldenContractTerms('12.2. Qualquer alteração ou aditamento a este contrato deverá ser feito por escrito e assinado por ambas as partes.', editorTerms)}<br/>{boldenContractTerms('12.3. A tolerância de uma parte para com a outra quanto ao descumprimento de qualquer das obrigações assumidas neste contrato não implicará em novação ou renúncia de direitos, podendo a parte tolerante exigir o cumprimento das obrigações a qualquer tempo.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 13 - DA DISPONIBILIDADE E COMUNICAÇÃO</strong><br/>{boldenContractTerms('13.1. O CONTRATADO deve estar disponível para comunicação e atendimento das demandas da CONTRATANTE em horários pré-estabelecidos, devendo responder a comunicações em até 24 horas úteis. As comunicações entre as partes serão realizadas preferencialmente por e-mail, mas também poderão ocorrer por telefone, mensagens instantâneas ou videoconferência.', editorTerms)}</p>
         <p><strong className="font-bold">CLÁUSULA 14 - DA QUALIDADE DOS SERVIÇOS</strong><br/>{boldenContractTerms('14.1. O CONTRATADO deve prestar os serviços de edição de vídeo seguindo os padrões de qualidade estabelecidos pela CONTRATANTE. A CONTRATANTE reserva-se o direito de solicitar correções ou ajustes nos vídeos editados até que sejam atendidos os padrões de qualidade acordados.', editorTerms)}</p>
-        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms('15.1. O CONTRATADO compromete-se a não prestar serviços de edição de vídeo para empresas concorrentes da CONTRATANTE, sob pena de rescisão contratual e aplicação de multa.', editorTerms)}</p>}
+        {includeNonCompeteClause && <p><strong className="font-bold">CLÁUSULA 15 - DA NÃO CONCORRÊNCIA</strong><br/>{boldenContractTerms(nonCompeteClause || '', editorTerms)}</p>}
         <p><strong className="font-bold">CLÁUSULA {includeNonCompeteClause ? '16' : '15'} - DA VIGÊNCIA</strong><br/>{boldenContractTerms(`${includeNonCompeteClause ? '16.1' : '15.1'}. Este contrato entra em vigor na data de sua assinatura e terá vigência por prazo indeterminado, podendo ser rescindido conforme a CLÁUSULA 10.`, editorTerms)}</p>
       </div>
 
@@ -640,5 +650,3 @@ const ContractPreview: React.FC<{ data: AnyContractData | null, companyInfo: Com
 };
 
 export default ContractPreview;
-
-    
