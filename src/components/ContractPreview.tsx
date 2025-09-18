@@ -5,7 +5,7 @@ import React from 'react';
 import type { AnyContractData, PermutaEquipmentServiceContractData, ServiceVideoContractData, ContractParty, FreelanceFilmmakerContractData, FreelancerMaterialAuthorizationData, FreelanceEditorContractData } from '@/types/contract';
 import type { CompanyInfo } from '@/types/budget'; // Assuming CompanyInfo is in budget types
 import { FileText } from 'lucide-react';
-import { toWords } from 'number-to-words';
+import { porExtenso } from 'numero-por-extenso';
 
 const formatCurrency = (value: string | number | undefined): string => {
   if (value === undefined || value === null) return 'R$ 0,00';
@@ -14,32 +14,18 @@ const formatCurrency = (value: string | number | undefined): string => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
 };
 
-const toWordsInPortuguese = (num: number): string => {
-    const integerPart = Math.floor(num);
-    const decimalPart = Math.round((num - integerPart) * 100);
-
-    let words = toWords(integerPart, { lang: 'pt' });
-    words = words.replace(/-/g, ' ');
-
-    let finalWords = `${words} reais`;
-
-    if (decimalPart > 0) {
-        let decimalWords = toWords(decimalPart, { lang: 'pt' });
-        decimalWords = decimalWords.replace(/-/g, ' ');
-        finalWords += ` e ${decimalWords} centavos`;
-    }
-
-    return finalWords.charAt(0).toUpperCase() + finalWords.slice(1);
-};
-
-
 const numberToWordsPt = (numStr: string | number | undefined): string => {
     if (numStr === undefined || numStr === null) return '';
     const numValue = typeof numStr === 'string' ? parseFloat(numStr.replace(',', '.')) : numStr;
     if (isNaN(numValue)) return '';
     
-    const inWords = toWordsInPortuguese(numValue);
-    return ` (${inWords})`;
+    try {
+        const inWords = porExtenso(numValue, { modo: 'monetario' });
+        return ` (${inWords})`;
+    } catch (e) {
+        console.error("Erro ao converter número para extenso:", e);
+        return '';
+    }
 };
 
 
@@ -198,12 +184,12 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
   
   let rescissionNoticePeriodInWords = "";
   if (rescissionNoticePeriodDays && !isNaN(parseInt(rescissionNoticePeriodDays))) {
-      rescissionNoticePeriodInWords = toWordsInPortuguese(parseInt(rescissionNoticePeriodDays));
+      rescissionNoticePeriodInWords = numberToWordsPt(parseInt(rescissionNoticePeriodDays));
   }
 
   let rescissionPenaltyInWords = "";
   if (rescissionPenaltyPercentage && !isNaN(parseFloat(rescissionPenaltyPercentage))) {
-     rescissionPenaltyInWords = toWordsInPortuguese(parseFloat(rescissionPenaltyPercentage));
+     rescissionPenaltyInWords = numberToWordsPt(parseFloat(rescissionPenaltyPercentage));
   }
 
   let paymentDescription = '';
@@ -273,7 +259,7 @@ const ServiceVideoPreview: React.FC<{ contractData: ServiceVideoContractData, co
 
       <div style={{ pageBreakInside: 'avoid' }}>
         <p className="mb-4"><strong className="font-bold">RESCISÃO:</strong><br/>
-        {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticePeriodDays || '__'} (${rescissionNoticePeriodInWords || '______'}) dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de ${rescissionPenaltyPercentage || '__'}% (${rescissionPenaltyInWords || '______ por cento'}) sobre o valor do contrato.`, serviceTerms)}
+        {boldenContractTerms(`O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de ${rescissionNoticePeriodDays || '__'} ${numberToWordsPt(rescissionNoticePeriodDays)} dias. Em caso de rescisão sem justa causa, a parte que der causa pagará à outra uma multa de ${rescissionPenaltyPercentage || '__'}% ${numberToWordsPt(rescissionPenaltyPercentage)} sobre o valor do contrato.`, serviceTerms)}
         </p>
       </div>
 
@@ -335,7 +321,7 @@ const FreelanceFilmmakerPreview: React.FC<{ contractData: FreelanceFilmmakerCont
   const remunerationValueInWords = numberToWordsPt(remunerationValue);
   const confidentialityPenaltyFormatted = formatCurrency(confidentialityBreachPenaltyValue);
   const confidentialityPenaltyInWords = numberToWordsPt(confidentialityBreachPenaltyValue);
-  const rescissionNoticeDaysInWords = rescissionNoticeDays ? toWordsInPortuguese(parseInt(rescissionNoticeDays)) : '______';
+  const rescissionNoticeDaysInWords = numberToWordsPt(rescissionNoticeDays) || '______';
   
   return (
     <div className="text-sm leading-relaxed" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#333' }}>
